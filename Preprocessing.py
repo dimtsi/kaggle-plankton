@@ -1,9 +1,3 @@
-
-# # Loading images
-
-# In[71]:
-
-
 from PIL import Image
 import numpy as np
 import pandas as pd
@@ -20,10 +14,6 @@ from torch.utils.data import Dataset, DataLoader,TensorDataset
 from torchvision import transforms
 
 from torchsummary import summary
-
-
-# In[72]:
-
 
 #labels with the same order
 train_images = []
@@ -46,10 +36,8 @@ for filename in glob.iglob('test_images' +'/*'):
     test_dict[filename.replace('test_images/', '')] = image
 
 
-# In[73]:
 
-
-widths, heights = [], [] 
+widths, heights = [], []
 sumx, sumy = 0, 0
 for i in train_images:
     sumx += i.size[0]
@@ -66,15 +54,6 @@ fig.set_size_inches(12, 5)
 avg_width = np.mean(widths)
 avg_height = np.mean(heights)
 print('Average width {} , Average height: {}'.format(avg_width, avg_height))
-
-
-# In[133]:
-
-
-
-
-# In[125]:
-
 
 class ListsDataset(Dataset):
     def __init__(self, list_of_images, list_of_labels, transform=None):
@@ -102,10 +81,6 @@ class ListsDataset(Dataset):
     def __len__(self):
         return len(self.data)
 
-
-# In[132]:
-
-
 #Transforms and Dataset Creation
 test_transforms = transforms.ToTensor()
 train_transforms = transforms. Compose([
@@ -115,21 +90,8 @@ train_transforms = transforms. Compose([
 
 train_dataset = ListsDataset(train_images, train_labels, transform = train_transforms)
 
-
-# In[94]:
-
-
-
-
-
-# In[134]:
-
-
 train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32, shuffle = True)
 # test_loader = torch.utils.data.DataLoader(test_images, batch_size = 32, shuffle = True)
-
-
-# In[ ]:
 
 
 class Flatten(nn.Module):
@@ -160,10 +122,6 @@ class CNN(nn.Module):
         out = self.fc(out)
         return out
 
-
-# In[138]:
-
-
 # device = torch.device("cpu");
 #CNN architecture
 cnn = CNN().cuda()
@@ -171,9 +129,6 @@ summary(cnn, (1,28,28))
 #Hyperparameters
 learning_rate = 0.0005
 batch_size = 32
-
-
-# In[ ]:
 
 
 def train(model, num_epochs):
@@ -207,4 +162,3 @@ def train(model, num_epochs):
             print()
     return model
 train(CNN().cuda(), num_epochs = 100)
-
