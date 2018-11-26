@@ -60,7 +60,7 @@ class ResNetMine(nn.Module):
         x = self.fc(x)
 
         return x
-    
+
 #        def forward(self, x):
 #         print(x.size())
 #         x = self.conv1(x)
@@ -89,8 +89,8 @@ class ResNetMine(nn.Module):
 #         x = self.fc(x)
 
 #         return x
-    
-    
+
+
 class Flatten(nn.Module):
     def forward(self, input):
         return input.view(input.size(0), -1)
