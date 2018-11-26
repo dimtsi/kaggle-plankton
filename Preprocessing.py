@@ -134,7 +134,7 @@ def train(model, data_loader, num_epochs):
     for epoch in range(num_epochs):
             for i, (images, labels) in enumerate(data_loader):
                 images = Variable(images).cuda()
-                labels = Variable(labels).squeeze(1).long().cuda()#.cpu()
+                labels = Variable(labels).squeeze(1).long().cuda()##.cpu()
                 # Forward + Backward + Optimize
                 optimizer.zero_grad()
                 outputs = model(images)
