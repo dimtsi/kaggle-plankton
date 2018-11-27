@@ -7,7 +7,7 @@ class ResNetMine(nn.Module):
     def __init__(self, block, layers, num_classes=121):
         self.inplanes = 64
         super(ResNetMine, self).__init__()
-        self.conv1 = nn.Conv2d(1, 64, kernel_size=3, stride=2, padding=3,
+        self.conv1 = nn.Conv2d(1, 64, kernel_size=3, stride=2, padding=1,
                                bias=False)
         self.bn1 = nn.BatchNorm2d(64)
         self.relu = nn.ReLU(inplace=True)
@@ -17,7 +17,7 @@ class ResNetMine(nn.Module):
 #         self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
 #         self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
         self.avgpool = nn.AvgPool2d(3, stride=2)
-        self.fc = nn.Linear(8192, num_classes)
+        self.fc = nn.Linear(12544, num_classes)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -50,7 +50,7 @@ class ResNetMine(nn.Module):
         x = self.maxpool(x)
 
         x = self.layer1(x)
-        x = self.layer2(x)
+        # x = self.layer2(x)
 #         x = self.layer3(x)
 #         x = self.layer4(x)
         x = self.avgpool(x)
