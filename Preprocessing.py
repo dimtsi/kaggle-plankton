@@ -201,7 +201,7 @@ def train(model, train_loader, num_epochs):
     criterion = nn.CrossEntropyLoss();
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay = weight_decay);
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-    optimizer, 'max', factor=0.1, patience=5, verbose=True)
+    optimizer, 'min', factor=0.1, patience=10, verbose=True)
 #     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate);
     #Training
     history = {'batch': [], 'loss': [], 'accuracy': []}
@@ -230,6 +230,7 @@ def train(model, train_loader, num_epochs):
                 history['loss'].append(loss.item())
                 history['accuracy'].append(accuracy_train.item())
         print()
+        scheduler.step(loss)
     return model
 
 
@@ -370,5 +371,5 @@ test_transforms = transforms. Compose([
 
 test_dataset = ListsTestDataset(test_images, transform = test_transforms)
 test_loader = torch.utils.data.DataLoader(test_dataset, batch_size = 100, shuffle = False)
-cnn = final_model.eval().to(device)
+final_model.eval().to(device)
 predict_test_set(final_model, test_loader, test_filenames)
