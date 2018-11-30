@@ -21,7 +21,7 @@ class ResNetMine(nn.Module):
             # nn.Linear(128*block.expansion, 64*block.expansion),
             # nn.ReLU(),
             # nn.Dropout(0.5),
-            nn.Linear(64*block.expansion, num_classes)
+            nn.Linear(128*block.expansion, num_classes)
         )
         ##
 
