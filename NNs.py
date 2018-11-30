@@ -20,10 +20,10 @@ class ResNetMine(nn.Module):
         self.fc = nn.Sequential(
             nn.Linear(128*block.expansion, 64*block.expansion),
             nn.ReLU(),
-            nn.Dropout(0.5),
+            # nn.Dropout(0.5),
             nn.Linear(64*block.expansion, num_classes)
         )
-        
+
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
