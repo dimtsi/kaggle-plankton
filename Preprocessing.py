@@ -190,7 +190,7 @@ from torchvision.models.resnet import BasicBlock, Bottleneck, ResNet
 
 
 # In[9]:
-
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 def train(model, data_loader, num_epochs):
     learning_rate = 0.0005
@@ -304,8 +304,8 @@ def train_and_validate(model, train_loader, test_loader, num_epochs):
     for epoch in range(num_epochs):
         model.train().cuda()
         for i, (images, labels) in enumerate(train_loader):
-            images = Variable(images).cuda()
-            labels = Variable(labels).squeeze(1).long().cuda()#.cpu()
+            images = Variable(images).to(device)
+            labels = Variable(labels).squeeze(1).long().to(device)#.cpu()
             # Forward + Backward + Optimize
             optimizer.zero_grad()
             outputs = model(images)
@@ -327,11 +327,11 @@ def train_and_validate(model, train_loader, test_loader, num_epochs):
                 history['accuracy'].append(accuracy_train.item())
         print()
         ##VALIDATION SCORE AFTER EVERY EPOCH
-        model.eval().cuda()
+        model.eval().to(device)
         correct = 0
         total = 0
         for images, labels in test_loader:
-            images = Variable(images).cuda()
+            images = Variable(images).to(device)
             labels= labels.squeeze(1)
             outputs = model(images)
             _, predicted = torch.max(outputs.data, 1)
@@ -372,7 +372,13 @@ for train_indexes, validation_indexes in kf.split(train_images):
         X_train, y_train, X_val, y_val, batch_size = 32)
 
     #Training
-    cnn = ResNetMine(Bottleneck, [3, 8, 36, 3]).cuda()
+    cnn = ResNetMine(Bottleneck, [3, 8, 36, 3])
+    if torch.cuda.device_count() > 1:
+      print("Let's use", torch.cuda.device_count(), "GPUs!")
+      # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
+      model = nn.DataParallel(model)
+    cnn.to(device)
+
 #     cnn = CNN().cuda()
     summary(cnn, (1,64,64))
 
