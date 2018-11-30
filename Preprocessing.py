@@ -372,7 +372,7 @@ for train_indexes, validation_indexes in kf.split(train_images):
         X_train, y_train, X_val, y_val, batch_size = 32)
 
     #Training
-    cnn = ResNetMine(Bottleneck, [3, 4, 36, 3])
+    cnn = ResNetMine(Bottleneck, [1, 2, 36, 3])
     # if torch.cuda.device_count() > 1:
     #   print("Let's use", torch.cuda.device_count(), "GPUs!")
     #   # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
