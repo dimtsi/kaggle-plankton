@@ -48,4 +48,5 @@ train_images[0]
 preprocessed_train_images[0]
 
 pickle.dump( preprocessed_train_images, open( "pkl/preprocessed_train_images.pkl", "wb" ) )
-preprocesed_train_images[0]
+pickle.dump( preprocessed_test_images, open( "pkl/preprocessed_test_images.pkl", "wb" ) )
+preprocessed_test_images[0]
