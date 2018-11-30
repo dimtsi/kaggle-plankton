@@ -27,6 +27,7 @@ def pad_and_resize(im):
     new_im = Image.new("RGB", (desired_size, desired_size))
     new_im.paste(im, ((desired_size-new_size[0])//2,
                         (desired_size-new_size[1])//2))
+    new_im = im.resize((64,64), Image.ANTIALIAS)
     return new_im
 
 
@@ -43,8 +44,9 @@ for im in test_images:
 
 
 # In[17]:
-
+train_images[0]
+preprocessed_train_images[0]
 
 pickle.dump( preprocessed_train_images, open( "pkl/preprocessed_train_images.pkl", "wb" ) )
 pickle.dump( preprocessed_test_images, open( "pkl/preprocessed_test_images.pkl", "wb" ) )
-
+train_images[0]
