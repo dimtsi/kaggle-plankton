@@ -370,5 +370,5 @@ test_transforms = transforms. Compose([
 
 test_dataset = ListsTestDataset(test_images, transform = test_transforms)
 test_loader = torch.utils.data.DataLoader(test_dataset, batch_size = 100, shuffle = False)
-
+cnn = final_model.eval().to(device)
 predict_test_set(final_model, test_loader, test_filenames)
