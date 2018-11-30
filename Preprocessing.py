@@ -341,7 +341,7 @@ train_transforms = transforms. Compose([
                         std =[0.43267642, 0.43267642, 0.43267642])
 ])
 train_dataset = ListsTrainDataset(train_images, train_labels, transform = train_transforms)
-train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 100, shuffle = True)
+train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32, shuffle = True)
 
 cnn = ResNetMine(Bottleneck, [3, 4, 36, 3])
 cnn.to(device)
