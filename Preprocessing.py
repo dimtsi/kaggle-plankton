@@ -207,6 +207,7 @@ def train(model, train_loader, num_epochs):
     history = {'batch': [], 'loss': [], 'accuracy': []}
     for epoch in range(num_epochs):
         model.train().cuda()
+        losses = [] #losses in epoch per batch
         for i, (images, labels) in enumerate(train_loader):
             images = Variable(images).to(device)
             labels = Variable(labels).squeeze(1).long().to(device)#.cpu()
@@ -215,6 +216,7 @@ def train(model, train_loader, num_epochs):
             outputs = model(images)
             loss = criterion(outputs, labels)
             loss.backward()
+            losses.append(loss.item())
             optimizer.step()
             _, argmax = torch.max(outputs, 1)
             accuracy_train = (labels == argmax.squeeze()).float().mean()*100
@@ -229,8 +231,8 @@ def train(model, train_loader, num_epochs):
                 history['batch'].append(i)
                 history['loss'].append(loss.item())
                 history['accuracy'].append(accuracy_train.item())
-        print()
-        scheduler.step(loss)
+        print(loss)
+        scheduler.step(np.mean(losses))
     return model
 
 
@@ -299,7 +301,7 @@ from NNs import *
 from sklearn.model_selection import KFold
 
 def run_KFolds():
-    kf = KFold(n_splits=1, random_state=None, shuffle=True)
+    kf = KFold(n_splits=12, random_state=None, shuffle=True)
     trained_models = []
     for train_indexes, validation_indexes in kf.split(train_images):
         X_train = []
@@ -332,26 +334,41 @@ def run_KFolds():
         trained_models.append(trained_model)
         break
 
+run_KFolds()
+final_model = trained_models[0].eval().cuda()
 
-# final_model = trained_models[0].eval().cuda()
-train_transforms = transforms. Compose([
-    transforms.Grayscale(),
-    transforms.RandomRotation(degrees=360),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
-                        std =[0.43267642, 0.43267642, 0.43267642])
-])
-train_dataset = ListsTrainDataset(train_images, train_labels, transform = train_transforms)
-train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32, shuffle = True)
 
-cnn = ResNetMine(Bottleneck, [3, 4, 36, 3])
-cnn.to(device)
-summary(cnn, (1,64,64))
-final_model = train(cnn, train_loader, num_epochs=100)
+def train_on_whole():
+    train_transforms = transforms. Compose([
+        transforms.Grayscale(),
+        transforms.RandomRotation(degrees=360),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
+                            std =[0.43267642, 0.43267642, 0.43267642])
+    ])
+    train_dataset = ListsTrainDataset(train_images, train_labels, transform = train_transforms)
+    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32, shuffle = True)
+
+    cnn = ResNetMine(Bottleneck, [3, 4, 36, 3])
+    cnn.to(device)
+    summary(cnn, (1,64,64))
+    model = train(cnn, train_loader, num_epochs=100)
+    return model
 
 
 #predict on testset
-def predict_test_set(model, loader, filenames):
+def predict_test_set(model, filenames):
+    test_transforms = transforms. Compose([
+        transforms.Grayscale(),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
+                    std =[0.43267642, 0.43267642, 0.43267642])
+    ])
+
+    test_dataset = ListsTestDataset(test_images, transform = test_transforms)
+    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size = 100, shuffle = False)
+
+    model.eval().to(device)
     predictions = []
     for images in loader:
         images = Variable(images).cuda()
@@ -362,14 +379,5 @@ def predict_test_set(model, loader, filenames):
     results_df.to_csv('results.csv',sep = ',', index = False)
 
 
-test_transforms = transforms. Compose([
-    transforms.Grayscale(),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
-                std =[0.43267642, 0.43267642, 0.43267642])
-])
 
-test_dataset = ListsTestDataset(test_images, transform = test_transforms)
-test_loader = torch.utils.data.DataLoader(test_dataset, batch_size = 100, shuffle = False)
-final_model.eval().to(device)
-predict_test_set(final_model, test_loader, test_filenames)
+# predict_test_set(final_model, test_filenames)
