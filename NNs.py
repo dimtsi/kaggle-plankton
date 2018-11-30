@@ -8,7 +8,7 @@ class ResNetMine(nn.Module):
         self.inplanes = 64
         super(ResNetMine, self).__init__()
         self.conv1 = nn.Conv2d(1, 64, kernel_size=3, stride=2, padding=1,
-                               bias=True)
+                               bias=False)
         self.bn1 = nn.BatchNorm2d(64)
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
