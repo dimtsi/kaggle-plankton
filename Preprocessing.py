@@ -31,10 +31,10 @@ from torchsummary import summary
 # In[2]:
 
 
-train_images = pickle.load(open("pkl/preprocessed_train_images.pkl", "rb"))
+train_images = pickle.load(open("pkl/train_images.pkl", "rb"))
 train_labels = pickle.load(open("pkl/train_labels.pkl", "rb"))
 train_filenames = pickle.load(open("pkl/train_filenames.pkl", "rb"))
-test_images = pickle.load(open("pkl/preprocessed_test_images.pkl", "rb"))
+test_images = pickle.load(open("pkl/test_images.pkl", "rb"))
 test_filenames = pickle.load(open("pkl/test_filenames.pkl", "rb"))
 
 
@@ -154,6 +154,7 @@ class ListsTestDataset(Dataset):
 #Transforms and Dataset Creation
 def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, batch_size = 32):
     test_transforms = transforms. Compose([
+        transforms.resize(image, (64, 64)),
 #         transforms.CenterCrop(64),
         transforms.Grayscale(),
         transforms.ToTensor(),
@@ -164,8 +165,9 @@ def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, b
     train_transforms = transforms. Compose([
 #         transforms.CenterCrop(64),
         transforms.Grayscale(),
+        transforms.resize(image, (64, 64)),
 #         transforms.RandomHorizontalFlip(p=0.5),
-        transforms.RandomRotation(degrees=180),
+        transforms.RandomRotation(degrees=360),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
                             std =[0.43267642, 0.43267642, 0.43267642])
