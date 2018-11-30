@@ -19,7 +19,7 @@ class ResNetMine(nn.Module):
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Sequential(
             nn.Linear(128*block.expansion, 64*block.expansion),
-            nn.ReLU(),
+            # nn.ReLU(),
             # nn.Dropout(0.5),
             nn.Linear(64*block.expansion, num_classes)
         )
