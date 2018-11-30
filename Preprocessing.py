@@ -194,102 +194,43 @@ from torchvision.models.resnet import BasicBlock, Bottleneck, ResNet
 # In[9]:
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-def train(model, data_loader, num_epochs):
-    learning_rate = 0.0005
-    batch_size = data_loader.batch_size
+def train(model, train_loader, num_epochs):
+    learning_rate = 0.001
+    weight_decay = 0
+    batch_size = train_loader.batch_size
     criterion = nn.CrossEntropyLoss();
-    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate);
+    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay = weight_decay);
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(
+    optimizer, 'max', factor=0.1, patience=5, verbose=True)
 #     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate);
     #Training
     history = {'batch': [], 'loss': [], 'accuracy': []}
     for epoch in range(num_epochs):
-            for i, (images, labels) in enumerate(data_loader):
-                images = Variable(images).cuda()
-                labels = Variable(labels).squeeze(1).long().cuda()#.cpu()
-                # Forward + Backward + Optimize
-                optimizer.zero_grad()
-                outputs = model(images)
-                loss = criterion(outputs, labels)
-                loss.backward()
-                optimizer.step()
-                _, argmax = torch.max(outputs, 1)
-                accuracy_train = (labels == argmax.squeeze()).float().mean()*100
-                # Show progress
-                if (i+1) % 32 == 0:
-                    log = " ".join([
-                      "Epoch : %d/%d" % (epoch+1, num_epochs),
-                      "Iter : %d/%d" % (i+1, len(data_loader.dataset)//batch_size),
-                      "Loss: %.4f" % loss.item(),
-                      "Accuracy: %.4f" % accuracy_train])
-                    print('\r{}'.format(log), end='')
-                    history['batch'].append(i)
-                    history['loss'].append(loss.item())
-                    history['accuracy'].append(accuracy_train.item())
-            print()
+        model.train().cuda()
+        for i, (images, labels) in enumerate(train_loader):
+            images = Variable(images).to(device)
+            labels = Variable(labels).squeeze(1).long().to(device)#.cpu()
+            # Forward + Backward + Optimize
+            optimizer.zero_grad()
+            outputs = model(images)
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
+            _, argmax = torch.max(outputs, 1)
+            accuracy_train = (labels == argmax.squeeze()).float().mean()*100
+            # Show progress
+            if (i+1) % 32 == 0:
+                log = " ".join([
+                  "Epoch : %d/%d" % (epoch+1, num_epochs),
+                  "Iter : %d/%d" % (i+1, len(train_loader.dataset)//batch_size),
+                  "Loss: %.4f" % loss.item(),
+                  "Accuracy: %.4f" % accuracy_train])
+                print('\r{}'.format(log), end='')
+                history['batch'].append(i)
+                history['loss'].append(loss.item())
+                history['accuracy'].append(accuracy_train.item())
+        print()
     return model
-
-
-# In[ ]:
-
-
-
-
-
-# In[10]:
-
-
-# cnn.eval().cuda()
-# correct = 0
-# total = 0
-# for images, labels in test_loader:
-#     images = Variable(images)
-#     labels= labels.squeeze(1)
-#     outputs = cnn(images)
-#     _, predicted = torch.max(outputs.data, 1)
-#     total += labels.size(0)
-#     correct += (predicted.float() == labels).sum()
-# print('Test Accuracy of the model on the 60000 test images: %.4f %%' % (100*correct.item() / total))
-
-
-# In[11]:
-
-
-def predict_test_set(model, loader, filenames):
-    predictions = []
-    for images in loader:
-        images = Variable(images).cuda()
-        outputs = model(images)
-        _, prediction = torch.max(outputs.data, 1)
-        predictions.extend(prediction.cpu().numpy())
-    results_df = pd.DataFrame({'image': test_filenames, 'class': predictions}, columns=['image', 'class'])
-    results_df.to_csv('results.csv',sep = ',', index = False)
-
-
-# In[12]:
-
-
-# train_loader, test_loader = create_datasets_dataloaders(train_images, train_labels)
-# cnn = ResNetMine(Bottleneck, [1, 1, 1, 1]).cuda()
-# trained_model = train(cnn, train_loader, num_epochs=20)
-
-
-# In[13]:
-
-
-##predict on testset
-
-# test_transforms = transforms. Compose([
-#         transforms.CenterCrop(64),
-#         transforms.ToTensor()
-#     ])
-
-# test_dataset = ListsTestDataset(test_images, transform = test_transforms)
-# test_loader = torch.utils.data.DataLoader(test_dataset, batch_size = 100, shuffle = False)
-
-# predict_test_set(trained_model, test_loader, test_filenames)
-
-
-# In[14]:
 
 
 def train_and_validate(model, train_loader, test_loader, num_epochs):
@@ -356,41 +297,56 @@ from NNs import *
 
 from sklearn.model_selection import KFold
 
-kf = KFold(n_splits=12, random_state=None, shuffle=True)
-trained_models = []
-for train_indexes, validation_indexes in kf.split(train_images):
-    X_train = []
-    y_train = []
-    X_val = []
-    y_val = []
+def run_KFolds():
+    kf = KFold(n_splits=1, random_state=None, shuffle=True)
+    trained_models = []
+    for train_indexes, validation_indexes in kf.split(train_images):
+        X_train = []
+        y_train = []
+        X_val = []
+        y_val = []
 
-    for i in train_indexes:
-        X_train.append(train_images[i])
-        y_train.append(train_labels[i])
-    for j in validation_indexes:
-        X_val.append(train_images[j])
-        y_val.append(train_labels[j])
-    train_loader, test_loader = create_datasets_dataloaders(
-        X_train, y_train, X_val, y_val, batch_size = 32)
+        for i in train_indexes:
+            X_train.append(train_images[i])
+            y_train.append(train_labels[i])
+        for j in validation_indexes:
+            X_val.append(train_images[j])
+            y_val.append(train_labels[j])
+        train_loader, test_loader = create_datasets_dataloaders(
+            X_train, y_train, X_val, y_val, batch_size = 32)
 
-    #Training
-    cnn = ResNetMine(Bottleneck, [3, 4, 36, 3])
-    # if torch.cuda.device_count() > 1:
-    #   print("Let's use", torch.cuda.device_count(), "GPUs!")
-    #   # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
-    #   cnn = nn.DataParallel(cnn)
-    cnn.to(device)
+        #Training
+        cnn = ResNetMine(Bottleneck, [3, 4, 36, 3])
+        # if torch.cuda.device_count() > 1:
+        #   print("Let's use", torch.cuda.device_count(), "GPUs!")
+        #   # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
+        #   cnn = nn.DataParallel(cnn)
+        cnn.to(device)
 
-#     cnn = CNN().cuda()
-    summary(cnn, (1,64,64))
+    #     cnn = CNN().cuda()
+        summary(cnn, (1,64,64))
 
-#     print(summary(cnn, (1,28,28)))
-    trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=150)
-    trained_models.append(trained_model)
-    break
+    #     print(summary(cnn, (1,28,28)))
+        trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=150)
+        trained_models.append(trained_model)
+        break
 
 
-final_model = trained_models[0].eval().cuda()
+# final_model = trained_models[0].eval().cuda()
+train_transforms = transforms. Compose([
+    transforms.Grayscale(),
+    transforms.RandomRotation(degrees=360),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
+                        std =[0.43267642, 0.43267642, 0.43267642])
+])
+train_dataset = ListsTrainDataset(train_images, train_labels, transform = train_transforms)
+train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 100, shuffle = True)
+
+cnn = ResNetMine(Bottleneck, [3, 4, 36, 3])
+cnn.to(device)
+summary(cnn, (1,64,64))
+final_model = train(cnn, train_loader, num_epochs=100)
 
 
 #predict on testset
@@ -406,9 +362,11 @@ def predict_test_set(model, loader, filenames):
 
 
 test_transforms = transforms. Compose([
-        transforms.CenterCrop(64),
-        transforms.ToTensor()
-    ])
+    transforms.Grayscale(),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
+                std =[0.43267642, 0.43267642, 0.43267642])
+])
 
 test_dataset = ListsTestDataset(test_images, transform = test_transforms)
 test_loader = torch.utils.data.DataLoader(test_dataset, batch_size = 100, shuffle = False)
