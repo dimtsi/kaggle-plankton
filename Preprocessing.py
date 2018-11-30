@@ -1,3 +1,11 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# # Loading images
+
+# In[1]:
+
+
 from PIL import Image
 import pickle
 
@@ -17,6 +25,11 @@ from torch.utils.data import Dataset, DataLoader,TensorDataset
 from torchvision import transforms
 
 from torchsummary import summary
+# %matplotlib inline
+
+
+# In[2]:
+
 
 train_images = pickle.load(open("pkl/preprocessed_train_images.pkl", "rb"))
 train_labels = pickle.load(open("pkl/train_labels.pkl", "rb"))
@@ -25,8 +38,12 @@ test_images = pickle.load(open("pkl/preprocessed_test_images.pkl", "rb"))
 test_filenames = pickle.load(open("pkl/test_filenames.pkl", "rb"))
 
 
+# In[3]:
 
-widths, heights = [], []
+
+#PIL
+
+widths, heights = [], [] 
 sumx, sumy = 0, 0
 for i in train_images:
     sumx += i.size[0]
@@ -44,6 +61,39 @@ avg_width = np.mean(widths)
 avg_height = np.mean(heights)
 print('Average width {} , Average height: {}'.format(avg_width, avg_height))
 
+norm_mean_width = np.mean(widths)
+norm_mean_height = np.mean(heights)
+
+
+# In[4]:
+
+
+##CONVERT TO NUMPY TO CALCULATE MEAN,STD PER CHANNEL FOR NORMALIZATION 
+# from sklearn.preprocessing import StandardScaler
+
+# scaler = StandardScaler()
+# np_train = []
+# np_test = []
+
+# for im in train_images:
+#     np_train.append(np.array(im))
+
+# for im in test_images:
+#     np_test.append(np.array(im))    
+    
+# arr = np.array(np_train) #len,x_pixels,y_pixels, channels
+# per_image_mean = np.mean(np_train, axis=(1,2)) #Shape (32,3)
+# per_image_std = np.std(np_train, axis=(1,2)) #Shape (32,3)
+
+# pop_channel_mean = np.mean(arr, axis=(0, 1, 2))/255
+# pop_channel_std = np.std(arr, axis=(0, 1, 2))/255
+
+# mean(array([0.70426004, 0.70426004, 0.70426004]),
+#  std array([0.43267642, 0.43267642, 0.43267642]))
+
+
+# In[5]:
+
 
 class ListsTrainDataset(Dataset):
     def __init__(self, list_of_images, list_of_labels, transform=None):
@@ -54,6 +104,7 @@ class ListsTrainDataset(Dataset):
             width (int): image width
             transform: pytorch transforms for transforms and tensor conversion
         """
+#         super().__init__()
         self.data = list_of_images
         self.labels = np.asarray(list_of_labels).reshape(-1,1)
         self.transform = transform
@@ -69,6 +120,9 @@ class ListsTrainDataset(Dataset):
 
     def __len__(self):
         return len(self.data)
+
+
+# In[6]:
 
 
 class ListsTestDataset(Dataset):
@@ -94,34 +148,49 @@ class ListsTestDataset(Dataset):
         return len(self.data)
 
 
+# In[7]:
+
+
 #Transforms and Dataset Creation
-def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None):
+def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, batch_size = 32):
     test_transforms = transforms. Compose([
+#         transforms.CenterCrop(64),
         transforms.Grayscale(),
-        transforms.ToTensor()
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
+                    std =[0.43267642, 0.43267642, 0.43267642])
     ])
-
+    
     train_transforms = transforms. Compose([
+#         transforms.CenterCrop(64),
         transforms.Grayscale(),
-        transforms.RandomHorizontalFlip(p=0.5),
-        transforms.RandomRotation(degrees=360),
-        transforms.ToTensor()
+#         transforms.RandomHorizontalFlip(p=0.5),
+        transforms.RandomRotation(degrees=180),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
+                            std =[0.43267642, 0.43267642, 0.43267642])
     ])
-
+    
     train_dataset = ListsTrainDataset(X_train, y_train, transform = train_transforms)
-    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32, shuffle = True, num_workers=2)
+    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = batch_size, shuffle = True, num_workers=0)
 
     if y_test is not None:
         test_dataset = ListsTrainDataset(X_test, y_test, transform = test_transforms)
     else:
         test_dataset = ListsTestDataset(X_test, transform = test_transforms)
 
-    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size = 32, shuffle = False)
+    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size = batch_size, shuffle = False)
     return (train_loader, test_loader)
 
 
+# In[8]:
+
 
 from torchvision.models.resnet import BasicBlock, Bottleneck, ResNet
+
+
+# In[9]:
+
 
 def train(model, data_loader, num_epochs):
     learning_rate = 0.0005
@@ -134,7 +203,7 @@ def train(model, data_loader, num_epochs):
     for epoch in range(num_epochs):
             for i, (images, labels) in enumerate(data_loader):
                 images = Variable(images).cuda()
-                labels = Variable(labels).squeeze(1).long().cuda()##.cpu()
+                labels = Variable(labels).squeeze(1).long().cuda()#.cpu()
                 # Forward + Backward + Optimize
                 optimizer.zero_grad()
                 outputs = model(images)
@@ -158,6 +227,31 @@ def train(model, data_loader, num_epochs):
     return model
 
 
+# In[ ]:
+
+
+
+
+
+# In[10]:
+
+
+# cnn.eval().cuda()
+# correct = 0
+# total = 0
+# for images, labels in test_loader:
+#     images = Variable(images)
+#     labels= labels.squeeze(1)
+#     outputs = cnn(images)
+#     _, predicted = torch.max(outputs.data, 1)
+#     total += labels.size(0)
+#     correct += (predicted.float() == labels).sum()
+# print('Test Accuracy of the model on the 60000 test images: %.4f %%' % (100*correct.item() / total))
+
+
+# In[11]:
+
+
 def predict_test_set(model, loader, filenames):
     predictions = []
     for images in loader:
@@ -169,10 +263,15 @@ def predict_test_set(model, loader, filenames):
     results_df.to_csv('results.csv',sep = ',', index = False)
 
 
+# In[12]:
+
+
 # train_loader, test_loader = create_datasets_dataloaders(train_images, train_labels)
 # cnn = ResNetMine(Bottleneck, [1, 1, 1, 1]).cuda()
 # trained_model = train(cnn, train_loader, num_epochs=20)
 
+
+# In[13]:
 
 
 ##predict on testset
@@ -188,13 +287,17 @@ def predict_test_set(model, loader, filenames):
 # predict_test_set(trained_model, test_loader, test_filenames)
 
 
+# In[14]:
+
 
 def train_and_validate(model, train_loader, test_loader, num_epochs):
-    learning_rate = 0.0001
-    weight_decay = 0.00005
+    learning_rate = 0.001
+    weight_decay = 0
     batch_size = train_loader.batch_size
     criterion = nn.CrossEntropyLoss();
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay = weight_decay);
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(
+    optimizer, 'max', factor=0.1, patience=5, verbose=True)
 #     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate);
     #Training
     history = {'batch': [], 'loss': [], 'accuracy': []}
@@ -235,25 +338,31 @@ def train_and_validate(model, train_loader, test_loader, num_epochs):
             total += labels.size(0)
             correct += (predicted.cpu().long() == labels).sum()
         print('VALIDATION SET ACCURACY: %.4f %%' % (100*correct.item() / total))
+        scheduler.step(correct.item() / total)
     return model
 
+
+# ## KFolds
+
+# In[ ]:
 
 
 import importlib
 import NNs
 import math
-
+importlib.reload(NNs)
 from NNs import *
+
 from sklearn.model_selection import KFold
 
-kf = KFold(n_splits=10, random_state=None, shuffle=True)
+kf = KFold(n_splits=12, random_state=None, shuffle=True)
 trained_models = []
 for train_indexes, validation_indexes in kf.split(train_images):
     X_train = []
     y_train = []
     X_val = []
     y_val = []
-
+    
     for i in train_indexes:
         X_train.append(train_images[i])
         y_train.append(train_labels[i])
@@ -261,12 +370,65 @@ for train_indexes, validation_indexes in kf.split(train_images):
         X_val.append(train_images[j])
         y_val.append(train_labels[j])
     train_loader, test_loader = create_datasets_dataloaders(
-        X_train, y_train, X_val, y_val)
-
+        X_train, y_train, X_val, y_val, batch_size = 32)
+    
     #Training
-    cnn = ResNetMine(BasicBlock, [1, 1, 1, 1]).cuda()
-    cnn = CNN().cuda()
+    cnn = ResNetMine(Bottleneck, [3, 8, 36, 3]).cuda()
+#     cnn = CNN().cuda()
+    summary(cnn, (1,64,64))
 
 #     print(summary(cnn, (1,28,28)))
     trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=150)
     trained_models.append(trained_model)
+    break
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+final_model = trained_models[0].eval().cuda()
+
+
+# In[ ]:
+
+
+#predict on testset
+def predict_test_set(model, loader, filenames):
+    predictions = []
+    for images in loader:
+        images = Variable(images).cuda()
+        outputs = model(images)
+        _, prediction = torch.max(outputs.data, 1)
+        predictions.extend(prediction.cpu().numpy())
+    results_df = pd.DataFrame({'image': test_filenames, 'class': predictions}, columns=['image', 'class'])
+    results_df.to_csv('results.csv',sep = ',', index = False)
+
+
+test_transforms = transforms. Compose([
+        transforms.CenterCrop(64),
+        transforms.ToTensor()
+    ])
+
+test_dataset = ListsTestDataset(test_images, transform = test_transforms)
+test_loader = torch.utils.data.DataLoader(test_dataset, batch_size = 100, shuffle = False)
+
+predict_test_set(final_model, test_loader, test_filenames)
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
