@@ -43,7 +43,7 @@ test_filenames = pickle.load(open("pkl/test_filenames.pkl", "rb"))
 
 #PIL
 
-widths, heights = [], [] 
+widths, heights = [], []
 sumx, sumy = 0, 0
 for i in train_images:
     sumx += i.size[0]
@@ -68,7 +68,7 @@ norm_mean_height = np.mean(heights)
 # In[4]:
 
 
-##CONVERT TO NUMPY TO CALCULATE MEAN,STD PER CHANNEL FOR NORMALIZATION 
+##CONVERT TO NUMPY TO CALCULATE MEAN,STD PER CHANNEL FOR NORMALIZATION
 # from sklearn.preprocessing import StandardScaler
 
 # scaler = StandardScaler()
@@ -79,8 +79,8 @@ norm_mean_height = np.mean(heights)
 #     np_train.append(np.array(im))
 
 # for im in test_images:
-#     np_test.append(np.array(im))    
-    
+#     np_test.append(np.array(im))
+
 # arr = np.array(np_train) #len,x_pixels,y_pixels, channels
 # per_image_mean = np.mean(np_train, axis=(1,2)) #Shape (32,3)
 # per_image_std = np.std(np_train, axis=(1,2)) #Shape (32,3)
@@ -160,7 +160,7 @@ def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, b
         transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
                     std =[0.43267642, 0.43267642, 0.43267642])
     ])
-    
+
     train_transforms = transforms. Compose([
 #         transforms.CenterCrop(64),
         transforms.Grayscale(),
@@ -170,7 +170,7 @@ def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, b
         transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
                             std =[0.43267642, 0.43267642, 0.43267642])
     ])
-    
+
     train_dataset = ListsTrainDataset(X_train, y_train, transform = train_transforms)
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = batch_size, shuffle = True, num_workers=0)
 
@@ -342,7 +342,6 @@ def train_and_validate(model, train_loader, test_loader, num_epochs):
     return model
 
 
-# ## KFolds
 
 # In[ ]:
 
@@ -362,7 +361,7 @@ for train_indexes, validation_indexes in kf.split(train_images):
     y_train = []
     X_val = []
     y_val = []
-    
+
     for i in train_indexes:
         X_train.append(train_images[i])
         y_train.append(train_labels[i])
@@ -371,7 +370,7 @@ for train_indexes, validation_indexes in kf.split(train_images):
         y_val.append(train_labels[j])
     train_loader, test_loader = create_datasets_dataloaders(
         X_train, y_train, X_val, y_val, batch_size = 32)
-    
+
     #Training
     cnn = ResNetMine(Bottleneck, [3, 8, 36, 3]).cuda()
 #     cnn = CNN().cuda()
@@ -383,19 +382,7 @@ for train_indexes, validation_indexes in kf.split(train_images):
     break
 
 
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
 final_model = trained_models[0].eval().cuda()
-
-
-# In[ ]:
 
 
 #predict on testset
@@ -419,16 +406,3 @@ test_dataset = ListsTestDataset(test_images, transform = test_transforms)
 test_loader = torch.utils.data.DataLoader(test_dataset, batch_size = 100, shuffle = False)
 
 predict_test_set(final_model, test_loader, test_filenames)
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
