@@ -5,11 +5,11 @@ import math;
 class ResNetMine(nn.Module):
 
     def __init__(self, block, layers, num_classes=121):
-        self.inplanes = 128
+        self.inplanes = 256
         super(ResNetMine, self).__init__()
-        self.conv1 = nn.Conv2d(1, 128, kernel_size=3, stride=2, padding=1,
+        self.conv1 = nn.Conv2d(1, 256, kernel_size=3, stride=2, padding=1,
                                bias=False)
-        self.bn1 = nn.BatchNorm2d(128)
+        self.bn1 = nn.BatchNorm2d(256)
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         self.layer1 = self._make_layer(block, 128, layers[0])
