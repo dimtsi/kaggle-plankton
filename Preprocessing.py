@@ -324,7 +324,7 @@ def run_KFolds():
             X_val.append(train_images[j])
             y_val.append(train_labels[j])
         train_loader, test_loader = create_datasets_dataloaders(
-            X_train, y_train, X_val, y_val, batch_size = 64)
+            X_train, y_train, X_val, y_val, batch_size = 32)
 
         #Training
         cnn = ResNetMine(Bottleneck, [3, 4, 2, 2])
