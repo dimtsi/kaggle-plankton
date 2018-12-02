@@ -327,7 +327,7 @@ def run_KFolds():
             X_train, y_train, X_val, y_val, batch_size = 32)
 
         #Training
-        cnn = ResNetMine(Bottleneck, [3, 4, 36, 3])
+        cnn = ResNetMine(Bottleneck, [2, 2, 2, 3])
         # if torch.cuda.device_count() > 1:
         #   print("Let's use", torch.cuda.device_count(), "GPUs!")
         #   # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
@@ -357,7 +357,7 @@ def train_on_whole():
     train_dataset = ListsTrainDataset(train_images, train_labels, transform = train_transforms)
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32, shuffle = True)
 
-    cnn = ResNetMine(Bottleneck, [3, 4, 36, 3])
+    cnn = ResNetMine(Bottleneck, [2, 2, 2, 3])
     cnn.to(device)
     summary(cnn, (1,64,64))
     model = train(cnn, train_loader, num_epochs=100)
