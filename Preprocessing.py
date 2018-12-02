@@ -370,7 +370,7 @@ def train_on_whole():
 # train_on_whole()
 #predict on testset
 final_model = ResNetMine(Bottleneck, [3, 4, 6, 3])
-# final_model.load_state_dict(torch.load('trained_model.pt')['state_dict'])
+final_model.load_state_dict(torch.load('trained_model.pt')['state_dict'])
 def predict_test_set(model, filenames):
     test_transforms = transforms. Compose([
         transforms.Grayscale(),
