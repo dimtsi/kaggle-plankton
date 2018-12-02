@@ -344,8 +344,8 @@ def run_KFolds():
         trained_models.append(trained_model)
         break
 
-run_KFolds()
-final_model = trained_models[0].eval().cuda()
+# run_KFolds()
+# final_model = trained_models[0].eval().cuda()
 
 
 def train_on_whole():
@@ -365,22 +365,23 @@ def train_on_whole():
     model = train(cnn, train_loader, num_epochs=100)
     return model
 
-
+final_model = ResNetMine(Bottleneck, [3, 4, 2, 2])
+final_model.load_state_dict(torch.load('trained_model.pt')['state_dict'])
 #predict on testset
 def predict_test_set(model, filenames):
     test_transforms = transforms. Compose([
         transforms.Grayscale(),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
-                    std =[0.43267642, 0.43267642, 0.43267642])
+        transforms.Normalize(mean=[0.95558817, 0.95558817, 0.95558817],
+            std =[0.14618639, 0.14618639, 0.14618639])
     ])
 
     test_dataset = ListsTestDataset(test_images, transform = test_transforms)
-    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size = 100, shuffle = False)
+    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size = 32, shuffle = False)
 
     model.eval().to(device)
     predictions = []
-    for images in loader:
+    for images in test_loader:
         images = Variable(images).cuda()
         outputs = model(images)
         _, prediction = torch.max(outputs.data, 1)
@@ -388,5 +389,5 @@ def predict_test_set(model, filenames):
     results_df = pd.DataFrame({'image': test_filenames, 'class': predictions}, columns=['image', 'class'])
     results_df.to_csv('results.csv',sep = ',', index = False)
 
-
-# predict_test_set(final_model, test_filenames)
+final_model
+predict_test_set(final_model, test_filenames)
