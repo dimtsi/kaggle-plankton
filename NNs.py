@@ -4,7 +4,7 @@ import math;
 
 class ResNetMine(nn.Module):
 
-    def __init__(self, block, layers, num_classes=121):
+    def __init__(self, block, layers, num_classes=120):
         self.inplanes = 64
         super(ResNetMine, self).__init__()
         self.conv1 = nn.Conv2d(1, 64, kernel_size=3, stride=2, padding=1,
