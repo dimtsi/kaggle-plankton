@@ -240,7 +240,7 @@ def train(model, train_loader, num_epochs):
                 history['batch'].append(i)
                 history['loss'].append(loss.item())
                 history['accuracy'].append(accuracy_train.item())
-        print("Loss: " +str(loss.item()))
+        print("\nLoss: " +str(loss.item()))
         scheduler.step(np.mean(losses))
         save_model(epoch, model, optimizer, scheduler)
     return model
@@ -367,9 +367,9 @@ def train_on_whole():
     model = train(cnn, train_loader, num_epochs=100)
     return model
 
-train_on_whole()
+# train_on_whole()
 #predict on testset
-# final_model = ResNetMine(Bottleneck, [3, 4, 2, 2])
+final_model = ResNetMine(Bottleneck, [3, 4, 6, 3])
 # final_model.load_state_dict(torch.load('trained_model.pt')['state_dict'])
 def predict_test_set(model, filenames):
     test_transforms = transforms. Compose([
@@ -393,4 +393,4 @@ def predict_test_set(model, filenames):
     results_df.to_csv('results.csv',sep = ',', index = False)
 
 # final_model
-# predict_test_set(final_model, test_filenames)
+predict_test_set(final_model, test_filenames)
