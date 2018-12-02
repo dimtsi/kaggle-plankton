@@ -174,7 +174,7 @@ def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, b
     ])
 
     train_dataset = ListsTrainDataset(X_train, y_train, transform = train_transforms)
-    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = batch_size, shuffle = True, num_workers=0)
+    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = batch_size, shuffle = True, num_workers=16)
 
     if y_test is not None:
         test_dataset = ListsTrainDataset(X_test, y_test, transform = test_transforms)
@@ -330,10 +330,10 @@ def run_KFolds():
 
         #Training
         cnn = ResNetMine(Bottleneck, [3, 4, 6, 3])
-        # if torch.cuda.device_count() > 1:
-        #   print("Let's use", torch.cuda.device_count(), "GPUs!")
-        #   # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
-        #   cnn = nn.DataParallel(cnn)
+        if torch.cuda.device_count() > 1:
+          print("Let's use", torch.cuda.device_count(), "GPUs!")
+          # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
+          cnn = nn.DataParallel(cnn)
         cnn.to(device)
 
     #     cnn = CNN().cuda()
