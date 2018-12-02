@@ -308,12 +308,12 @@ import math
 importlib.reload(NNs)
 from NNs import *
 
-from sklearn.model_selection import KFold
+from sklearn.model_selection import StratifiedKFold
 
 trained_models = []
 def run_KFolds():
-    kf = KFold(n_splits=12, random_state=None, shuffle=True)
-    for train_indexes, validation_indexes in kf.split(train_images):
+    kf = StratifiedKFold(n_splits=7, random_state=None, shuffle=True)
+    for train_indexes, validation_indexes in kf.split(X = train_images, y = train_labels):
         X_train = []
         y_train = []
         X_val = []
