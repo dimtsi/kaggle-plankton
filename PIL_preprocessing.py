@@ -13,13 +13,13 @@ import pickle
 
 train_images = pickle.load(open("pkl/train_images.pkl", "rb"))
 test_images = pickle.load(open("pkl/test_images.pkl", "rb"))
-
+classified_train_images = pickle.load(open("pkl/classified_train_images.pkl", "rb"))
 
 # In[13]:
 
 
 def pad_and_resize(im):
-    desired_size = 128
+    desired_size = 64
     old_size = im.size  # old_size[0] is in (width, height) format
     ratio = float(desired_size)/max(old_size)
     new_size = tuple([int(x*ratio) for x in old_size])
@@ -36,12 +36,14 @@ def pad_and_resize(im):
 
 preprocessed_train_images = []
 preprocessed_test_images = []
+preprocessed_classified_images = []
 
 for im in train_images:
     preprocessed_train_images.append(pad_and_resize(im))
 for im in test_images:
     preprocessed_test_images.append(pad_and_resize(im))
-
+for im in classified_train_images:
+    preprocessed_classified_images.append(pad_and_resize(im))
 
 # In[17]:
 train_images[0]
@@ -49,3 +51,4 @@ preprocessed_train_images[0]
 
 pickle.dump( preprocessed_train_images, open( "pkl/preprocessed_train_images.pkl", "wb" ) )
 pickle.dump( preprocessed_test_images, open( "pkl/preprocessed_test_images.pkl", "wb" ) )
+pickle.dump( preprocessed_classified_images, open( "pkl/preprocessed_classified_images.pkl", "wb" ) )

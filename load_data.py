@@ -1,4 +1,7 @@
 import pickle
+import pandas as pd
+import glob
+import numpy as np
 from PIL import Image
 
 #labels with the same order
@@ -28,3 +31,16 @@ pickle.dump( train_labels, open( "pkl/train_labels.pkl", "wb" ) )
 pickle.dump( train_filenames, open( "pkl/train_filenames.pkl", "wb" ) )
 pickle.dump( test_images, open( "pkl/test_images.pkl", "wb" ) )
 pickle.dump( test_filenames, open( "pkl/test_filenames.pkl", "wb" ) )
+
+classified_train_images = []
+classified_train_labels = []
+
+for x in range(len(train_images)):
+    if train_labels[x] == 0:
+        continue
+    else:
+        classified_train_images.append(train_images[x])
+        classified_train_labels.append(train_labels[x])
+       
+pickle.dump( classified_train_images, open("pkl/classified_train_images.pkl", "wb" ))
+pickle.dump( classified_train_labels, open("pkl/classified_train_labels.pkl", "wb"))
