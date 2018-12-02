@@ -32,13 +32,11 @@ from torchsummary import summary
 
 
 train_images = pickle.load(open("pkl/preprocessed_train_images.pkl", "rb"))
+# train_images = train_images[:1000]
 train_labels = pickle.load(open("pkl/train_labels.pkl", "rb"))
 train_filenames = pickle.load(open("pkl/train_filenames.pkl", "rb"))
 test_images = pickle.load(open("pkl/preprocessed_test_images.pkl", "rb"))
 test_filenames = pickle.load(open("pkl/test_filenames.pkl", "rb"))
-
-
-# In[3]:
 
 
 #PIL
@@ -191,6 +189,15 @@ def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, b
 from torchvision.models.resnet import BasicBlock, Bottleneck, ResNet
 
 
+def save_model(epoch, model, optimizer, scheduler):
+    train_state = {
+    'epoch': epoch,
+    'state_dict': model.state_dict(),
+    'optimizer': optimizer.state_dict(),
+    'scheduler': scheduler.state_dict()
+    }
+    torch.save(train_state, 'trained_model.pt')
+
 # In[9]:
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -285,6 +292,7 @@ def train_and_validate(model, train_loader, test_loader, num_epochs):
             correct += (predicted.cpu().long() == labels).sum()
         print('VALIDATION SET ACCURACY: %.4f %%' % (100*correct.item() / total))
         scheduler.step(correct.item() / total)
+        save_model(epoch, model, optimizer, scheduler)
     return model
 
 
@@ -300,9 +308,9 @@ from NNs import *
 
 from sklearn.model_selection import KFold
 
+trained_models = []
 def run_KFolds():
     kf = KFold(n_splits=12, random_state=None, shuffle=True)
-    trained_models = []
     for train_indexes, validation_indexes in kf.split(train_images):
         X_train = []
         y_train = []
@@ -330,7 +338,7 @@ def run_KFolds():
         summary(cnn, (1,64,64))
 
     #     print(summary(cnn, (1,28,28)))
-        trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=150)
+        trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100)
         trained_models.append(trained_model)
         break
 
@@ -377,7 +385,6 @@ def predict_test_set(model, filenames):
         predictions.extend(prediction.cpu().numpy())
     results_df = pd.DataFrame({'image': test_filenames, 'class': predictions}, columns=['image', 'class'])
     results_df.to_csv('results.csv',sep = ',', index = False)
-
 
 
 # predict_test_set(final_model, test_filenames)
