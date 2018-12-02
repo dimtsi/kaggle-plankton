@@ -240,7 +240,7 @@ def train(model, train_loader, num_epochs):
                 history['batch'].append(i)
                 history['loss'].append(loss.item())
                 history['accuracy'].append(accuracy_train.item())
-        print(loss)
+        print("Loss: " +str(loss.item()))
         scheduler.step(np.mean(losses))
         save_model(epoch, model, optimizer, scheduler)
     return model
