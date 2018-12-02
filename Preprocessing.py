@@ -327,7 +327,7 @@ def run_KFolds():
             X_train, y_train, X_val, y_val, batch_size = 32)
 
         #Training
-        cnn = ResNetMine(Bottleneck, [2, 2, 2, 3])
+        cnn = ResNetMine(Bottleneck, [2, 2, 2, 2])
         # if torch.cuda.device_count() > 1:
         #   print("Let's use", torch.cuda.device_count(), "GPUs!")
         #   # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
