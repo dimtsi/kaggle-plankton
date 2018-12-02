@@ -158,8 +158,8 @@ def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, b
 #         transforms.CenterCrop(64),
         transforms.Grayscale(),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.95558817, 0.95558817, 0.95558817],
-            std =[0.14618639, 0.14618639, 0.14618639])
+        transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
+                    std =[0.43267642, 0.43267642, 0.43267642])
     ])
 
     train_transforms = transforms. Compose([
@@ -169,8 +169,8 @@ def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, b
 #         transforms.RandomHorizontalFlip(p=0.5),
         transforms.RandomRotation(degrees=360),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.95558817, 0.95558817, 0.95558817],
-            std =[0.14618639, 0.14618639, 0.14618639])
+        transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
+                    std =[0.43267642, 0.43267642, 0.43267642])
     ])
 
     train_dataset = ListsTrainDataset(X_train, y_train, transform = train_transforms)
@@ -353,8 +353,8 @@ def train_on_whole():
         transforms.Grayscale(),
         transforms.RandomRotation(degrees=360),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.95558817, 0.95558817, 0.95558817],
-            std =[0.14618639, 0.14618639, 0.14618639])
+        transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
+                    std =[0.43267642, 0.43267642, 0.43267642])
     ])
     train_dataset = ListsTrainDataset(train_images, train_labels, transform = train_transforms)
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32, shuffle = True)
@@ -372,8 +372,8 @@ def predict_test_set(model, filenames):
     test_transforms = transforms. Compose([
         transforms.Grayscale(),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.95558817, 0.95558817, 0.95558817],
-            std =[0.14618639, 0.14618639, 0.14618639])
+        transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
+                    std =[0.43267642, 0.43267642, 0.43267642])
     ])
 
     test_dataset = ListsTestDataset(test_images, transform = test_transforms)
