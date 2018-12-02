@@ -199,7 +199,7 @@ def save_model(epoch, model, optimizer, scheduler):
 
 # In[9]:
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-torch.backends.cudnnbenchmark = True
+# torch.backends.cudnnbenchmark = True
 
 def train(model, train_loader, num_epochs):
     learning_rate = 0.001
