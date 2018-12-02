@@ -67,27 +67,26 @@ norm_mean_height = np.mean(heights)
 
 
 ##CONVERT TO NUMPY TO CALCULATE MEAN,STD PER CHANNEL FOR NORMALIZATION
-# from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler
 
-# scaler = StandardScaler()
-# np_train = []
-# np_test = []
+scaler = StandardScaler()
+np_train = []
+np_test = []
 
-# for im in train_images:
-#     np_train.append(np.array(im))
+for im in train_images:
+    np_train.append(np.array(im))
 
-# for im in test_images:
-#     np_test.append(np.array(im))
+for im in test_images:
+    np_test.append(np.array(im))
 
-# arr = np.array(np_train) #len,x_pixels,y_pixels, channels
-# per_image_mean = np.mean(np_train, axis=(1,2)) #Shape (32,3)
-# per_image_std = np.std(np_train, axis=(1,2)) #Shape (32,3)
+arr = np.array(np_train) #len,x_pixels,y_pixels, channels
+per_image_mean = np.mean(np_train, axis=(1,2)) #Shape (32,3)
+per_image_std = np.std(np_train, axis=(1,2)) #Shape (32,3)
 
-# pop_channel_mean = np.mean(arr, axis=(0, 1, 2))/255
-# pop_channel_std = np.std(arr, axis=(0, 1, 2))/255
-
-# mean(array([0.70426004, 0.70426004, 0.70426004]),
-#  std array([0.43267642, 0.43267642, 0.43267642]))
+pop_channel_mean = np.mean(arr, axis=(0, 1, 2))/255
+pop_channel_std = np.std(arr, axis=(0, 1, 2))/255
+norm_mean_array = np.array([pop_channel_mean, pop_channel_mean, pop_channel_mean])
+norm_std_array = np.array([pop_channel_std, pop_channel_std, pop_channel_std])
 
 
 # In[5]:
@@ -156,8 +155,8 @@ def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, b
 #         transforms.CenterCrop(64),
         transforms.Grayscale(),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
-                    std =[0.43267642, 0.43267642, 0.43267642])
+        transforms.Normalize(mean=norm_mean_array,
+                    std =norm_std_array)
     ])
 
     train_transforms = transforms. Compose([
@@ -167,8 +166,8 @@ def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, b
 #         transforms.RandomHorizontalFlip(p=0.5),
         transforms.RandomRotation(degrees=360),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
-                            std =[0.43267642, 0.43267642, 0.43267642])
+        transforms.Normalize(mean=norm_mean_array,
+                    std =norm_std_array)
     ])
 
     train_dataset = ListsTrainDataset(X_train, y_train, transform = train_transforms)
@@ -351,8 +350,8 @@ def train_on_whole():
         transforms.Grayscale(),
         transforms.RandomRotation(degrees=360),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
-                            std =[0.43267642, 0.43267642, 0.43267642])
+        transforms.Normalize(mean=norm_mean_array,
+                    std =norm_std_array)
     ])
     train_dataset = ListsTrainDataset(train_images, train_labels, transform = train_transforms)
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32, shuffle = True)
@@ -369,8 +368,8 @@ def predict_test_set(model, filenames):
     test_transforms = transforms. Compose([
         transforms.Grayscale(),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
-                    std =[0.43267642, 0.43267642, 0.43267642])
+        transforms.Normalize(mean=norm_mean_array,
+                    std =norm_std_array)
     ])
 
     test_dataset = ListsTestDataset(test_images, transform = test_transforms)
