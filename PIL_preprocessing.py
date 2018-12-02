@@ -27,7 +27,7 @@ def pad_and_resize(im):
     # new_im = Image.new("RGB", (desired_size, desired_size), "white")
     # new_im.paste(im, ((desired_size-new_size[0])//2,
     #                     (desired_size-new_size[1])//2))
-    new_im = im.resize((64,64), Image.ANTIALIAS)
+    new_im = im.resize((128,128), Image.ANTIALIAS)
     return new_im
 
 

@@ -357,7 +357,7 @@ def train_on_whole():
     train_dataset = ListsTrainDataset(train_images, train_labels, transform = train_transforms)
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32, shuffle = True)
 
-    cnn = ResNetMine(Bottleneck, [2, 2, 2, 3])
+    cnn = ResNetMine(Bottleneck, [2, 2, 2, 2])
     cnn.to(device)
     summary(cnn, (1,64,64))
     model = train(cnn, train_loader, num_epochs=100)
