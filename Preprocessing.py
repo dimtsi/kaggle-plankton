@@ -66,7 +66,7 @@ norm_mean_height = np.mean(heights)
 # In[4]:
 
 
-# ##CONVERT TO NUMPY TO CALCULATE MEAN,STD PER CHANNEL FOR NORMALIZATION
+##CONVERT TO NUMPY TO CALCULATE MEAN,STD PER CHANNEL FOR NORMALIZATION
 # from sklearn.preprocessing import StandardScaler
 #
 # scaler = StandardScaler()
@@ -85,9 +85,12 @@ norm_mean_height = np.mean(heights)
 #
 # pop_channel_mean = np.mean(arr, axis=(0, 1, 2))/255
 # pop_channel_std = np.std(arr, axis=(0, 1, 2))/255
-# norm_mean_array = array([pop_channel_mean, pop_channel_mean, pop_channel_mean])
-# norm_std_array = array([pop_channel_std, pop_channel_std, pop_channel_std])
-
+# # norm_std_array = array([pop_channel_std, pop_channel_std, pop_channel_std])
+# pop_channel_mean
+# transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
+#             std =[0.43267642, 0.43267642, 0.43267642])
+# transforms.Normalize(mean=[0.95558817, 0.95558817, 0.95558817],
+#             std =[0.14618639, 0.14618639, 0.14618639])
 
 # In[5]:
 
@@ -155,8 +158,8 @@ def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, b
 #         transforms.CenterCrop(64),
         transforms.Grayscale(),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
-                    std =[0.43267642, 0.43267642, 0.43267642])
+        transforms.Normalize(mean=[0.95558817, 0.95558817, 0.95558817],
+            std =[0.14618639, 0.14618639, 0.14618639])
     ])
 
     train_transforms = transforms. Compose([
@@ -166,8 +169,8 @@ def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, b
 #         transforms.RandomHorizontalFlip(p=0.5),
         transforms.RandomRotation(degrees=360),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
-                            std =[0.43267642, 0.43267642, 0.43267642])
+        transforms.Normalize(mean=[0.95558817, 0.95558817, 0.95558817],
+            std =[0.14618639, 0.14618639, 0.14618639])
     ])
 
     train_dataset = ListsTrainDataset(X_train, y_train, transform = train_transforms)
@@ -350,8 +353,8 @@ def train_on_whole():
         transforms.Grayscale(),
         transforms.RandomRotation(degrees=360),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
-                            std =[0.43267642, 0.43267642, 0.43267642])
+        transforms.Normalize(mean=[0.95558817, 0.95558817, 0.95558817],
+            std =[0.14618639, 0.14618639, 0.14618639])
     ])
     train_dataset = ListsTrainDataset(train_images, train_labels, transform = train_transforms)
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32, shuffle = True)
