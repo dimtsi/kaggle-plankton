@@ -66,27 +66,27 @@ norm_mean_height = np.mean(heights)
 # In[4]:
 
 
-##CONVERT TO NUMPY TO CALCULATE MEAN,STD PER CHANNEL FOR NORMALIZATION
-from sklearn.preprocessing import StandardScaler
-
-scaler = StandardScaler()
-np_train = []
-np_test = []
-
-for im in train_images:
-    np_train.append(np.array(im))
-
-for im in test_images:
-    np_test.append(np.array(im))
-
-arr = np.array(np_train) #len,x_pixels,y_pixels, channels
-per_image_mean = np.mean(np_train, axis=(1,2)) #Shape (32,3)
-per_image_std = np.std(np_train, axis=(1,2)) #Shape (32,3)
-
-pop_channel_mean = np.mean(arr, axis=(0, 1, 2))/255
-pop_channel_std = np.std(arr, axis=(0, 1, 2))/255
-norm_mean_array = np.array([pop_channel_mean, pop_channel_mean, pop_channel_mean])
-norm_std_array = np.array([pop_channel_std, pop_channel_std, pop_channel_std])
+# ##CONVERT TO NUMPY TO CALCULATE MEAN,STD PER CHANNEL FOR NORMALIZATION
+# from sklearn.preprocessing import StandardScaler
+#
+# scaler = StandardScaler()
+# np_train = []
+# np_test = []
+#
+# for im in train_images:
+#     np_train.append(np.array(im))
+#
+# for im in test_images:
+#     np_test.append(np.array(im))
+#
+# arr = np.array(np_train) #len,x_pixels,y_pixels, channels
+# per_image_mean = np.mean(np_train, axis=(1,2)) #Shape (32,3)
+# per_image_std = np.std(np_train, axis=(1,2)) #Shape (32,3)
+#
+# pop_channel_mean = np.mean(arr, axis=(0, 1, 2))/255
+# pop_channel_std = np.std(arr, axis=(0, 1, 2))/255
+# norm_mean_array = array([pop_channel_mean, pop_channel_mean, pop_channel_mean])
+# norm_std_array = array([pop_channel_std, pop_channel_std, pop_channel_std])
 
 
 # In[5]:
@@ -155,8 +155,8 @@ def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, b
 #         transforms.CenterCrop(64),
         transforms.Grayscale(),
         transforms.ToTensor(),
-        transforms.Normalize(mean=norm_mean_array,
-                    std =norm_std_array)
+        transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
+                    std =[0.43267642, 0.43267642, 0.43267642])
     ])
 
     train_transforms = transforms. Compose([
@@ -166,8 +166,8 @@ def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, b
 #         transforms.RandomHorizontalFlip(p=0.5),
         transforms.RandomRotation(degrees=360),
         transforms.ToTensor(),
-        transforms.Normalize(mean=norm_mean_array,
-                    std =norm_std_array)
+        transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
+                            std =[0.43267642, 0.43267642, 0.43267642])
     ])
 
     train_dataset = ListsTrainDataset(X_train, y_train, transform = train_transforms)
@@ -199,7 +199,6 @@ def save_model(epoch, model, optimizer, scheduler):
 
 # In[9]:
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-# torch.backends.cudnnbenchmark = True
 
 def train(model, train_loader, num_epochs):
     learning_rate = 0.001
@@ -328,10 +327,10 @@ def run_KFolds():
 
         #Training
         cnn = ResNetMine(Bottleneck, [3, 4, 2, 2])
-        # if torch.cuda.device_count() > 1:
-        #   print("Let's use", torch.cuda.device_count(), "GPUs!")
-        #   # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
-        #   cnn = nn.DataParallel(cnn)
+        if torch.cuda.device_count() > 1:
+          print("Let's use", torch.cuda.device_count(), "GPUs!")
+          # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
+          cnn = nn.DataParallel(cnn)
         cnn.to(device)
 
     #     cnn = CNN().cuda()
@@ -351,8 +350,8 @@ def train_on_whole():
         transforms.Grayscale(),
         transforms.RandomRotation(degrees=360),
         transforms.ToTensor(),
-        transforms.Normalize(mean=norm_mean_array,
-                    std =norm_std_array)
+        transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
+                            std =[0.43267642, 0.43267642, 0.43267642])
     ])
     train_dataset = ListsTrainDataset(train_images, train_labels, transform = train_transforms)
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32, shuffle = True)
@@ -369,8 +368,8 @@ def predict_test_set(model, filenames):
     test_transforms = transforms. Compose([
         transforms.Grayscale(),
         transforms.ToTensor(),
-        transforms.Normalize(mean=norm_mean_array,
-                    std =norm_std_array)
+        transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
+                    std =[0.43267642, 0.43267642, 0.43267642])
     ])
 
     test_dataset = ListsTestDataset(test_images, transform = test_transforms)
