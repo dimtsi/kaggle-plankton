@@ -347,10 +347,10 @@ def run_KFolds():
         models.append(cnn2)
 
         cnn = SuperNet(models)
-        # if torch.cuda.device_count() > 1:
-        #   print("Let's use", torch.cuda.device_count(), "GPUs!")
-        #   # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
-        #   cnn = nn.DataParallel(cnn)
+        if torch.cuda.device_count() > 1:
+          print("Let's use", torch.cuda.device_count(), "GPUs!")
+          # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
+          cnn = nn.DataParallel(cnn)
         cnn.to(device)
 
     #     cnn = CNN().cuda()
@@ -385,7 +385,7 @@ def train_on_whole():
 
 # train_on_whole()
 # predict on testset
-final_model = ResNetMine(Bottleneck, [3, 4, 6, 3])
+# final_model = ResNetMine(Bottleneck, [3, 4, 6, 3])
 final_model.load_state_dict(torch.load('trained_model.pt')['state_dict'])
 def predict_test_set(model, filenames):
     test_transforms = transforms. Compose([
