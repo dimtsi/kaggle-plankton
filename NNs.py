@@ -55,12 +55,13 @@ class ResNetMine(nn.Module):
         # self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
         # self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.fc = nn.Sequential(
-            nn.Linear(128*block.expansion, 64*block.expansion),
-            nn.LeakyReLU(0.3),
-            nn.Dropout(0.3),
-            nn.Linear(64*block.expansion, num_classes)
-        )
+        self.fc1 = nn.Sequential(
+            # nn.Linear(128*block.expansion, 64*block.expansion),
+            # nn.LeakyReLU(0.3),
+            nn.Dropout(0.3)
+            )
+        self.fc2 = nn.Linear(64*block.expansion, num_classes)
+
         ##
 
         for m in self.modules():
@@ -100,8 +101,8 @@ class ResNetMine(nn.Module):
         x = self.avgpool(x)
         x = x.view(x.size(0), -1)
 
-        x = self.fc(x)
-#         x = self.fc2(x)
+        x = self.fc1(x)
+        x = self.fc2(x)
 
         return x
 
