@@ -117,12 +117,13 @@ class SuperNet(nn.Module):
             print("2GPU")
             self.net1.to(torch.device("cuda:0"))
             self.net2.to(torch.device("cuda:3"))
+            # print(self.net2.device())
 
 
 
     def forward(self, x):
         x1 = self.net1(x.to(torch.device("cuda:0")))
-        x2 = self.net2(x.to(torch.device("cuda:3")))
+        x2 = self.net2(x).to(torch.device("cuda:3"))
         z = torch.cat((x1,x2),1)
         z = z.view(z.size(0), -1)
         z = self.fc(z)
