@@ -113,17 +113,17 @@ class SuperNet(nn.Module):
         self.net1 =  nn.Sequential(*list(networks[0].children())[:-1])
         self.net2 =  nn.Sequential(*list(networks[1].children())[:-1])
         self.fc = nn.Linear(128*4*2, num_classes)
-        if torch.cuda.device_count() > 1:
-            print("2GPU")
-            self.net1.to(torch.device("cuda:0"))
-            self.net2.to(torch.device("cuda:3"))
+        # if torch.cuda.device_count() > 1:
+        #     print("2GPU")
+        #     self.net1.cuda(device = gpus[0])
+        #     self.net2.cuda(device = gpus[3])
             # print(self.net2.device())
 
 
 
     def forward(self, x):
         x1 = self.net1
-        x2 = self.net2.cuda("cuda:3")(x.to(torch.device("cuda:3")))
+        x2 = self.net2(x)
         z = torch.cat((x1,x2),1)
         z = z.view(z.size(0), -1)
         z = self.fc(z)
