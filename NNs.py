@@ -106,11 +106,21 @@ class ResNetMine(nn.Module):
 
         return x
 
-#     def forward(self, x):
-#         print(x.size())
-#         x = self.conv1(x)
-#         print(x.size())
-#         x = self.bn1(x)
+class SuperNet(nn.Module):
+
+    def __init__(self, networks, num_classes=121):
+        super(SuperNet, self).__init__()
+        self.net1 =  nn.Sequential(*list(networks[0].children())[:-1])
+        self.net2 =  nn.Sequential(*list(networks[1].children())[:-1])
+        self.fc = nn.Linear(128*4*2, num_classes)
+
+    def forward(self, x):
+        x1 = self.net1(x)
+        x2 = self.net2(x)
+        z = torch.cat((x1,x2),1)
+        z = z.view(z.size(0), -1)
+        z = self.fc(z)
+        return z
 #         print(x.size())
 
 #         x = self.relu(x)

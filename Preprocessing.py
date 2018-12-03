@@ -166,7 +166,7 @@ def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, b
 #         transforms.CenterCrop(64),
         # transforms.Grayscale(),
         # transforms.resize(image, (64, 64)),
-        transforms.RandomHorizontalFlip(p=0.5),
+        # transforms.RandomHorizontalFlip(p=0.5),
         transforms.RandomRotation(degrees=360),
         transforms.RandomAffine(360, shear=20),
         transforms.ToTensor(),
@@ -233,11 +233,11 @@ def train(model, train_loader, num_epochs):
             accuracy_train = (labels == argmax.squeeze()).float().mean()*100
             accuracies_train.append(accuracy_train)
             # Show progress
-            if (i+1) % 32 == 0:
-                log = " ".join([
-                  "Epoch : %d/%d" % (epoch+1, num_epochs),
-                  "Iter : %d/%d" % (i+1, len(train_loader.dataset)//batch_size)])
-                print('\r{}'.format(log), end=" ")
+            # if (i+1) % 32 == 0:
+            log = " ".join([
+              "Epoch : %d/%d" % (epoch+1, num_epochs),
+              "Iter : %d/%d" % (i+1, len(train_loader.dataset)//batch_size)])
+            print('\r{}'.format(log), end = " ")
                 # history['batch'].append(i)
                 # history['loss'].append(loss.item())
                 # history['accuracy'].append(accuracy_train.item())
@@ -340,7 +340,13 @@ def run_KFolds():
             X_train, y_train, X_val, y_val, batch_size = 32)
 
         #Training
-        cnn = ResNetMine(Bottleneck, [3, 4, 6, 3])
+        cnn1 = ResNetMine(Bottleneck, [3, 4, 6, 3])
+        cnn2 = ResNetMine(Bottleneck, [3, 4, 6, 3])
+        models = []
+        models.append(cnn1)
+        models.append(cnn2)
+
+        cnn = SuperNet(models)
         # if torch.cuda.device_count() > 1:
         #   print("Let's use", torch.cuda.device_count(), "GPUs!")
         #   # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
