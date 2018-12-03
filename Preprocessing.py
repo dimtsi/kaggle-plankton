@@ -278,11 +278,11 @@ def train_and_validate(model, train_loader, test_loader, num_epochs):
             accuracy_train = (labels == argmax.squeeze()).float().mean()*100
             accuracies_train.append(accuracy_train)
             # Show progress
-            if (i+1) % 32 == 0:
-                log = " ".join([
-                  "Epoch : %d/%d" % (epoch+1, num_epochs),
-                  "Iter : %d/%d" % (i+1, len(train_loader.dataset)//batch_size)])
-                print('\r{}'.format(log), end=" ")
+            # if (i+1) % 32 == 0:
+            log = " ".join([
+              "Epoch : %d/%d" % (epoch+1, num_epochs),
+              "Iter : %d/%d" % (i+1, len(train_loader.dataset)//batch_size)])
+            print('\r{}'.format(log), end=" ")
                 # history['batch'].append(i)
                 # history['loss'].append(loss.item())
                 # history['accuracy'].append(accuracy_train.item())
