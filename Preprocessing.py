@@ -348,7 +348,7 @@ def run_KFolds():
         cnn.to(device)
 
     #     cnn = CNN().cuda()
-        summary(cnn, (1,64,64))
+        summary(cnn, (3,64,64))
 
     #     print(summary(cnn, (1,28,28)))
         trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100)
@@ -373,7 +373,7 @@ def train_on_whole():
     cnn = ResNetMine(Bottleneck, [3, 4, 6, 3])
     cnn.to(device)
     cnn.load_state_dict(torch.load('trained_model.pt')['state_dict'])
-    summary(cnn, (1,64,64))
+    summary(cnn, (3,64,64))
     model = train(cnn, train_loader, num_epochs=100)
     return model
 
