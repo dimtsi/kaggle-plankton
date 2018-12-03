@@ -110,7 +110,7 @@ class SuperNet(nn.Module):
 
     def __init__(self, networks, num_classes=121):
         super(SuperNet, self).__init__()
-        self.net1 =  nn.Sequential(*list(networks[0].children())[:-1])
+        self.net1 =  nn.Sequential(*list(networks[0].children())[:-1]).cuda()
         self.net2 =  nn.Sequential(*list(networks[1].children())[:-1]).to(torch.device('cuda:2'))
         self.fc = nn.Linear(128*4*2, num_classes)
         # if torch.cuda.device_count() > 1:
