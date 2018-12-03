@@ -364,10 +364,10 @@ def train_on_whole():
     cnn.to(device)
     cnn.load_state_dict(torch.load('trained_model.pt')['state_dict'])
     summary(cnn, (1,64,64))
-    model = train(cnn, train_loader, num_epochs=100)
+    model = train(cnn, train_loader, num_epochs=30)
     return model
 
-# train_on_whole()
+train_on_whole()
 # predict on testset
 final_model = ResNetMine(Bottleneck, [3, 4, 6, 3])
 final_model.load_state_dict(torch.load('trained_model.pt')['state_dict'])
