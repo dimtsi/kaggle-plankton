@@ -43,11 +43,11 @@ class Bottleneck(nn.Module):
 class ResNetMine(nn.Module):
 
     def __init__(self, block, layers, num_classes=121):
-        self.inplanes = 128
+        self.inplanes = 64
         super(ResNetMine, self).__init__()
-        self.conv1 = nn.Conv2d(1, 128, kernel_size=3, stride=2, padding=1,
+        self.conv1 = nn.Conv2d(1, 64, kernel_size=3, stride=2, padding=1,
                                bias=False)
-        self.bn1 = nn.BatchNorm2d(128)
+        self.bn1 = nn.BatchNorm2d(64)
         self.relu = nn.LeakyReLU(0.3, inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         self.layer1 = self._make_layer(block, 64, layers[0])
