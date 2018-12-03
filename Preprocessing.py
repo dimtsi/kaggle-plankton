@@ -345,7 +345,7 @@ def run_KFolds():
         trained_models.append(trained_model)
         break
 
-run_KFolds()
+# run_KFolds()
 # final_model = trained_models[0].eval().cuda()
 
 
@@ -368,9 +368,9 @@ def train_on_whole():
     return model
 
 # train_on_whole()
-#predict on testset
-# final_model = ResNetMine(Bottleneck, [3, 4, 6, 3])
-# final_model.load_state_dict(torch.load('trained_model.pt')['state_dict'])
+# predict on testset
+final_model = ResNetMine(Bottleneck, [3, 4, 6, 3])
+final_model.load_state_dict(torch.load('trained_model.pt')['state_dict'])
 def predict_test_set(model, filenames):
     test_transforms = transforms. Compose([
         transforms.Grayscale(),
@@ -393,4 +393,4 @@ def predict_test_set(model, filenames):
     results_df.to_csv('results.csv',sep = ',', index = False)
 
 # final_model
-# predict_test_set(final_model, test_filenames)
+predict_test_set(final_model, test_filenames)
