@@ -123,7 +123,7 @@ class SuperNet(nn.Module):
 
     def forward(self, x):
         x1 = self.net1(x)
-        x2 = self.net2(x)
+        x2 = self.net2(x.to(torch.device('cuda:2')))
         z = torch.cat((x1, x2.to(torch.device('cuda:0'))), 1)
         z = z.view(z.size(0), -1)
         z = self.fc(z)
