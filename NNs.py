@@ -112,7 +112,7 @@ class SuperNet(nn.Module):
         super(SuperNet, self).__init__()
         self.net1 =  nn.Sequential(*list(networks[0].children())[:-1]).cuda()
         self.net2 =  nn.Sequential(*list(networks[1].children())[:-1]).to(torch.device('cuda:2'))
-        self.fc = nn.Linear(128*4*2, num_classes)
+        self.fc = nn.Linear(128*4*2, num_classes).cuda()
         # if torch.cuda.device_count() > 1:
         #     print("2GPU")
         #     self.net1.cuda(device = gpus[0])
