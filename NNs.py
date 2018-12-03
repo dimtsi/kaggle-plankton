@@ -14,7 +14,7 @@ class Bottleneck(nn.Module):
         self.bn2 = nn.BatchNorm2d(planes)
         self.conv3 = nn.Conv2d(planes, planes * 4, kernel_size=1, bias=False)
         self.bn3 = nn.BatchNorm2d(planes * 4)
-        self.relu = nn.LeakyReLU(inplace=True)
+        self.relu = nn.LeakyReLU(0.3, inplace=True)
         self.downsample = downsample
         self.stride = stride
 
@@ -48,7 +48,7 @@ class ResNetMine(nn.Module):
         self.conv1 = nn.Conv2d(1, 128, kernel_size=3, stride=2, padding=1,
                                bias=False)
         self.bn1 = nn.BatchNorm2d(128)
-        self.relu = nn.LeakyReLU(inplace=True)
+        self.relu = nn.LeakyReLU(0.3, inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         self.layer1 = self._make_layer(block, 64, layers[0])
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2)
@@ -57,7 +57,7 @@ class ResNetMine(nn.Module):
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Sequential(
             nn.Linear(128*block.expansion, 64*block.expansion),
-            nn.LeakyReLU(),
+            nn.LeakyReLU(0.3),
             # nn.Dropout(0.5),
             nn.Linear(64*block.expansion, num_classes)
         )
