@@ -341,7 +341,7 @@ def run_KFolds():
 
         #Training
         cnn1 = ResNetMine(Bottleneck, [3, 4, 6, 3])
-        cnn2 = ResNetMine(Bottleneck, [3, 4, 6, 3])
+        cnn2 = ResNetMine(Bottleneck, [1, 1, 6, 3])
         models = []
         models.append(cnn1)
         models.append(cnn2)
