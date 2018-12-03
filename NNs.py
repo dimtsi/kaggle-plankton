@@ -60,7 +60,7 @@ class ResNetMine(nn.Module):
             # nn.LeakyReLU(0.3),
             nn.Dropout(0.3)
             )
-        self.fc2 = nn.Linear(64*block.expansion, num_classes)
+        self.fc2 = nn.Linear(128*block.expansion, num_classes)
 
         ##
 
