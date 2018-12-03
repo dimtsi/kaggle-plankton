@@ -210,13 +210,14 @@ def train(model, train_loader, num_epochs):
     criterion = nn.CrossEntropyLoss();
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay = weight_decay);
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-    optimizer, 'min', factor=0.1, patience=10, verbose=True)
+    optimizer, 'min', factor=0.1, patience=5, verbose=True)
 #     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate);
     #Training
     history = {'batch': [], 'loss': [], 'accuracy': []}
     for epoch in range(num_epochs):
         model.train().cuda()
         losses = [] #losses in epoch per batch
+        accuracies_train = [] #accuracies in epoch per batch
         for i, (images, labels) in enumerate(train_loader):
             images = Variable(images).to(device)
             labels = Variable(labels).squeeze(1).long().to(device)#.cpu()
@@ -229,20 +230,22 @@ def train(model, train_loader, num_epochs):
             optimizer.step()
             _, argmax = torch.max(outputs, 1)
             accuracy_train = (labels == argmax.squeeze()).float().mean()*100
+            accuracies_train.append(accuracy_train)
             # Show progress
             if (i+1) % 32 == 0:
                 log = " ".join([
                   "Epoch : %d/%d" % (epoch+1, num_epochs),
-                  "Iter : %d/%d" % (i+1, len(train_loader.dataset)//batch_size),
-                  "Loss: %.4f" % loss.item(),
-                  "Accuracy: %.4f" % accuracy_train])
-                print('\r{}'.format(log), end='')
-                history['batch'].append(i)
-                history['loss'].append(loss.item())
-                history['accuracy'].append(accuracy_train.item())
-        print("\nLoss: " +str(np.mean(losses)))
-        scheduler.step(np.mean(losses))
-        save_model(epoch, model, optimizer, scheduler)
+                  "Iter : %d/%d" % (i+1, len(train_loader.dataset)//batch_size)])
+                print('\r{}'.format(log), end=" ")
+                # history['batch'].append(i)
+                # history['loss'].append(loss.item())
+                # history['accuracy'].append(accuracy_train.item())
+        epoch_log = " ".join([
+          "Epoch : %d/%d" % (epoch+1, num_epochs),
+          "Training Loss: %.4f" % np.mean(losses),
+          "Training Accuracy: %.4f" % np.mean(accuracies_train)])
+        print('\r{}'.format(epoch_log))
+        print()
     return model
 
 
@@ -259,6 +262,8 @@ def train_and_validate(model, train_loader, test_loader, num_epochs):
     history = {'batch': [], 'loss': [], 'accuracy': []}
     for epoch in range(num_epochs):
         model.train().cuda()
+        losses = [] #losses in epoch per batch
+        accuracies_train = [] #accuracies in epoch per batch
         for i, (images, labels) in enumerate(train_loader):
             images = Variable(images).to(device)
             labels = Variable(labels).squeeze(1).long().to(device)#.cpu()
@@ -267,21 +272,25 @@ def train_and_validate(model, train_loader, test_loader, num_epochs):
             outputs = model(images)
             loss = criterion(outputs, labels)
             loss.backward()
+            losses.append(loss.item())
             optimizer.step()
             _, argmax = torch.max(outputs, 1)
             accuracy_train = (labels == argmax.squeeze()).float().mean()*100
+            accuracies_train.append(accuracy_train)
             # Show progress
             if (i+1) % 32 == 0:
                 log = " ".join([
                   "Epoch : %d/%d" % (epoch+1, num_epochs),
-                  "Iter : %d/%d" % (i+1, len(train_loader.dataset)//batch_size),
-                  "Loss: %.4f" % loss.item(),
-                  "Accuracy: %.4f" % accuracy_train])
-                print('\r{}'.format(log), end='')
-                history['batch'].append(i)
-                history['loss'].append(loss.item())
-                history['accuracy'].append(accuracy_train.item())
-        print()
+                  "Iter : %d/%d" % (i+1, len(train_loader.dataset)//batch_size)])
+                print('\r{}'.format(log), end=" ")
+                # history['batch'].append(i)
+                # history['loss'].append(loss.item())
+                # history['accuracy'].append(accuracy_train.item())
+        epoch_log = " ".join([
+          "Epoch : %d/%d" % (epoch+1, num_epochs),
+          "Training Loss: %.4f" % np.mean(losses),
+          "Training Accuracy: %.4f" % np.mean(accuracies_train)])
+        print('\r{}'.format(epoch_log))
         ##VALIDATION SCORE AFTER EVERY EPOCH
         model.eval().to(device)
         correct = 0
@@ -345,7 +354,7 @@ def run_KFolds():
         trained_models.append(trained_model)
         break
 
-# run_KFolds()
+run_KFolds()
 # final_model = trained_models[0].eval().cuda()
 
 
@@ -367,7 +376,7 @@ def train_on_whole():
     model = train(cnn, train_loader, num_epochs=100)
     return model
 
-train_on_whole()
+# train_on_whole()
 # predict on testset
 final_model = ResNetMine(Bottleneck, [3, 4, 6, 3])
 final_model.load_state_dict(torch.load('trained_model.pt')['state_dict'])
