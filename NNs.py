@@ -115,8 +115,8 @@ class SuperNet(nn.Module):
         self.fc = nn.Linear(128*4*2, num_classes)
         if torch.cuda.device_count() > 1:
             print("2GPU")
-            self.net1.cuda('cuda:0')
-            self.net1.cuda('cuda:3')
+            self.net1.to(torch.device("cuda:0"))
+            self.net2.to(torch.device("cuda:3"))
 
 
 
