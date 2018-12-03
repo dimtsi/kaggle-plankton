@@ -113,6 +113,11 @@ class SuperNet(nn.Module):
         self.net1 =  nn.Sequential(*list(networks[0].children())[:-1])
         self.net2 =  nn.Sequential(*list(networks[1].children())[:-1])
         self.fc = nn.Linear(128*4*2, num_classes)
+        if torch.cuda.device_count() > 1:
+            self.net1.to('cuda:0')
+            self.net1.to('cuda:1')
+
+
 
     def forward(self, x):
         x1 = self.net1(x)
