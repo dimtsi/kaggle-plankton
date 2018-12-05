@@ -401,7 +401,7 @@ def train_on_whole():
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32, shuffle = True)
 
     cnn.to(device)
-    cnn.load_state_dict(torch.load('trained_model.pt')['state_dict'])
+    # cnn.load_state_dict(torch.load('trained_model.pt')['state_dict'])
     summary(cnn, (1,64,64))
     model = train_only(cnn, train_loader, num_epochs=100)
     return model
