@@ -358,7 +358,7 @@ def run_KFolds():
         #   print("Let's use", torch.cuda.device_count(), "GPUs!")
         #   # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
         #   cnn = nn.DataParallel(cnn, device_ids=[0, 1])
-        cnn.to(device)
+        # cnn.to(device)
 
     #     cnn = CNN().cuda()
         summary(cnn, (3,64,64))
