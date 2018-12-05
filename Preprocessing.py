@@ -341,11 +341,16 @@ def run_KFolds():
             X_val.append(train_images[j])
             y_val.append(train_labels[j])
         train_loader, test_loader = create_datasets_dataloaders(
-            X_train, y_train, X_val, y_val, batch_size = 128)
+            X_train, y_train, X_val, y_val, batch_size = 32)
 
         #Training
-        # cnn1 = resnet34(pretrained = True)
-        cnn1 = ResNetMine(Bottleneck, [3, 8, 36, 3])
+        pretrained = resnet34(pretrained = True)
+        # cnn1 = PretrainedResnetMine(pretrained.block, pretrained.layers,
+        #  pretrained_nn = pretrained)
+
+
+        cnn1 = ResNetDynamic(pretrained.block, pretrained.layers,
+         num_layers = 2, pretrained_nn = pretrained)
 
         # cnn2 = ResNetMine(Bottleneck, [1, 1, 6, 3])
         # models = []
@@ -357,7 +362,7 @@ def run_KFolds():
         cnn = cnn1.cuda()
         if torch.cuda.device_count() > 1:
           print("Let's use", torch.cuda.device_count(), "GPUs!")
-          # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
+          # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 cGPUs
         #   cnn = nn.DataParallel(cnn)
           cnn = nn.DataParallel(cnn, device_ids=[0, 1])
         cnn.to(device)

@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import math;
+from collections import OrderedDict
 
 class Bottleneck(nn.Module):
     expansion = 4
@@ -17,6 +18,7 @@ class Bottleneck(nn.Module):
         self.relu = nn.LeakyReLU(0.3, inplace=True)
         self.downsample = downsample
         self.stride = stride
+        self.planes = planes
 
     def forward(self, x):
         residual = x
@@ -45,23 +47,25 @@ class ResNetMine(nn.Module):
     def __init__(self, block, layers, num_classes=121):
         self.inplanes = 64
         super(ResNetMine, self).__init__()
-        self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=1,
+        self.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=2, padding=1,
                                bias=False)
         self.bn1 = nn.BatchNorm2d(64)
         self.relu = nn.LeakyReLU(0.3, inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         self.layer1 = self._make_layer(block, 64, layers[0])
+        print(self.layer1.state_dict())
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2)
-        self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
-        self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
+        # self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
+        # self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc1 = nn.Sequential(
             # nn.Linear(128*block.expansion, 64*block.expansion),
             # nn.LeakyReLU(0.3),
             nn.Dropout(0.3)
             )
-        self.fc2 = nn.Linear(512*block.expansion, num_classes)
 
+
+        self.fc2 = nn.Linear(128*block.expansion, num_classes)
         ##
 
         for m in self.modules():
@@ -96,8 +100,8 @@ class ResNetMine(nn.Module):
 
         x = self.layer1(x)
         x = self.layer2(x)
-        x = self.layer3(x)
-        x = self.layer4(x)
+        # x = self.layer3(x)
+        # x = self.layer4(x)
         x = self.avgpool(x)
         x = x.view(x.size(0), -1)
 
@@ -105,6 +109,98 @@ class ResNetMine(nn.Module):
         x = self.fc2(x)
 
         return x
+
+
+class ResNetDynamic(nn.Module):
+
+    def __init__(self, block, layers, num_classes=121, num_layers=4, pretrained_nn = None):
+        self.inplanes = 64
+        self.num_layers = num_layers
+        self.layers = layers
+        self.block = block
+        super(ResNetDynamic, self).__init__()
+        self.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=2, padding=1,
+                               bias=False)
+        self.bn1 = nn.BatchNorm2d(64)
+        self.relu = nn.LeakyReLU(0.3, inplace=True)
+        self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
+
+
+        inside_layers = OrderedDict()
+        layer_planes = 64
+        for i in range(num_layers):
+            if i==0:
+                inside_layers[str(i)] = self._make_layer(block, layer_planes, layers[i])
+            else:
+                inside_layers[str(i)] = self._make_layer(block, layer_planes, layers[i], stride=2)
+            layer_planes *= 2
+        self.inside_layers = nn.Sequential(inside_layers)
+        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        self.fc1 = nn.Sequential(
+            # nn.Linear(128*block.expansion, 64*block.expansion),
+            # nn.LeakyReLU(0.3),
+            nn.Dropout(0.3)
+            )
+        self.fc2 = nn.Linear(64* block.expansion * 2**(num_layers-1), num_classes)
+        ##
+
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
+                m.weight.data.normal_(0, math.sqrt(2. / n))
+            elif isinstance(m, nn.BatchNorm2d):
+                m.weight.data.fill_(1)
+                m.bias.data.zero_()
+
+        if (pretrained_nn != None):
+            self.pretrain(pretrained_nn)
+
+    def pretrain(self, pretrained_resnet):
+        pretrained_layers = []
+        pretrained_layers.append(pretrained_resnet.layer1)
+        pretrained_layers.append(pretrained_resnet.layer2)
+        pretrained_layers.append(pretrained_resnet.layer3)
+        pretrained_layers.append(pretrained_resnet.layer4)
+
+        for i in range(self.num_layers):
+            self.inside_layers[i].load_state_dict(pretrained_layers[i].state_dict())
+
+
+    def _make_layer(self, block, planes, blocks, stride=1):
+        downsample = None
+        if stride != 1 or self.inplanes != planes * block.expansion:
+            downsample = nn.Sequential(
+                nn.Conv2d(self.inplanes, planes * block.expansion,
+                          kernel_size=1, stride=stride, bias=False),
+                nn.BatchNorm2d(planes * block.expansion),
+            )
+
+        layers = []
+        layers.append(block(self.inplanes, planes, stride, downsample))
+        self.inplanes = planes * block.expansion
+        for i in range(1, blocks):
+            layers.append(block(self.inplanes, planes))
+        return nn.Sequential(*layers)
+
+
+    def forward(self, x):
+        x = self.conv1(x)
+        x = self.bn1(x)
+        x = self.relu(x)
+        x = self.maxpool(x)
+
+        x = self.inside_layers(x)
+        # x = self.layer3(x)
+        # x = self.layer4(x)
+        x = self.avgpool(x)
+        x = x.view(x.size(0), -1)
+
+        x = self.fc1(x)
+        x = self.fc2(x)
+
+        return x
+
+
 
 class SuperNet(nn.Module):
 
@@ -128,6 +224,37 @@ class SuperNet(nn.Module):
         z = z.view(z.size(0), -1)
         z = self.fc(z)
         return z
+
+
+class PretrainedResnetMine(ResNetMine):
+
+    def __init__(self, block, layers, num_classes=121, pretrained_nn = None):
+        super(PretrainedResnetMine, self).__init__(block, layers)
+        self.layer1.load_state_dict(pretrained_nn.layer1.state_dict())
+        self.layer2.load_state_dict(pretrained_nn.layer2.state_dict())
+        print(self.layer1.state_dict())
+        # self.layer3.load_state_dict(pretrained_nn.layer3.state_dict())
+        # self.layer4.load_state_dict(pretrained_nn.layer4.state_dict())
+        self.fc1 = nn.Sequential(
+            nn.Dropout(0.3)
+        )
+        self.fc2 = nn.Linear(512 * 4, num_classes)
+
+
+
+
+
+
+
+    # def forward(self, x):
+    #     x = self.layer1(x)
+    #     x = self.layer2(x)
+    #     x = self.avgpool(x)
+    #     x = x.view(x.size(0), -1)
+    #
+    #     x = self.fc1(x)
+    #     x = self.fc2(x)
+    #     return x
 #         print(x.size())
 
 #         x = self.relu(x)
