@@ -126,6 +126,7 @@ class SuperNet(nn.Module):
         x1 = self.net1(x)
         self.net2.cuda(1)
         x2 = self.net2(x.cuda(1))
+        z = self.cuda(0)
         z = torch.cat((x1, x2.cuda(0)), 1)
         z = z.view(z.size(0), -1)
         z = self.fc(z)
