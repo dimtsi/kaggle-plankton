@@ -361,7 +361,7 @@ def run_KFolds():
         # cnn.to(device)
 
         cnn = CNN().cuda()
-        summary(cnn, (3,64,64))
+        # summary(cnn, (3,64,64))
 
     #     print(summary(cnn, (1,28,28)))
         trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100)
