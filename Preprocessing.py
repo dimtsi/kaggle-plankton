@@ -393,7 +393,6 @@ def run_KFolds():
         break
 
 run_KFolds()
-# final_model = trained_models[0].eval().cuda()
 
 
 def train_on_whole():
