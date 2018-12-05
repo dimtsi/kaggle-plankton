@@ -344,7 +344,8 @@ def run_KFolds():
             X_train, y_train, X_val, y_val, batch_size = 32)
 
         #Training
-        cnn1 = resnet34(pretrained = True)
+        # cnn1 = resnet34(pretrained = True)
+        cnn1 = ResNetMine(Bottleneck, [3, 8, 36, 3])
 
         # cnn2 = ResNetMine(Bottleneck, [1, 1, 6, 3])
         # models = []
@@ -354,15 +355,15 @@ def run_KFolds():
         # cnn = ResNetMine(Bottleneck, [3, 4, 6, 3])
         # cnn = SuperNet(models)
         cnn = cnn1.cuda()
-        # if torch.cuda.device_count() > 1:
-        #   print("Let's use", torch.cuda.device_count(), "GPUs!")
-        #   # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
-        #   cnn = nn.DataParallel(cnn)
-          # cnn = nn.DataParallel(cnn, device_ids=[0, 1])
+        if torch.cuda.device_count() > 1:
+          print("Let's use", torch.cuda.device_count(), "GPUs!")
+          # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
+          # cnn = nn.DataParallel(cnn)
+          cnn = nn.DataParallel(cnn, device_ids=[0, 1])
         cnn.to(device)
 
         # cnn = CNN().cuda()
-        # summary(cnn, (3,64,64))
+        summary(cnn, (3,64,64))
 
     #     print(summary(cnn, (1,28,28)))
         trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100)
