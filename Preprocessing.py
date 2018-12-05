@@ -352,7 +352,8 @@ def run_KFolds():
         # models.append(cnn2)
 
         # cnn = ResNetMine(Bottleneck, [3, 4, 6, 3])
-        cnn = SuperNet(models)
+        # cnn = SuperNet(models)
+        cnn = cnn1
         # if torch.cuda.device_count() > 1:
         #   print("Let's use", torch.cuda.device_count(), "GPUs!")
         #   # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
