@@ -166,9 +166,9 @@ def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, b
 #         transforms.CenterCrop(64),
         # transforms.Grayscale(),
         # transforms.resize(image, (64, 64)),
-        # transforms.RandomHorizontalFlip(p=0.5),
+        transforms.RandomHorizontalFlip(p=0.5),
         transforms.RandomRotation(degrees=360),
-        transforms.RandomAffine(360, shear=20),
+        # transforms.RandomAffine(360, shear=20),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
                     std =[0.43267642, 0.43267642, 0.43267642])
