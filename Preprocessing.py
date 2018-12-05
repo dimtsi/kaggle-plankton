@@ -352,7 +352,7 @@ def run_KFolds():
 
 
         cnn1 = ResNetDynamic(pretrained.block, pretrained.layers,
-         num_layers = 2, pretrained_nn = pretrained)
+         num_layers = 2, pretrained_nn = None)
 
         # cnn2 = ResNetMine(Bottleneck, [1, 1, 6, 3])
         # models = []
