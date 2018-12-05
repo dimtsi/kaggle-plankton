@@ -270,6 +270,7 @@ class CNN(nn.Module):
         out = self.fc(out)
         return out
 
+
 import torch.nn as nn
 import math
 import torch.utils.model_zoo as model_zoo
