@@ -385,7 +385,7 @@ def run_KFolds():
         trained_models.append(trained_model)
         break
 
-# run_KFolds()
+run_KFolds()
 # final_model = trained_models[0].eval().cuda()
 
 
@@ -406,7 +406,7 @@ def train_on_whole():
     model = train_only(cnn, train_loader, num_epochs=100)
     return model
 
-train_on_whole()
+# train_on_whole()
 
 # predict on testset
 final_model = cnn
