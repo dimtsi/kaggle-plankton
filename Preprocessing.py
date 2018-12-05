@@ -316,12 +316,12 @@ def train_and_validate(model, train_loader, test_loader, num_epochs):
 
 # In[ ]:
 
-
 import importlib
 import NNs
 import math
 importlib.reload(NNs)
 from NNs import *
+from torchvision.models.resnet import *
 
 from sklearn.model_selection import StratifiedKFold
 
@@ -344,11 +344,12 @@ def run_KFolds():
             X_train, y_train, X_val, y_val, batch_size = 32)
 
         #Training
-        cnn1 = resnet50(pretrained = true)
+        cnn1 = resnet152(pretrained = True)
+
         # cnn2 = ResNetMine(Bottleneck, [1, 1, 6, 3])
-        models = []
-        models.append(cnn1)
-        models.append(cnn2)
+        # models = []
+        # models.append(cnn1)
+        # models.append(cnn2)
 
         cnn = cnn1
         # cnn = SuperNet(models)
