@@ -80,7 +80,7 @@ class ResNetDynamic(nn.Module):
         self.layers = layers
         self.block = block
         super(ResNetDynamic, self).__init__()
-        self.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=2, padding=3,
+        self.conv1 = nn.Conv2d(1, 64, kernel_size=3, stride=2, padding=3,
                                bias=False)
         self.bn1 = nn.BatchNorm2d(64)
         self.relu = nn.LeakyReLU(0.3, inplace=True)
