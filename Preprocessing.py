@@ -346,7 +346,7 @@ def run_KFolds():
             X_train, y_train, X_val, y_val, batch_size = 32)
 
         #Training
-        pretrained = resnet152(pretrained = True)
+        pretrained = resnet50(pretrained = True)
         # cnn1 = PretrainedResnetMine(pretrained.block, pretrained.layers,
         #  pretrained_nn = pretrained)
 
