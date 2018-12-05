@@ -24,11 +24,10 @@ def pad_and_resize(im):
     ratio = float(desired_size)/max(old_size)
     new_size = tuple([int(x*ratio) for x in old_size])
     im = im.resize(new_size, Image.ANTIALIAS)
-    new_im = Image.new("RGB", (desired_size, desired_size), "white")
-    new_im.paste(im, ((desired_size-new_size[0])//2,
-                        (desired_size-new_size[1])//2))
-    # new_im = im.resize((128,128), Image.ANTIALIAS)
-    return new_im
+    # new_im = Image.new("RGB", (desired_size, desired_size), "white")
+    # new_im.paste(im, ((desired_size-new_size[0])//2,
+    #                     (desired_size-new_size[1])//2))
+    return im
 
 
 # In[14]:
@@ -46,8 +45,8 @@ for im in classified_train_images:
     preprocessed_classified_images.append(pad_and_resize(im))
 
 # In[17]:
-train_images[0]
-preprocessed_train_images[0]
+train_images[50]
+preprocessed_train_images[50]
 
 pickle.dump( preprocessed_train_images, open( "pkl/preprocessed_train_images.pkl", "wb" ) )
 pickle.dump( preprocessed_test_images, open( "pkl/preprocessed_test_images.pkl", "wb" ) )
