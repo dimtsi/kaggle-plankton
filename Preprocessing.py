@@ -337,7 +337,7 @@ cnn1 = ResNetDynamic(pretrained.block, pretrained.layers,
             num_layers = 2, pretrained_nn = None)
 
 
-cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 3)
+cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
 models = []
 models.append(cnn1)
 models.append(cnn2)
