@@ -351,16 +351,16 @@ def run_KFolds():
         # models.append(cnn1)
         # models.append(cnn2)
 
-        cnn = cnn1
-        # cnn = SuperNet(models)
+        # cnn = ResNetMine(Bottleneck, [3, 4, 6, 3])
+        cnn = SuperNet(models)
         # if torch.cuda.device_count() > 1:
         #   print("Let's use", torch.cuda.device_count(), "GPUs!")
         #   # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
-        #   cnn = nn.DataParallel(cnn, device_ids=opt.gpus)
-        cnn.to(device)
+        #   cnn = nn.DataParallel(cnn, device_ids=[0, 1])
+        # cnn.to(device)
 
-    #     cnn = CNN().cuda()
-        summary(cnn, (3,64,64))
+        cnn = CNN().cuda()
+        summary(cnn, (1,64,64))
 
     #     print(summary(cnn, (1,28,28)))
         trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100)
