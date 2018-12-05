@@ -203,8 +203,9 @@ def save_model(epoch, model, optimizer, scheduler):
 
 # In[9]:
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+import timeit
 
-def train(model, train_loader, num_epochs):
+def train_only(model, train_loader, num_epochs):
     learning_rate = 0.001
     weight_decay = 0
     batch_size = train_loader.batch_size
@@ -262,6 +263,7 @@ def train_and_validate(model, train_loader, test_loader, num_epochs):
     #Training
     history = {'batch': [], 'loss': [], 'accuracy': []}
     for epoch in range(num_epochs):
+        tic=timeit.default_timer()
         model.train().cuda()
         losses = [] #losses in epoch per batch
         accuracies_train = [] #accuracies in epoch per batch
@@ -306,6 +308,8 @@ def train_and_validate(model, train_loader, test_loader, num_epochs):
         print('VALIDATION SET ACCURACY: %.4f %%' % (100*correct.item() / total))
         scheduler.step(correct.item() / total)
         save_model(epoch, model, optimizer, scheduler)
+        toc=timeit.default_timer()
+        print(toc-tic)
     return model
 
 
@@ -340,13 +344,14 @@ def run_KFolds():
             X_train, y_train, X_val, y_val, batch_size = 32)
 
         #Training
-        cnn1 = ResNetMine(Bottleneck, [3, 4, 6, 3])
-        cnn2 = ResNetMine(Bottleneck, [1, 1, 6, 3])
+        cnn1 = resnet50(pretrained = true)
+        # cnn2 = ResNetMine(Bottleneck, [1, 1, 6, 3])
         models = []
         models.append(cnn1)
         models.append(cnn2)
 
-        cnn = SuperNet(models)
+        cnn = cnn1
+        # cnn = SuperNet(models)
         # if torch.cuda.device_count() > 1:
         #   print("Let's use", torch.cuda.device_count(), "GPUs!")
         #   # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
@@ -380,7 +385,7 @@ def train_on_whole():
     cnn.to(device)
     cnn.load_state_dict(torch.load('trained_model.pt')['state_dict'])
     summary(cnn, (3,64,64))
-    model = train(cnn, train_loader, num_epochs=100)
+    model = train_only(cnn, train_loader, num_epochs=100)
     return model
 
 # train_on_whole()
