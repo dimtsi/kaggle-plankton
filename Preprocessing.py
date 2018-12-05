@@ -360,7 +360,7 @@ def run_KFolds():
         #   cnn = nn.DataParallel(cnn, device_ids=[0, 1])
         # cnn.to(device)
 
-        cnn = CNN().cuda()
+        # cnn = CNN().cuda()
         summary(cnn, (1,64,64))
 
     #     print(summary(cnn, (1,28,28)))
