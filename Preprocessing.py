@@ -166,7 +166,7 @@ def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, b
 #         transforms.CenterCrop(64),
         # transforms.Grayscale(),
         # transforms.resize(image, (64, 64)),
-        # transforms.RandomHorizontalFlip(p=0.5),
+        transforms.RandomHorizontalFlip(p=0.5),
         transforms.RandomRotation(degrees=360),
         # transforms.RandomAffine(360, shear=20),
         transforms.ToTensor(),
@@ -306,7 +306,7 @@ def train_and_validate(model, train_loader, test_loader, num_epochs):
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
             correct += (predicted.cpu().long() == labels).sum()
-        val_accuracy = 100*correct.item() / total
+            val_accuracy = 100*correct.item() / total
         print('VALIDATION SET ACCURACY: %.4f %%' % val_accuracy)
         scheduler.step(correct.item() / total)
         if val_accuracy >= best_val_accuracy:
@@ -325,7 +325,7 @@ import importlib
 import NNs
 import math
 importlib.reload(NNs)
-from NNs import ResNetDynamic, ResNetMine, CNN
+from NNs import ResNetDynamic, ResNetMine, CNN, SuperNet
 from NNs import *
 
 # from torchvision.models.resnet import *
@@ -335,7 +335,14 @@ from sklearn.model_selection import StratifiedKFold
 pretrained = resnet50(pretrained = True)
 cnn1 = ResNetDynamic(pretrained.block, pretrained.layers,
             num_layers = 2, pretrained_nn = None)
-cnn = cnn1.cuda()
+
+
+cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 3)
+models = []
+models.append(cnn1)
+models.append(cnn2)
+cnn = SuperNet(models)
+
 
 
 trained_models = []
