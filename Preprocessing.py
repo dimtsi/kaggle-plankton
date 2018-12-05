@@ -306,7 +306,7 @@ def train_and_validate(model, train_loader, test_loader, num_epochs):
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
             correct += (predicted.cpu().long() == labels).sum()
-        val_accuracy = 100*correct.item() / total)
+        val_accuracy = 100*correct.item() / total
         print('VALIDATION SET ACCURACY: %.4f %%' % val_accuracy)
         scheduler.step(correct.item() / total)
         if val_accuracy >= best_val_accuracy:
@@ -332,9 +332,15 @@ from NNs import *
 
 from sklearn.model_selection import StratifiedKFold
 
+pretrained = resnet50(pretrained = True)
+cnn1 = ResNetDynamic(pretrained.block, pretrained.layers,
+            num_layers = 2, pretrained_nn = None)
+cnn = cnn1.cuda()
+
+
 trained_models = []
 def run_KFolds():
-    kf = StratifiedKFold(n_splits=12, random_state=None, shuffle=True)
+    kf = StratifiedKFold(n_splits=7, random_state=None, shuffle=True)
     for train_indexes, validation_indexes in kf.split(X = train_images, y = train_labels):
         X_train = []
         y_train = []
@@ -351,13 +357,11 @@ def run_KFolds():
             X_train, y_train, X_val, y_val, batch_size = 32)
 
         #Training
-        pretrained = resnet50(pretrained = True)
         # cnn1 = PretrainedResnetMine(pretrained.block, pretrained.layers,
         #  pretrained_nn = pretrained)
 
 
-        cnn1 = ResNetDynamic(pretrained.block, pretrained.layers,
-         num_layers = 2, pretrained_nn = None)
+
 
         # cnn2 = ResNetMine(Bottleneck, [1, 1, 6, 3])
         # models = []
@@ -366,7 +370,6 @@ def run_KFolds():
 
         # cnn = ResNetMine(Bottleneck, [3, 4, 6, 3])
         # cnn = SuperNet(models)
-        cnn = cnn1.cuda()
         # if torch.cuda.device_count() > 1:
         #   print("Let's use", torch.cuda.device_count(), "GPUs!")
         #   # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 cGPUs
@@ -382,7 +385,7 @@ def run_KFolds():
         trained_models.append(trained_model)
         break
 
-run_KFolds()
+# run_KFolds()
 # final_model = trained_models[0].eval().cuda()
 
 
@@ -397,7 +400,6 @@ def train_on_whole():
     train_dataset = ListsTrainDataset(train_images, train_labels, transform = train_transforms)
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32, shuffle = True)
 
-    cnn = ResNetMine(Bottleneck, [3, 4, 6, 3])
     cnn.to(device)
     cnn.load_state_dict(torch.load('trained_model.pt')['state_dict'])
     summary(cnn, (3,64,64))
@@ -405,8 +407,9 @@ def train_on_whole():
     return model
 
 # train_on_whole()
+
 # predict on testset
-# final_model = ResNetMine(Bottleneck, [3, 4, 6, 3])
+final_model = cnn
 final_model.load_state_dict(torch.load('trained_model.pt')['state_dict'])
 def predict_test_set(model, filenames):
     test_transforms = transforms. Compose([
