@@ -267,6 +267,7 @@ def train_and_validate(model, train_loader, test_loader, num_epochs):
         model.train().cuda()
         losses = [] #losses in epoch per batch
         accuracies_train = [] #accuracies in epoch per batch
+        best_val_accuracy = 0
         for i, (images, labels) in enumerate(train_loader):
             images = Variable(images).to(device)
             labels = Variable(labels).squeeze(1).long().to(device)#.cpu()
@@ -305,9 +306,13 @@ def train_and_validate(model, train_loader, test_loader, num_epochs):
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
             correct += (predicted.cpu().long() == labels).sum()
-        print('VALIDATION SET ACCURACY: %.4f %%' % (100*correct.item() / total))
+        val_accuracy = 100*correct.item() / total)
+        print('VALIDATION SET ACCURACY: %.4f %%' % val_accuracy)
         scheduler.step(correct.item() / total)
-        save_model(epoch, model, optimizer, scheduler)
+        if val_accuracy >= best_val_accuracy:
+            best_val_accuracy = val_accuracy
+            print("saved best model")
+            save_model(epoch, model, optimizer, scheduler)
         toc=timeit.default_timer()
         print(toc-tic)
     return model
@@ -329,7 +334,7 @@ from sklearn.model_selection import StratifiedKFold
 
 trained_models = []
 def run_KFolds():
-    kf = StratifiedKFold(n_splits=7, random_state=None, shuffle=True)
+    kf = StratifiedKFold(n_splits=12, random_state=None, shuffle=True)
     for train_indexes, validation_indexes in kf.split(X = train_images, y = train_labels):
         X_train = []
         y_train = []
