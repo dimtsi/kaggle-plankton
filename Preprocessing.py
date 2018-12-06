@@ -344,7 +344,7 @@ pretrained = resnet50(pretrained = True)
 cnn = ResNetDynamic(pretrained.block, pretrained.layers,
             num_layers = 2, pretrained_nn = None)
 
-
+cnn.load_state_dict(torch.load('trained_model.pt')['state_dict'])
 # cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
 # models = []
 # models.append(cnn1)
