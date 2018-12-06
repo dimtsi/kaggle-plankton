@@ -209,7 +209,7 @@ import timeit
 from sklearn.utils.class_weight import compute_class_weight
 labels_df = pd.read_csv('train_onelabel.csv')
 class_weights = compute_class_weight('balanced', np.arange(121), labels_df['class'])
-class_weights = torch.from_numpy(class_weights)
+class_weights = torch.from_numpy(class_weights).float()
 #=============================TRAINING ===================================#
 
 def train_only(model, train_loader, num_epochs):
