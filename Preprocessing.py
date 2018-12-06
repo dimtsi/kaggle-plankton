@@ -218,7 +218,7 @@ def train_only(model, train_loader, num_epochs):
     learning_rate = 0.001
     weight_decay = 0
     batch_size = train_loader.batch_size
-    criterion = nn.CrossEntropyLoss(weight = class_weights);
+    criterion = nn.CrossEntropyLoss();
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay = weight_decay);
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
     optimizer, 'min', factor=0.1, patience=10, verbose=True)
@@ -264,7 +264,7 @@ def train_and_validate(model, train_loader, test_loader, num_epochs):
     learning_rate = 0.001
     weight_decay = 0
     batch_size = train_loader.batch_size
-    criterion = nn.CrossEntropyLoss(weight = class_weights);
+    criterion = nn.CrossEntropyLoss();
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay = weight_decay);
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
     optimizer, 'max', factor=0.1, patience=10, verbose=True)
@@ -342,20 +342,20 @@ from NNs import *
 from sklearn.model_selection import StratifiedKFold
 
 pretrained = resnet50(pretrained = True)
-cnn1 = ResNetDynamic(pretrained.block, pretrained.layers,
+cnn = ResNetDynamic(pretrained.block, pretrained.layers,
             num_layers = 2, pretrained_nn = None)
-
-# cnn.load_state_dict(torch.load('trained_model.pt')['state_dict'])
-cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
-models = []
-models.append(cnn1)
-models.append(cnn2)
-cnn = SuperNet(models)
+#
+# # cnn.load_state_dict(torch.load('trained_model.pt')['state_dict'])
+# cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
+# models = []
+# models.append(cnn1)
+# models.append(cnn2)
+# cnn = SuperNet(models)
 
 
 trained_models = []
 def run_KFolds():
-    kf = StratifiedKFold(n_splits=7, random_state=None, shuffle=True)
+    kf = StratifiedKFold(n_splits=12, random_state=None, shuffle=True)
     for train_indexes, validation_indexes in kf.split(X = train_images, y = train_labels):
         X_train = []
         y_train = []
