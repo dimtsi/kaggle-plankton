@@ -205,11 +205,18 @@ def save_model(epoch, model, optimizer, scheduler):
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 import timeit
 
+##Class weights for imbalance
+from sklearn.utils.class_weight import compute_class_weight
+labels_df = pd.read_csv('train_onelabel.csv')
+class_weights = compute_class_weight('balanced', np.arange(121), labels_df['class'])
+class_weights = torch.from_numpy(class_weights)
+#=============================TRAINING ===================================#
+
 def train_only(model, train_loader, num_epochs):
     learning_rate = 0.001
     weight_decay = 0
     batch_size = train_loader.batch_size
-    criterion = nn.CrossEntropyLoss();
+    criterion = nn.CrossEntropyLoss(weight = class_weights);
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay = weight_decay);
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
     optimizer, 'min', factor=0.1, patience=5, verbose=True)
@@ -255,7 +262,7 @@ def train_and_validate(model, train_loader, test_loader, num_epochs):
     learning_rate = 0.001
     weight_decay = 0
     batch_size = train_loader.batch_size
-    criterion = nn.CrossEntropyLoss();
+    criterion = nn.CrossEntropyLoss(weight = class_weights);
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay = weight_decay);
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
     optimizer, 'max', factor=0.1, patience=5, verbose=True)
@@ -333,16 +340,15 @@ from NNs import *
 from sklearn.model_selection import StratifiedKFold
 
 pretrained = resnet50(pretrained = True)
-cnn1 = ResNetDynamic(pretrained.block, pretrained.layers,
+cnn = ResNetDynamic(pretrained.block, pretrained.layers,
             num_layers = 2, pretrained_nn = None)
 
 
-cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
-models = []
-models.append(cnn1)
-models.append(cnn2)
-cnn = SuperNet(models)
-
+# cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
+# models = []
+# models.append(cnn1)
+# models.append(cnn2)
+# cnn = SuperNet(models)
 
 
 trained_models = []
