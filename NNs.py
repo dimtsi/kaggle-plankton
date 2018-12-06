@@ -101,11 +101,11 @@ class ResNetDynamic(nn.Module):
         self.final_size = 64* block.expansion * 2**(num_layers-1)
         self.fc1 = nn.Sequential(
             Flatten(),
-            nn.Linear(self.final_size, self.final_size//2),
-            nn.LeakyReLU(0.3),
+            # nn.Linear(self.final_size, self.final_size//2),
+            # nn.LeakyReLU(0.3),
             nn.Dropout(0.3)
             )
-        self.fc2 = nn.Linear(self.final_size//2, num_classes)
+        self.fc2 = nn.Linear(self.final_size, num_classes)
         ##
 
         for m in self.modules():
