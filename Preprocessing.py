@@ -399,7 +399,7 @@ def run_KFolds():
         trained_models.append(trained_model)
         break
 
-run_KFolds()
+# run_KFolds()
 
 
 def train_on_whole():
