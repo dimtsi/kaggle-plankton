@@ -372,19 +372,6 @@ def run_KFolds():
             X_train, y_train, X_val, y_val, batch_size = 32)
 
         #Training
-        # cnn1 = PretrainedResnetMine(pretrained.block, pretrained.layers,
-        #  pretrained_nn = pretrained)
-
-
-
-
-        # cnn2 = ResNetMine(Bottleneck, [1, 1, 6, 3])
-        # models = []
-        # models.append(cnn1)
-        # models.append(cnn2)
-
-        # cnn = ResNetMine(Bottleneck, [3, 4, 6, 3])
-        # cnn = SuperNet(models)
         # if torch.cuda.device_count() > 1:
         #   print("Let's use", torch.cuda.device_count(), "GPUs!")
         #   # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 cGPUs
@@ -396,7 +383,7 @@ def run_KFolds():
         summary(cnn, (1,64,64))
 
     #     print(summary(cnn, (1,28,28)))
-        trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100)
+        trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=300)
         trained_models.append(trained_model)
         break
 
