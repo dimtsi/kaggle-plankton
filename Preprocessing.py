@@ -261,7 +261,7 @@ def train_only(model, train_loader, num_epochs):
 
 def train_and_validate(model, train_loader, test_loader, num_epochs):
     learning_rate = 0.001
-    weight_decay = 0
+    weight_decay = 1e-4
     batch_size = train_loader.batch_size
     criterion = nn.CrossEntropyLoss(weight = class_weights);
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay = weight_decay);
