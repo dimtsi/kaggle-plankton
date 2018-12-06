@@ -209,6 +209,7 @@ import timeit
 from sklearn.utils.class_weight import compute_class_weight
 labels_df = pd.read_csv('train_onelabel.csv')
 class_weights = compute_class_weight('balanced', np.arange(121), labels_df['class'])
+class_weights = np.interp(weighted_classes, (weighted_classes.min(), weighted_classes.max()), (0, +1))
 class_weights = torch.from_numpy(class_weights).float().to(device)
 # class_weights = class_weights.type(torch.FloatTensor)
 #=============================TRAINING ===================================#
@@ -341,15 +342,15 @@ from NNs import *
 from sklearn.model_selection import StratifiedKFold
 
 pretrained = resnet50(pretrained = True)
-cnn = ResNetDynamic(pretrained.block, pretrained.layers,
+cnn1 = ResNetDynamic(pretrained.block, pretrained.layers,
             num_layers = 2, pretrained_nn = None)
 
-cnn.load_state_dict(torch.load('trained_model.pt')['state_dict'])
-# cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
-# models = []
-# models.append(cnn1)
-# models.append(cnn2)
-# cnn = SuperNet(models)
+# cnn.load_state_dict(torch.load('trained_model.pt')['state_dict'])
+cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
+models = []
+models.append(cnn1)
+models.append(cnn2)
+cnn = SuperNet(models)
 
 
 trained_models = []
@@ -399,7 +400,7 @@ def run_KFolds():
         trained_models.append(trained_model)
         break
 
-# run_KFolds()
+run_KFolds()
 
 
 def train_on_whole():
