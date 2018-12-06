@@ -220,7 +220,7 @@ def train_only(model, train_loader, num_epochs):
     criterion = nn.CrossEntropyLoss(weight = class_weights);
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay = weight_decay);
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-    optimizer, 'min', factor=0.1, patience=5, verbose=True)
+    optimizer, 'min', factor=0.1, patience=10, verbose=True)
 #     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate);
     #Training
     history = {'batch': [], 'loss': [], 'accuracy': []}
@@ -266,16 +266,16 @@ def train_and_validate(model, train_loader, test_loader, num_epochs):
     criterion = nn.CrossEntropyLoss(weight = class_weights);
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay = weight_decay);
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-    optimizer, 'max', factor=0.1, patience=5, verbose=True)
+    optimizer, 'max', factor=0.1, patience=10, verbose=True)
 #     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate);
     #Training
     history = {'batch': [], 'loss': [], 'accuracy': []}
+    best_val_accuracy = 0
     for epoch in range(num_epochs):
         tic=timeit.default_timer()
         model.train().cuda()
         losses = [] #losses in epoch per batch
         accuracies_train = [] #accuracies in epoch per batch
-        best_val_accuracy = 0
         for i, (images, labels) in enumerate(train_loader):
             images = Variable(images).to(device)
             labels = Variable(labels).squeeze(1).long().to(device)#.cpu()
