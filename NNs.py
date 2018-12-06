@@ -97,12 +97,15 @@ class ResNetDynamic(nn.Module):
             layer_planes *= 2
         self.inside_layers = nn.Sequential(inside_layers)
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+
+        self.final_size = 64* block.expansion * 2**(num_layers-1)
         self.fc1 = nn.Sequential(
-            # nn.Linear(128*block.expansion, 64*block.expansion),
-            # nn.LeakyReLU(0.3),
+            Flatten(),
+            nn.Linear(self.final_size, self.final_size//2),
+            nn.LeakyReLU(0.3),
             nn.Dropout(0.3)
             )
-        self.fc2 = nn.Linear(64* block.expansion * 2**(num_layers-1), num_classes)
+        self.fc2 = nn.Linear(self.final_size//2, num_classes)
         ##
 
         for m in self.modules():
@@ -151,14 +154,11 @@ class ResNetDynamic(nn.Module):
         x = self.maxpool(x)
 
         x = self.inside_layers(x)
-        # x = self.layer3(x)
-        # x = self.layer4(x)
+
         x = self.avgpool(x)
-        x = x.view(x.size(0), -1)
 
         x = self.fc1(x)
         x = self.fc2(x)
-
         return x
 
 
@@ -169,7 +169,12 @@ class SuperNet(nn.Module):
         super(SuperNet, self).__init__()
         self.net1 =  nn.Sequential(*list(networks[0].children())[:-1])
         self.net2 =  nn.Sequential(*list(networks[1].children())[:-1])
-        self.fc = nn.Linear(2560, num_classes)
+
+        self.final_size = 0
+        for net in networks:
+            self.final_size += net.final_size//2
+
+        self.fc = nn.Linear(self.final_size, num_classes)
 
     def forward(self, x):
         x1 = self.net1(x)
@@ -199,40 +204,6 @@ class PretrainedResnetMine(ResNetMine):
 
 
 
-
-    # def forward(self, x):
-    #     x = self.layer1(x)
-    #     x = self.layer2(x)
-    #     x = self.avgpool(x)
-    #     x = x.view(x.size(0), -1)
-    #
-    #     x = self.fc1(x)
-    #     x = self.fc2(x)
-    #     return x
-#         print(x.size())
-
-#         x = self.relu(x)
-#         print(x.size())
-#         x = self.maxpool(x)
-#         print(x.size())
-
-#         x = self.layer1(x)
-#         print(x.size())
-
-#         x = self.layer2(x)
-#         print(x.size())
-#         x = self.layer3(x)
-#         print(x.size())
-#         x = self.layer4(x)
-#         print(x.size())
-#         x = self.avgpool(x)
-#         print(x.size())
-#         x = x.view(x.size(0), -1)
-#         print(x.size())
-
-#         x = self.fc(x)
-
-#         return x
 
 
 class Flatten(nn.Module):
