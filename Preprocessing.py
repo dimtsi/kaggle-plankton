@@ -378,7 +378,7 @@ def run_KFolds():
         summary(cnn, (1,64,64))
 
     #     print(summary(cnn, (1,28,28)))
-        trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=300)
+        trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100)
         trained_models.append(trained_model)
         break
 
