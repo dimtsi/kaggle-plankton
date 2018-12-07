@@ -149,8 +149,8 @@ class ListsTestDataset(Dataset):
 
 
 # In[7]:
-
-
+mean_norm = 0.485
+mean_std = 0.229
 #Transforms and Dataset Creation
 def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, batch_size = 32):
     test_transforms = transforms. Compose([
@@ -158,8 +158,8 @@ def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, b
 #         transforms.CenterCrop(64),
         # transforms.Grayscale(),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485],
-                    std =[0.229])
+        # transforms.Normalize(mean=[mean_norm],
+        #             std =[mean_std])
     ])
 
     train_transforms = transforms. Compose([
@@ -170,8 +170,8 @@ def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, b
         transforms.RandomRotation(degrees=360),
         # transforms.RandomAffine(360, shear=20),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485],
-                    std =[0.229])
+        # transforms.Normalize(mean=[mean_norm],
+        #             std =[mean_std])
     ])
 
     train_dataset = ListsTrainDataset(X_train, y_train, transform = train_transforms)
@@ -387,7 +387,7 @@ def run_KFolds():
         trained_models.append(trained_model)
         break
 
-# run_KFolds()
+run_KFolds()
 
 
 def train_on_whole():
@@ -395,8 +395,8 @@ def train_on_whole():
         transforms.Grayscale(),
         transforms.RandomRotation(degrees=360),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
-                    std =[0.43267642, 0.43267642, 0.43267642])
+        # transforms.Normalize(mean=[mean_norm],
+        #             std =[mean_std])
     ])
     train_dataset = ListsTrainDataset(train_images, train_labels, transform = train_transforms)
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32, shuffle = True)
@@ -416,8 +416,8 @@ def predict_test_set(model, filenames):
     test_transforms = transforms. Compose([
         transforms.Grayscale(),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485],
-                    std =[0.229])
+        # transforms.Normalize(mean=[mean_norm],
+        #             std =[mean_std])
     ])
 
     test_dataset = ListsTestDataset(test_images, transform = test_transforms)
