@@ -139,7 +139,7 @@ def create_datasets_dataloaders(X_train, y_train, X_val= None, y_val = None, bat
     ])
 
     train_transforms = transforms. Compose([
-        transforms.CenterCrop(64),
+        # transforms.CenterCrop(64),
         transforms.Grayscale(),
         # transforms.resize(image, (64, 64)),
         transforms.RandomHorizontalFlip(p=0.5),
