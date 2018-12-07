@@ -128,15 +128,15 @@ class ListsTestDataset(Dataset):
 
 # In[7]:
 #Transforms and Dataset Creation
-def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, batch_size = 32, norm_params= None):
+def create_datasets_dataloaders(X_train, y_train, X_val= None, y_val = None, batch_size = 32, norm_params= None):
 
     val_transforms = transforms. Compose([
         # transforms.resize(image, (64, 64)),
 #         transforms.CenterCrop(64),
         # transforms.Grayscale(),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[norm_params['val_norm_mean']],
-                    std =[norm_params['val_norm_std']])
+        transforms.Normalize(mean=[norm_params['train_norm_mean']],
+                    std =[norm_params['train_norm_std']])
     ])
 
     train_transforms = transforms. Compose([
@@ -153,12 +153,12 @@ def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, b
 
     train_dataset = ListsTrainDataset(X_train, y_train, transform = train_transforms)
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = batch_size,
-        shuffle = True, num_workers=16)
+        shuffle = True, num_workers=4)
 
-    if y_test is not None:
-        test_dataset = ListsTrainDataset(X_test, y_test, transform = val_transforms)
+    if y_val is not None:
+        test_dataset = ListsTrainDataset(X_val, y_val, transform = val_transforms)
     else:
-        test_dataset = ListsTestDataset(X_test, transform = test_transforms)
+        test_dataset = ListsTestDataset(X_val, transform = test_transforms)
 
     test_loader = torch.utils.data.DataLoader(test_dataset,
                                 batch_size = batch_size, shuffle = False)
@@ -361,7 +361,6 @@ def run_KFolds():
             y_val.append(train_labels[j])
 
         norm['train_norm_mean'], norm['train_norm_std'] = calc_means_stds(X_train)
-        norm['val_norm_mean'], norm['val_norm_std'] = calc_means_stds(X_val)
 
         train_loader, test_loader = create_datasets_dataloaders(
             X_train, y_train, X_val, y_val, batch_size = 32, norm_params = norm)
@@ -407,7 +406,7 @@ def train_on_whole():
 # predict on testset
 final_model = cnn
 final_model.load_state_dict(torch.load('trained_model.pt')['state_dict'])
-mean_norm_test, std_norm_test = calc_means_stds(test_images)
+mean_norm_test, std_norm_test = calc_means_stds(train_images)
 
 def predict_test_set(model, filenames):
     test_transforms = transforms. Compose([
