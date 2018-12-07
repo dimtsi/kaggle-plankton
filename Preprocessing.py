@@ -89,8 +89,8 @@ norm_mean_height = np.mean(heights)
 # pop_channel_mean
 # transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
 #             std =[0.43267642, 0.43267642, 0.43267642])
-# transforms.Normalize(mean=[0.95558817, 0.95558817, 0.95558817],
-#             std =[0.14618639, 0.14618639, 0.14618639])
+transforms.Normalize(mean=[0.95558817, 0.95558817, 0.95558817],
+            std =[0.14618639, 0.14618639, 0.14618639])
 
 # In[5]:
 
@@ -158,8 +158,8 @@ def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, b
 #         transforms.CenterCrop(64),
         # transforms.Grayscale(),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
-                    std =[0.43267642, 0.43267642, 0.43267642])
+        transforms.Normalize(mean=[0.95558817, 0.95558817, 0.95558817],
+                    std =[0.14618639, 0.14618639, 0.14618639]))
     ])
 
     train_transforms = transforms. Compose([
@@ -170,8 +170,8 @@ def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, b
         transforms.RandomRotation(degrees=360),
         # transforms.RandomAffine(360, shear=20),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
-                    std =[0.43267642, 0.43267642, 0.43267642])
+        transforms.Normalize(mean=[0.95558817, 0.95558817, 0.95558817],
+                    std =[0.14618639, 0.14618639, 0.14618639])
     ])
 
     train_dataset = ListsTrainDataset(X_train, y_train, transform = train_transforms)
@@ -355,7 +355,7 @@ cnn = ResNetDynamic(pretrained.block, pretrained.layers,
 
 trained_models = []
 def run_KFolds():
-    kf = StratifiedKFold(n_splits=4, random_state=None, shuffle=True)
+    kf = StratifiedKFold(n_splits=12, random_state=None, shuffle=True)
     for train_indexes, validation_indexes in kf.split(X = train_images, y = train_labels):
         X_train = []
         y_train = []
@@ -416,8 +416,8 @@ def predict_test_set(model, filenames):
     test_transforms = transforms. Compose([
         transforms.Grayscale(),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
-                    std =[0.43267642, 0.43267642, 0.43267642])
+        transforms.Normalize(mean=[0.939890, 0.939890, 0.939890],
+                    std =[0.16706594, 0.16706594, 0.16706594])
     ])
 
     test_dataset = ListsTestDataset(test_images, transform = test_transforms)
