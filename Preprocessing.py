@@ -416,8 +416,8 @@ def predict_test_set(model, filenames):
     test_transforms = transforms. Compose([
         transforms.Grayscale(),
         transforms.ToTensor(),
-        # transforms.Normalize(mean=[0.939890, 0.939890, 0.939890],
-        #             std =[0.16706594, 0.16706594, 0.16706594])
+        transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
+                    std =[0.43267642, 0.43267642, 0.43267642])
     ])
 
     test_dataset = ListsTestDataset(test_images, transform = test_transforms)
