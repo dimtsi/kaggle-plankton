@@ -19,7 +19,7 @@ classified_train_images = pickle.load(open("pkl/classified_train_images.pkl", "r
 
 
 def pad_and_resize(im):
-    desired_size = 80
+    desired_size = 32
     # old_size = im.size  # old_size[0] is in (width, height) format
     # ratio = float(desired_size)/max(old_size)
     # new_size = tuple([int(x*ratio) for x in old_size])
@@ -49,6 +49,9 @@ for im in classified_train_images:
 train_images[78]
 preprocessed_train_images[78]
 
-pickle.dump( preprocessed_train_images, open( "pkl/preprocessed_train_images.pkl", "wb" ) )
-pickle.dump( preprocessed_test_images, open( "pkl/preprocessed_test_images.pkl", "wb" ) )
-pickle.dump( preprocessed_classified_images, open( "pkl/preprocessed_classified_images.pkl", "wb" ) )
+pickle.dump( preprocessed_train_images, open( "pkl/train_resized32.pkl", "wb" ) )
+pickle.dump( preprocessed_test_images, open( "pkl/test_resized32.pkl", "wb" ) )
+pickle.dump( preprocessed_classified_images, open( "pkl/classified_resized32.pkl", "wb" ) )
+
+
+#####FEATURE EXTRACTION####
