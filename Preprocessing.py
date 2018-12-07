@@ -93,6 +93,26 @@ norm_mean_height = np.mean(heights)
 #             std =[0.14618639, 0.14618639, 0.14618639])
 
 # In[5]:
+def calc_means_stds(train_images, test_images):
+    np_train = []
+    np_test = []
+
+    for im in train_images:
+        new_im = np.array(im)
+        np_train.append(new_im)
+    np_train = np.array(np_train)
+    for im in test_images:
+        new_im = np.array(im)
+        np_test.append(new_im)
+    np_test = np.array(np_test)
+
+    mean_train = np.mean(np_train)/255
+    mean_test = np.mean(np_test)/255
+    std_train = np.std(np_train)/255
+    std_test = np.std(np_test)/255
+    return (mean_train, mean_test, std_train, std_test)
+
+mean_norm_train, mean_norm_test, std_norm_train, std_norm_test = calc_means_stds(train_images, test_images)
 
 
 class ListsTrainDataset(Dataset):
@@ -149,8 +169,6 @@ class ListsTestDataset(Dataset):
 
 
 # In[7]:
-mean_norm = 0.485
-mean_std = 0.229
 #Transforms and Dataset Creation
 def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, batch_size = 32):
     test_transforms = transforms. Compose([
@@ -158,8 +176,8 @@ def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, b
 #         transforms.CenterCrop(64),
         # transforms.Grayscale(),
         transforms.ToTensor(),
-        # transforms.Normalize(mean=[mean_norm],
-        #             std =[mean_std])
+        transforms.Normalize(mean=[mean_norm_train],
+                    std =[std_norm_train])
     ])
 
     train_transforms = transforms. Compose([
@@ -170,8 +188,8 @@ def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, b
         transforms.RandomRotation(degrees=360),
         # transforms.RandomAffine(360, shear=20),
         transforms.ToTensor(),
-        # transforms.Normalize(mean=[mean_norm],
-        #             std =[mean_std])
+        transforms.Normalize(mean=[mean_norm_train],
+                    std =[std_norm_train])
     ])
 
     train_dataset = ListsTrainDataset(X_train, y_train, transform = train_transforms)
@@ -395,8 +413,8 @@ def train_on_whole():
         transforms.Grayscale(),
         transforms.RandomRotation(degrees=360),
         transforms.ToTensor(),
-        # transforms.Normalize(mean=[mean_norm],
-        #             std =[mean_std])
+        transforms.Normalize(mean=[mean_norm_train],
+                    std =[mean_std_train])
     ])
     train_dataset = ListsTrainDataset(train_images, train_labels, transform = train_transforms)
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32, shuffle = True)
@@ -416,8 +434,8 @@ def predict_test_set(model, filenames):
     test_transforms = transforms. Compose([
         transforms.Grayscale(),
         transforms.ToTensor(),
-        # transforms.Normalize(mean=[mean_norm],
-        #             std =[mean_std])
+        transforms.Normalize(mean=[mean_norm_test],
+                    std =[std_norm_test])
     ])
 
     test_dataset = ListsTestDataset(test_images, transform = test_transforms)
