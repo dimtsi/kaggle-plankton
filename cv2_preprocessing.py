@@ -40,3 +40,13 @@ for filename in glob.iglob('test_images' +'/*'):
     test_filenames.append(filename.replace('test_images/', ''))
     haralick_features = extract_haralick(image)
     test_haralick.append(haralick_features)
+
+train_haralick = np.array(train_haralick)
+test_haralick = np.array(test_haralick)
+
+pickle.dump( train_images, open( "pkl/train_images_cv2.pkl", "wb" ) )
+pickle.dump( train_labels, open( "pkl/train_labels_cv2.pkl", "wb" ) )
+pickle.dump( test_images, open( "pkl/test_images_cv2.pkl", "wb" ) )
+
+pickle.dump( train_haralick, open( "features/train_haralick.pkl", "wb" ) )
+pickle.dump( test_haralick, open( "features/test_haralick.pkl", "wb" ) )
