@@ -93,27 +93,17 @@ norm_mean_height = np.mean(heights)
 #             std =[0.14618639, 0.14618639, 0.14618639])
 
 # In[5]:
-def calc_means_stds(train_images, test_images):
-    np_train = []
-    np_test = []
+def calc_means_stds(image_list):
+    np_images = []
 
-    for im in train_images:
+    for im in image_list:
         new_im = np.array(im)
-        np_train.append(new_im)
-    np_train = np.array(np_train)
-    for im in test_images:
-        new_im = np.array(im)
-        np_test.append(new_im)
-    np_test = np.array(np_test)
+        np_images.append(new_im)
+    np_images = np.array(np_images)
 
-    mean_train = np.mean(np_train)/255
-    mean_test = np.mean(np_test)/255
-    std_train = np.std(np_train)/255
-    std_test = np.std(np_test)/255
-    return (mean_train, mean_test, std_train, std_test)
-
-mean_norm_train, mean_norm_test, std_norm_train, std_norm_test = calc_means_stds(train_images, test_images)
-
+    img_mean = np.mean(np_images)/255
+    img_std = np.std(np_images)/255
+    return (img_mean, img_std)
 
 class ListsTrainDataset(Dataset):
     def __init__(self, list_of_images, list_of_labels, transform=None):
@@ -170,14 +160,15 @@ class ListsTestDataset(Dataset):
 
 # In[7]:
 #Transforms and Dataset Creation
-def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, batch_size = 32):
-    test_transforms = transforms. Compose([
+def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, batch_size = 32, norm_params= None):
+
+    val_transforms = transforms. Compose([
         # transforms.resize(image, (64, 64)),
 #         transforms.CenterCrop(64),
         # transforms.Grayscale(),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[mean_norm_train],
-                    std =[std_norm_train])
+        transforms.Normalize(mean=[norm_params['val_norm_mean']],
+                    std =norm_params['val_norm_std'])
     ])
 
     train_transforms = transforms. Compose([
@@ -188,19 +179,21 @@ def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, b
         transforms.RandomRotation(degrees=360),
         # transforms.RandomAffine(360, shear=20),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[mean_norm_train],
-                    std =[std_norm_train])
+        transforms.Normalize(mean=[norm_params['train_norm_mean']],
+                    std =[norm_params['train_norm_std']])
     ])
 
     train_dataset = ListsTrainDataset(X_train, y_train, transform = train_transforms)
-    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = batch_size, shuffle = True, num_workers=16)
+    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = batch_size,
+        shuffle = True, num_workers=16)
 
     if y_test is not None:
-        test_dataset = ListsTrainDataset(X_test, y_test, transform = test_transforms)
+        test_dataset = ListsTrainDataset(X_test, y_test, transform = val_transforms)
     else:
         test_dataset = ListsTestDataset(X_test, transform = test_transforms)
 
-    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size = batch_size, shuffle = False)
+    test_loader = torch.utils.data.DataLoader(test_dataset,
+                                batch_size = batch_size, shuffle = False)
     return (train_loader, test_loader)
 
 
@@ -309,11 +302,11 @@ def train_and_validate(model, train_loader, test_loader, num_epochs):
             accuracy_train = (labels == argmax.squeeze()).float().mean()*100
             accuracies_train.append(accuracy_train)
             # Show progress
-            # if (i+1) % 32 == 0:
-            log = " ".join([
-              "Epoch : %d/%d" % (epoch+1, num_epochs),
-              "Iter : %d/%d" % (i+1, len(train_loader.dataset)//batch_size)])
-            print('\r{}'.format(log), end=" ")
+            if (i+1) % 32 == 0:
+                log = " ".join([
+                  "Epoch : %d/%d" % (epoch+1, num_epochs),
+                  "Iter : %d/%d" % (i+1, len(train_loader.dataset)//batch_size)])
+                print('\r{}'.format(log), end=" ")
                 # history['batch'].append(i)
                 # history['loss'].append(loss.item())
                 # history['accuracy'].append(accuracy_train.item())
@@ -369,7 +362,18 @@ cnn = ResNetDynamic(pretrained.block, pretrained.layers,
 # models.append(cnn1)
 # models.append(cnn2)
 # cnn = SuperNet(models)
+norm = {}
+X_train = train_images
+X_val=train_images
+y_train= train_labels
+y_val=train_labels
 
+norm['train_norm_mean'], norm['train_norm_std'] = calc_means_stds(X_train)
+X_val = train_images[:5]
+norm['val_norm_mean'], norm['val_norm_std'] = calc_means_stds(X_val)
+norm
+train_loader, test_loader = create_datasets_dataloaders(
+    X_train, y_train, X_val, y_val, batch_size = 32, norm_params = norm)
 
 trained_models = []
 def run_KFolds():
@@ -379,6 +383,7 @@ def run_KFolds():
         y_train = []
         X_val = []
         y_val = []
+        norm = {}
 
         for i in train_indexes:
             X_train.append(train_images[i])
@@ -386,8 +391,12 @@ def run_KFolds():
         for j in validation_indexes:
             X_val.append(train_images[j])
             y_val.append(train_labels[j])
+
+        norm['train_norm_mean'], norm['train_norm_std'] = calc_means_stds(X_train)
+        norm['val_norm_mean'], norm['val_norm_std'] = calc_means_stds(X_val)
+
         train_loader, test_loader = create_datasets_dataloaders(
-            X_train, y_train, X_val, y_val, batch_size = 32)
+            X_train, y_train, X_val, y_val, batch_size = 32, norm_params = norm)
 
         #Training
         # if torch.cuda.device_count() > 1:
