@@ -132,7 +132,7 @@ def create_datasets_dataloaders(X_train, y_train, X_val= None, y_val = None, bat
 
     val_transforms = transforms. Compose([
         # transforms.resize(image, (64, 64)),
-#         transforms.CenterCrop(64),
+        # transforms.RandomCrop(64),
         # transforms.Grayscale(),
         transforms.ToTensor(),
         transforms.Normalize(mean=[norm_params['train_norm_mean']],
@@ -140,7 +140,7 @@ def create_datasets_dataloaders(X_train, y_train, X_val= None, y_val = None, bat
     ])
 
     train_transforms = transforms. Compose([
-#         transforms.CenterCrop(64),
+        transforms.RandomCrop(64),
         # transforms.Grayscale(),
         # transforms.resize(image, (64, 64)),
         transforms.RandomHorizontalFlip(p=0.5),
@@ -345,7 +345,7 @@ train_loader, test_loader = create_datasets_dataloaders(
 
 trained_models = []
 def run_KFolds():
-    kf = StratifiedKFold(n_splits=4, random_state=None, shuffle=True)
+    kf = StratifiedKFold(n_splits=12, random_state=None, shuffle=True)
     for train_indexes, validation_indexes in kf.split(X = train_images, y = train_labels):
         X_train = []
         y_train = []
