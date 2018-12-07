@@ -63,36 +63,6 @@ norm_mean_width = np.mean(widths)
 norm_mean_height = np.mean(heights)
 
 
-# In[4]:
-
-
-##CONVERT TO NUMPY TO CALCULATE MEAN,STD PER CHANNEL FOR NORMALIZATION
-# from sklearn.preprocessing import StandardScaler
-#
-# scaler = StandardScaler()
-# np_train = []
-# np_test = []
-#
-# for im in train_images:
-#     np_train.append(np.array(im))
-#
-# for im in test_images:
-#     np_test.append(np.array(im))
-#
-# arr = np.array(np_train) #len,x_pixels,y_pixels, channels
-# per_image_mean = np.mean(np_train, axis=(1,2)) #Shape (32,3)
-# per_image_std = np.std(np_train, axis=(1,2)) #Shape (32,3)
-#
-# pop_channel_mean = np.mean(arr, axis=(0, 1, 2))/255
-# pop_channel_std = np.std(arr, axis=(0, 1, 2))/255
-# # norm_std_array = array([pop_channel_std, pop_channel_std, pop_channel_std])
-# pop_channel_mean
-# transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
-#             std =[0.43267642, 0.43267642, 0.43267642])
-# transforms.Normalize(mean=[0.95558817, 0.95558817, 0.95558817],
-#             std =[0.14618639, 0.14618639, 0.14618639])
-
-# In[5]:
 def calc_means_stds(image_list):
     np_images = []
 
@@ -131,8 +101,6 @@ class ListsTrainDataset(Dataset):
     def __len__(self):
         return len(self.data)
 
-
-# In[6]:
 
 
 class ListsTestDataset(Dataset):
@@ -439,6 +407,8 @@ def train_on_whole():
 # predict on testset
 final_model = cnn
 final_model.load_state_dict(torch.load('trained_model.pt')['state_dict'])
+mean_norm_test, std_norm_test = calc_means_stds(test_images)
+
 def predict_test_set(model, filenames):
     test_transforms = transforms. Compose([
         transforms.Grayscale(),
