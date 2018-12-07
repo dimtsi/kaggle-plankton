@@ -6,7 +6,7 @@ import glob
 import cv2
 import mahotas as mt
 
-def haralick(image):
+def extract_haralick(image):
         # calculate haralick texture features for 4 types of adjacency
         textures = mt.features.haralick(image)
 
@@ -32,11 +32,11 @@ for filename in labels_df['image'].values: ##to keep mapping with classes
     train_images.append(image)
     train_labels.append(labels_dict[filename])
     train_filenames.append(filename)
-    haralick = extract_features(image)
-    train_haralick.append(haralick)
+    haralick_features = extract_haralick(image)
+    train_haralick.append(haralick_features)
 for filename in glob.iglob('test_images' +'/*'):
     image = cv2.imread(filename,0).copy()
     test_images.append(image)
     test_filenames.append(filename.replace('test_images/', ''))
-    haralick = extract_features(image)
-    test_haralick.append(haralick)
+    haralick_features = extract_haralick(image)
+    test_haralick.append(haralick_features)
