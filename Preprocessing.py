@@ -168,7 +168,7 @@ def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, b
         # transforms.Grayscale(),
         transforms.ToTensor(),
         transforms.Normalize(mean=[norm_params['val_norm_mean']],
-                    std =norm_params['val_norm_std'])
+                    std =[norm_params['val_norm_std']])
     ])
 
     train_transforms = transforms. Compose([
