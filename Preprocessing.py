@@ -158,8 +158,8 @@ def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, b
 #         transforms.CenterCrop(64),
         # transforms.Grayscale(),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.95558817, 0.95558817, 0.95558817],
-                    std =[0.14618639, 0.14618639, 0.14618639])
+        transforms.Normalize(mean=[0.485],
+                    std =[0.229])
     ])
 
     train_transforms = transforms. Compose([
@@ -170,8 +170,8 @@ def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, b
         transforms.RandomRotation(degrees=360),
         # transforms.RandomAffine(360, shear=20),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
-                    std =[0.43267642, 0.43267642, 0.43267642])
+        transforms.Normalize(mean=[0.485],
+                    std =[0.229])
     ])
 
     train_dataset = ListsTrainDataset(X_train, y_train, transform = train_transforms)
@@ -345,7 +345,7 @@ pretrained = resnet50(pretrained = True)
 cnn = ResNetDynamic(pretrained.block, pretrained.layers,
             num_layers = 2, pretrained_nn = None)
 #
-cnn.load_state_dict(torch.load('trained_model.pt')['state_dict'])
+# cnn.load_state_dict(torch.load('trained_model.pt')['state_dict'])
 # cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
 # models = []
 # models.append(cnn1)
