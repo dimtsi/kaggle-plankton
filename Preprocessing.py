@@ -355,7 +355,7 @@ cnn.load_state_dict(torch.load('trained_model.pt')['state_dict'])
 
 trained_models = []
 def run_KFolds():
-    kf = StratifiedKFold(n_splits=12, random_state=None, shuffle=True)
+    kf = StratifiedKFold(n_splits=4, random_state=None, shuffle=True)
     for train_indexes, validation_indexes in kf.split(X = train_images, y = train_labels):
         X_train = []
         y_train = []
