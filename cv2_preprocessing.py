@@ -50,3 +50,19 @@ pickle.dump( test_images, open( "pkl/test_images_cv2.pkl", "wb" ) )
 
 pickle.dump( train_haralick, open( "features/train_haralick.pkl", "wb" ) )
 pickle.dump( test_haralick, open( "features/test_haralick.pkl", "wb" ) )
+
+## Moments
+
+train_moments = []
+test_moments = []
+
+for im in train_images:
+    train_moments.append(list(cv2.moments(im).values()))
+for im in test_images:
+    test_moments.append(list(cv2.moments(im).values()))
+
+train_moments = np.array(train_moments)
+test_moments = np.array(test_moments)
+
+pickle.dump(train_moments, open("features/train_moments.pkl", "wb"))
+pickle.dump(test_moments, open("features/test_moments.pkl", "wb"))
