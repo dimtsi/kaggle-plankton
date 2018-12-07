@@ -170,8 +170,8 @@ def create_datasets_dataloaders(X_train, y_train, X_test= None, y_test = None, b
         transforms.RandomRotation(degrees=360),
         # transforms.RandomAffine(360, shear=20),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.95558817, 0.95558817, 0.95558817],
-                    std =[0.14618639, 0.14618639, 0.14618639])
+        transforms.Normalize(mean=[0.70426004, 0.70426004, 0.70426004],
+                    std =[0.43267642, 0.43267642, 0.43267642])
     ])
 
     train_dataset = ListsTrainDataset(X_train, y_train, transform = train_transforms)
