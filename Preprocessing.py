@@ -30,12 +30,11 @@ from torchsummary import summary
 
 # In[2]:
 
-
-train_images = pickle.load(open("pkl/classified_padded80.pkl", "rb"))
+train_images = pickle.load(open("pkl/classified_padded64.pkl", "rb"))
 # train_images = train_images[:1000]
 train_labels = pickle.load(open("pkl/classified_train_labels.pkl", "rb"))
 train_filenames = pickle.load(open("pkl/train_filenames.pkl", "rb"))
-test_images = pickle.load(open("pkl/test_padded80.pkl", "rb"))
+test_images = pickle.load(open("pkl/test_padded64.pkl", "rb"))
 test_filenames = pickle.load(open("pkl/test_filenames.pkl", "rb"))
 
 
@@ -133,7 +132,7 @@ def create_datasets_dataloaders(X_train, y_train, X_val= None, y_val = None, bat
     val_transforms = transforms. Compose([
         # transforms.resize(image, (64, 64)),
         # transforms.RandomCrop(64),
-        # transforms.Grayscale(),
+        transforms.Grayscale(),
         transforms.ToTensor(),
         transforms.Normalize(mean=[norm_params['train_norm_mean']],
                     std =[norm_params['train_norm_std']])
@@ -141,7 +140,7 @@ def create_datasets_dataloaders(X_train, y_train, X_val= None, y_val = None, bat
 
     train_transforms = transforms. Compose([
         transforms.CenterCrop(64),
-        # transforms.Grayscale(),
+        transforms.Grayscale(),
         # transforms.resize(image, (64, 64)),
         transforms.RandomHorizontalFlip(p=0.5),
         transforms.RandomRotation(degrees=360),
