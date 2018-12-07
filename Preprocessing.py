@@ -30,11 +30,11 @@ from torchsummary import summary
 
 # In[2]:
 
-train_images = pickle.load(open("pkl/classified_resized80.pkl", "rb"))
+train_images = pickle.load(open("pkl/classified_resized64.pkl", "rb"))
 # train_images = train_images[:1000]
 train_labels = pickle.load(open("pkl/classified_train_labels.pkl", "rb"))
 train_filenames = pickle.load(open("pkl/train_filenames.pkl", "rb"))
-test_images = pickle.load(open("pkl/test_resized80.pkl", "rb"))
+test_images = pickle.load(open("pkl/test_resized64.pkl", "rb"))
 test_filenames = pickle.load(open("pkl/test_filenames.pkl", "rb"))
 
 
