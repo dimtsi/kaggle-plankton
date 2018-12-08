@@ -404,7 +404,7 @@ if __name__ == "__main__":
 
 
             train_loader, test_loader = create_datasets_dataloaders(
-                X_train, y_train, X_val, y_val, batch_size = 32, norm_params = norm, sampler = train_sampler)
+                X_train, y_train, X_val, y_val, batch_size = 32, norm_params = norm, train_sampler = train_sampler)
 
             #Training
             # if torch.cuda.device_count() > 1:
