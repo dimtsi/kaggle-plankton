@@ -23,8 +23,7 @@ from torchvision import transforms
 import NNs
 importlib.reload(NNs)
 import math
-from NNs import ResNetMine, ResNetDynamic, Bottleneck, Flatten
-
+from NNs import ResNetMine, ResNetDynamic, Bottleneck, Flatten, FeatureBoostedCNN
 import glob
 import cv2
 
@@ -256,23 +255,6 @@ handcrafted_val = scaler.fit_transform(handcrafted_val)
 # In[8]:
 
 
-class FeatureBoostedCNN(nn.Module):
-    
-    def __init__(self, network, num_extra_feats=0, num_classes=121):
-        super(FeatureBoostedCNN, self).__init__()
-        self.convolutional =  nn.Sequential(*list(network.children())[:-2])
-        self.cnn_final_size =  64* network.block.expansion * 2**(network.num_layers-1)
-        self.flattened_size = self.cnn_final_size + num_extra_feats
-        self.fc1 = nn.Linear(self.flattened_size, self.flattened_size//2)
-        self.fc2 = nn.Linear(self.flattened_size//2, num_classes)
-
-
-    def forward(self, x):
-        x1 = self.convolutional(x[0])
-        x1 = torch.cat((x1, x[1]),1)
-        x1 = self.fc1(x1)
-        x1 = self.fc2(x1)
-        return x1    
 
 pretrained = resnet50(pretrained = True)
 cnn = ResNetDynamic(pretrained.block, pretrained.layers,
@@ -291,7 +273,7 @@ ensemble_nn
 
 
 train_dataset, val_dataset = create_train_val_datasets(X_train, y_train,
-                                                       X_val, y_val, 
+                                                       X_val, y_val,
                                                        norm_params = norm,
                                                        train_features = handcrafted_train,
                                                        val_features = handcrafted_val
@@ -321,4 +303,3 @@ train_and_validate_with_features(ensemble_nn, train_loader, val_loader, num_epoc
 
 
 handcrafted_val.shape
-
