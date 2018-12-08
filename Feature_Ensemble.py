@@ -372,7 +372,7 @@ def CreateBalancedSampleWeights(y_train, largest_class_weight_coef):
     return sample_weights
 max_weight_coeff = 0.0654138
 
-train_sample_weight = CreateBalancedSampleWeights(label_train, largest_class_weight_coef=max_weight_coeff)
+train_sample_weight = CreateBalancedSampleWeights(y_train, largest_class_weight_coef=max_weight_coeff)
 
 from xgboost import XGBClassifier
 start_time = time.time()
