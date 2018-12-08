@@ -348,7 +348,7 @@ def train_on_whole():
 
 # predict on testset
 
-def predict_test_set(model, filenames):
+def predict_test_set(model, filenames,  mean_norm_test, std_norm_test):
     test_transforms = transforms. Compose([
         transforms.Grayscale(),
         transforms.ToTensor(),
@@ -379,10 +379,10 @@ def predict_test_set(model, filenames):
 
 if __name__ == "__main__":
 
-    train_images = pickle.load(open("pkl/classified_resized64.pkl", "rb"))
+    train_images = pickle.load(open("pkl/classified_padded64.pkl", "rb"))
     train_labels = pickle.load(open("pkl/classified_train_labels.pkl", "rb"))
     train_filenames = pickle.load(open("pkl/train_filenames.pkl", "rb"))
-    test_images = pickle.load(open("pkl/test_resized64.pkl", "rb"))
+    test_images = pickle.load(open("pkl/test_padded64.pkl", "rb"))
     test_filenames = pickle.load(open("pkl/test_filenames.pkl", "rb"))
 
     #PIL
@@ -434,58 +434,58 @@ if __name__ == "__main__":
 
 
     trained_models = []
-    # def run_KFolds():
-    kf = StratifiedKFold(n_splits=12, random_state=None, shuffle=True)
-    for train_indexes, validation_indexes in kf.split(X = train_images, y = train_labels):
-        X_train = []
-        y_train = []
-        X_val = []
-        y_val = []
-        norm = {}
+    def run_KFolds():
+        kf = StratifiedKFold(n_splits=12, random_state=None, shuffle=True)
+        for train_indexes, validation_indexes in kf.split(X = train_images, y = train_labels):
+            X_train = []
+            y_train = []
+            X_val = []
+            y_val = []
+            norm = {}
 
-        for i in train_indexes:
-            X_train.append(train_images[i])
-            y_train.append(train_labels[i])
-        for j in validation_indexes:
-            X_val.append(train_images[j])
-            y_val.append(train_labels[j])
+            for i in train_indexes:
+                X_train.append(train_images[i])
+                y_train.append(train_labels[i])
+            for j in validation_indexes:
+                X_val.append(train_images[j])
+                y_val.append(train_labels[j])
 
-        norm['train_norm_mean'], norm['train_norm_std'] = calc_means_stds(X_train)
+            norm['train_norm_mean'], norm['train_norm_std'] = calc_means_stds(X_train)
 
-        class_sample_counts = np.bincount(y_train)
-        class_sample_counts
-        class_weights = 1./torch.Tensor(class_sample_counts)
-        train_samples_weight = [class_weights[class_id] for class_id in y_train]
+            class_sample_counts = np.bincount(y_train)
+            class_sample_counts
+            class_weights = 1./torch.Tensor(class_sample_counts)
+            train_samples_weight = [class_weights[class_id] for class_id in y_train]
 
-        ## Create Datasets and Dataloaders
-        train_dataset, val_dataset = create_train_val_datasets(X_train, y_train, X_val, y_val, norm_params =norm)
-        # train_sampler = ImbalancedDatasetSampler(train_dataset)
+            ## Create Datasets and Dataloaders
+            train_dataset, val_dataset = create_train_val_datasets(X_train, y_train, X_val, y_val, norm_params =norm)
+            # train_sampler = ImbalancedDatasetSampler(train_dataset)
 
-        train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32,
-            shuffle = True, num_workers=4)
+            train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32,
+                shuffle = True, num_workers=4)
 
-        test_loader = torch.utils.data.DataLoader(val_dataset,
-                                    batch_size = 32, shuffle = False)
+            test_loader = torch.utils.data.DataLoader(val_dataset,
+                                        batch_size = 32, shuffle = False)
 
-        #Training
-        # if torch.cuda.device_count() > 1:
-        #   print("Let's use", torch.cuda.device_count(), "GPUs!")
-        #   # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 cGPUs
-        # #   cnn = nn.DataParallel(cnn)
-        #   cnn = nn.DataParallel(cnn, device_ids=[0, 1])
-        cnn.to(device)
+            #Training
+            # if torch.cuda.device_count() > 1:
+            #   print("Let's use", torch.cuda.device_count(), "GPUs!")
+            #   # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 cGPUs
+            # #   cnn = nn.DataParallel(cnn)
+            #   cnn = nn.DataParallel(cnn, device_ids=[0, 1])
+            cnn.to(device)
 
-        # cnn = CNN().cuda()
-        summary(cnn, (1,64,64))
+            # cnn = CNN().cuda()
+            summary(cnn, (1,64,64))
 
-    #     print(summary(cnn, (1,28,28)))
-        trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100)
-        trained_models.append(trained_model)
-        break
+        #     print(summary(cnn, (1,28,28)))
+            trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100)
+            trained_models.append(trained_model)
+            break
 
-    # run_KFolds()
+    run_KFolds()
 
     final_model = cnn
     final_model.load_state_dict(torch.load('trained_model.pt')['state_dict'])
     mean_norm_test, std_norm_test = calc_means_stds(train_images)
-    predict_test_set(final_model, test_filenames)
+    predict_test_set(final_model, test_filenames, mean_norm_test, std_norm_test)
