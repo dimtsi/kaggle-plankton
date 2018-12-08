@@ -296,10 +296,10 @@ def train_and_validate(model, train_loader, test_loader, num_epochs):
             val_accuracy = 100*correct.item() / total
         print('VALIDATION SET ACCURACY: %.4f %%' % val_accuracy)
         scheduler.step(correct.item() / total)
-        # if val_accuracy >= best_val_accuracy:
-        #     best_val_accuracy = val_accuracy
-        #     print("saved best model")
-        #     save_model(epoch, model, optimizer, scheduler)
+        if val_accuracy >= best_val_accuracy:
+            best_val_accuracy = val_accuracy
+            print("saved best model")
+            save_model(epoch, model, optimizer, scheduler)
         toc=timeit.default_timer()
         print(toc-tic)
     return model

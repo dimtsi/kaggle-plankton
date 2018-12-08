@@ -97,10 +97,9 @@ class ResNetDynamic(nn.Module):
             layer_planes *= 2
         self.inside_layers = nn.Sequential(inside_layers)
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-
+        self.flatten = Flatten()
         self.final_size = 64* block.expansion * 2**(num_layers-1)
         self.fc1 = nn.Sequential(
-            Flatten(),
             nn.Linear(self.final_size, self.final_size//2),
             nn.LeakyReLU(0.3),
             nn.Dropout(0.3)
@@ -156,7 +155,7 @@ class ResNetDynamic(nn.Module):
         x = self.inside_layers(x)
 
         x = self.avgpool(x)
-
+        x = self.flatten(x)
         x = self.fc1(x)
         x = self.fc2(x)
         return x
@@ -183,6 +182,8 @@ class SuperNet(nn.Module):
         z = z.view(z.size(0), -1)
         z = self.fc(z)
         return z
+
+
 
 
 class PretrainedResnetMine(ResNetMine):
