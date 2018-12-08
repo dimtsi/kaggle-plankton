@@ -374,3 +374,5 @@ print("Validation Accuracy: " +str(accuracy_score(y_test, y_pred_val)))
 
 elapsed_time = time.time() - start_time
 print("elapsed time: "+str(elapsed_time))
+
+print(y_pred_val)
