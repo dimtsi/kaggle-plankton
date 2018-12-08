@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[2]:
 
 
 import numpy as np
@@ -34,7 +34,7 @@ from Preprocessing import ListsTrainDataset, ListsTestDataset
 
 # ## LOAD DATA
 
-# In[2]:
+# In[3]:
 
 
 train_images = pickle.load(open("pkl/train_resized64.pkl", "rb"))
@@ -47,7 +47,7 @@ test_filenames = pickle.load(open("pkl/test_filenames.pkl", "rb"))
 
 # ## Load handcrafted features
 
-# In[3]:
+# In[4]:
 
 
 train_haralick = pickle.load(open("features/train_haralick.pkl", "rb"))
@@ -64,7 +64,7 @@ test_handcrafted_features = np.concatenate([test_haralick, test_moments,  test_s
 
 # ### New Dataset
 
-# In[4]:
+# In[5]:
 
 
 class ListsTrainFeatureDataset(Dataset):
@@ -109,7 +109,7 @@ class ListsTestFeatureDataset(Dataset):
 
 # ## CUSTOM NETWORK
 
-# In[9]:
+# In[6]:
 
 
 pretrained = resnet50(pretrained = True)
@@ -120,7 +120,7 @@ feature_extractor_cnn = nn.Sequential(*list(cnn.children())[:-2])
 feature_extractor_cnn
 
 
-# In[10]:
+# In[7]:
 
 
 feature_extractor_dict = feature_extractor_cnn.state_dict()
@@ -133,7 +133,7 @@ feature_extractor_cnn = feature_extractor_cnn.eval().cuda()
 
 # ## Get features from pretrained NN
 
-# In[11]:
+# In[8]:
 
 
 def get_cnn_features(model, x):
@@ -162,7 +162,7 @@ def get_cnn_features(model, x):
     return features.numpy()
 
 
-# In[12]:
+# In[9]:
 
 
 from sklearn.model_selection import StratifiedKFold
@@ -209,13 +209,23 @@ for train_indexes, validation_indexes in kf.split(X = train_images, y = train_la
     break
 
 
-# In[14]:
+# In[11]:
 
 
 from sklearn.preprocessing import StandardScaler
 scaler = StandardScaler()
-scaled_features_train = scaler.fit_transform(FINAL_FEATURES_TRAIN)
-scaled_features_val = scaler.fit_transform(FINAL_FEATURES_VAL)
+scaled_features_train = scaler.fit_transform(handcrafted_train)
+scaled_features_val = scaler.fit_transform(handcrafted_val)
+
+FINAL_FEATURES_TRAIN = np.concatenate([cnn_train_features, scaled_features_train], axis = 1)
+FINAL_FEATURES_VAL = np.concatenate([cnn_val_features, scaled_features_val], axis = 1)
+
+
+# In[13]:
+
+
+FINAL_FEATURES_TRAIN.shape
+FINAL_FEATURES_VAL.shape
 
 
 # In[15]:
@@ -240,7 +250,7 @@ n_estimators
 # In[16]:
 
 
-X_train, X_val = scaled_features_train, scaled_features_val
+X_train, X_val = FINAL_FEATURES_TRAIN, FINAL_FEATURES_VAL
 y_train, y_test = y_train, y_val
 
 
