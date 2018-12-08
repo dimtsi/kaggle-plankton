@@ -19,11 +19,11 @@ from torch.utils.data import Dataset, DataLoader,TensorDataset
 from torchvision.models.resnet import *
 from torch.autograd import Variable
 from torchvision import transforms
+from NNs import FeatureBoostedCNN, ResNetMine, ResNetDynamic, Bottleneck, Flatten
 
-import NNs
-importlib.reload(NNs)
+# import NNs
+# importlib.reload(NNs)
 import math
-from NNs import ResNetMine, ResNetDynamic, Bottleneck, Flatten, FeatureBoostedCNN
 import glob
 import cv2
 
@@ -265,7 +265,6 @@ cnn = ResNetDynamic(pretrained.block, pretrained.layers,
 # feature_extractor_cnn
 num_handcrafted = handcrafted_train.shape[1]
 ensemble_nn = FeatureBoostedCNN(cnn, num_handcrafted)
-ensemble_nn
 
 
 # In[9]:
