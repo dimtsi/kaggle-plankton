@@ -100,7 +100,7 @@ class ListsTestDataset(Dataset):
 
 # In[7]:
 #Transforms and Dataset Creation
-def create_datasets_dataloaders(X_train, y_train, X_val= None, y_val = None, batch_size = 32, norm_params= None):
+def create_datasets_dataloaders(X_train, y_train, X_val= None, y_val = None, batch_size = 32, norm_params= None, train_sampler = None):
     print(norm_params)
     val_transforms = transforms. Compose([
         # transforms.resize(image, (64, 64)),
@@ -125,7 +125,7 @@ def create_datasets_dataloaders(X_train, y_train, X_val= None, y_val = None, bat
 
     train_dataset = ListsTrainDataset(X_train, y_train, transform = train_transforms)
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = batch_size,
-        shuffle = True, num_workers=4)
+        shuffle = True, num_workers=4, sampler = train_sampler)
 
     if y_val is not None:
         test_dataset = ListsTrainDataset(X_val, y_val, transform = val_transforms)
@@ -355,11 +355,11 @@ if __name__ == "__main__":
     import timeit
 
     ##Class weights for imbalance
-    from sklearn.utils.class_weight import compute_class_weight
-    labels_df = pd.read_csv('train_onelabel.csv')
-    class_weights = compute_class_weight('balanced', np.arange(121), labels_df['class'])
-    class_weights = np.interp(class_weights, (class_weights.min(), class_weights.max()), (0, +1))
-    class_weights = torch.from_numpy(class_weights).float().to(device)
+    # from sklearn.utils.class_weight import compute_class_weight
+    # labels_df = pd.read_csv('train_onelabel.csv')
+    # class_weights = compute_class_weight('balanced', np.arange(121), labels_df['class'])
+    # class_weights = np.interp(class_weights, (class_weights.min(), class_weights.max()), (0, +1))
+    # class_weights = torch.from_numpy(class_weights).float().to(device)
 
     from sklearn.model_selection import StratifiedKFold
 
@@ -373,6 +373,8 @@ if __name__ == "__main__":
     # models.append(cnn1)
     # models.append(cnn2)
     # cnn = SuperNet(models)
+
+
 
     trained_models = []
     def run_KFolds():
@@ -393,8 +395,16 @@ if __name__ == "__main__":
 
             norm['train_norm_mean'], norm['train_norm_std'] = calc_means_stds(X_train)
 
+            class_sample_counts = np.bincount(y_train)
+            class_sample_counts
+            class_weights = 1./torch.Tensor(class_sample_counts)
+            train_samples_weight = [class_weights[class_id] for class_id in y_train]
+            train_sampler = torch.utils.data.sampler.WeightedRandomSampler(train_samples_weight, len(y_train))
+
+
+
             train_loader, test_loader = create_datasets_dataloaders(
-                X_train, y_train, X_val, y_val, batch_size = 32, norm_params = norm)
+                X_train, y_train, X_val, y_val, batch_size = 32, norm_params = norm, sampler = train_sampler)
 
             #Training
             # if torch.cuda.device_count() > 1:
