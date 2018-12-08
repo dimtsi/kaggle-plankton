@@ -6,7 +6,7 @@
 
 from PIL import Image, ImageOps, ImageFilter
 import pickle
-
+import numpy as np
 
 # In[12]:
 
@@ -19,7 +19,7 @@ classified_train_images = pickle.load(open("pkl/classified_train_images.pkl", "r
 
 
 def pad_and_resize(im):
-    desired_size = 32
+    desired_size = 80
     old_size = im.size  # old_size[0] is in (width, height) format
     ratio = float(desired_size)/max(old_size)
     new_size = tuple([int(x*ratio) for x in old_size])
@@ -27,13 +27,9 @@ def pad_and_resize(im):
     new_im = Image.new("RGB", (desired_size, desired_size), "white")
     new_im.paste(im, ((desired_size-new_size[0])//2,
                         (desired_size-new_size[1])//2))
-    new_im = new_im.convert('LA')
+    new_im = new_im.convert('L')
     # new_im = im.resize((desired_size, desired_size), Image.ANTIALIAS)
     return new_im
-
-
-# In[14]:
-
 
 preprocessed_train_images = []
 preprocessed_test_images = []
@@ -50,6 +46,6 @@ for im in classified_train_images:
 train_images[78]
 preprocessed_train_images[78]
 
-pickle.dump( preprocessed_train_images, open( "pkl/train_padded32", "wb" ) )
-pickle.dump( preprocessed_test_images, open( "pkl/test_padded32.pkl", "wb" ) )
-pickle.dump( preprocessed_classified_images, open( "pkl/classified_padded32.pkl", "wb" ) )
+pickle.dump( preprocessed_train_images, open( "pkl/train_padded80", "wb" ) )
+pickle.dump( preprocessed_test_images, open( "pkl/test_padded80.pkl", "wb" ) )
+pickle.dump( preprocessed_classified_images, open( "pkl/classified_padded80.pkl", "wb" ) )

@@ -152,7 +152,7 @@ def create_datasets_dataloaders(X_train, y_train, X_val= None, y_val = None, bat
 
     train_dataset = ListsTrainDataset(X_train, y_train, transform = train_transforms)
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = batch_size,
-        shuffle = True, num_workers=4)
+        shuffle = False, num_workers=4)
 
     if y_val is not None:
         test_dataset = ListsTrainDataset(X_val, y_val, transform = val_transforms)
@@ -296,10 +296,10 @@ def train_and_validate(model, train_loader, test_loader, num_epochs):
             val_accuracy = 100*correct.item() / total
         print('VALIDATION SET ACCURACY: %.4f %%' % val_accuracy)
         scheduler.step(correct.item() / total)
-        if val_accuracy >= best_val_accuracy:
-            best_val_accuracy = val_accuracy
-            print("saved best model")
-            save_model(epoch, model, optimizer, scheduler)
+        # if val_accuracy >= best_val_accuracy:
+        #     best_val_accuracy = val_accuracy
+        #     print("saved best model")
+        #     save_model(epoch, model, optimizer, scheduler)
         toc=timeit.default_timer()
         print(toc-tic)
     return model

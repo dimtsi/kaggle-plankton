@@ -6,23 +6,12 @@ import glob
 import cv2
 import mahotas as mt
 
-def extract_haralick(image):
-        # calculate haralick texture features for 4 types of adjacency
-        textures = mt.features.haralick(image)
-
-        # take the mean of it and return it
-        ht_mean = textures.mean(axis=0)
-        return ht_mean
-
-
 train_images = []
 train_labels = []
-train_haralick = []
 
 test_images = []
 train_filenames = []
 test_filenames = []
-test_haralick = []
 
 labels_df = pd.read_csv('train_onelabel.csv')
 labels_dict = labels_df.set_index('image')['class'].to_dict()
@@ -32,26 +21,38 @@ for filename in labels_df['image'].values: ##to keep mapping with classes
     train_images.append(image)
     train_labels.append(labels_dict[filename])
     train_filenames.append(filename)
-    haralick_features = extract_haralick(image)
-    train_haralick.append(haralick_features)
+
+
 for filename in glob.iglob('test_images' +'/*'):
     image = cv2.imread(filename,0).copy()
     test_images.append(image)
     test_filenames.append(filename.replace('test_images/', ''))
-    haralick_features = extract_haralick(image)
-    test_haralick.append(haralick_features)
+
+pickle.dump( train_images, open("pkl/train_images_cv2.pkl", "wb"))
+pickle.dump( train_labels, open("pkl/train_labels_cv2.pkl", "wb"))
+pickle.dump( test_images, open("pkl/test_images_cv2.pkl", "wb"))
+
+def haralick(image):
+        # calculate haralick texture features for 4 types of adjacency
+        textures = mt.features.haralick(image)
+
+        # take the mean of it and return it
+        ht_mean = textures.mean(axis=0)
+        return ht_mean
+
+train_haralick = []
+test_haralick = []
+
+for im in train_images:
+    train_haralick.append(haralick(image))
+for im in test_images:
+    test_haralick.append(haralick(image))
 
 train_haralick = np.array(train_haralick)
 test_haralick = np.array(test_haralick)
 
-pickle.dump( train_images, open( "pkl/train_images_cv2.pkl", "wb" ) )
-pickle.dump( train_labels, open( "pkl/train_labels_cv2.pkl", "wb" ) )
-pickle.dump( test_images, open( "pkl/test_images_cv2.pkl", "wb" ) )
-
-pickle.dump( train_haralick, open( "features/train_haralick.pkl", "wb" ) )
-pickle.dump( test_haralick, open( "features/test_haralick.pkl", "wb" ) )
-
-## Moments
+pickle.dump(train_haralick, open( "features/train_haralick.pkl", "wb"))
+pickle.dump(test_haralick, open( "features/test_haralick.pkl", "wb"))
 
 train_moments = []
 test_moments = []
@@ -66,3 +67,43 @@ test_moments = np.array(test_moments)
 
 pickle.dump(train_moments, open("features/train_moments.pkl", "wb"))
 pickle.dump(test_moments, open("features/test_moments.pkl", "wb"))
+
+train_sizes = []
+test_sizes = []
+
+for im in train_images:
+    train_sizes.append(np.array(im.shape))
+for im in test_images:
+    test_sizes.append(np.array(im.shape))
+
+train_sizes = np.array(train_sizes)
+test_sizes = np.array(test_sizes)
+
+pickle.dump(train_sizes, open("features/train_sizes.pkl", "wb"))
+pickle.dump(test_sizes, open("features/test_sizes.pkl", "wb"))
+
+
+#==============CLASSIFIED===============#
+
+classified_train_images = []
+classified_train_labels = []
+classified_train_haralick = []
+classified_train_moments = []
+classified_train_sizes = []
+
+for x in range(len(train_images)):
+    if train_labels[x] == 0:
+        continue
+    else:
+        classified_train_images.append(train_images[x])
+        classified_train_labels.append(train_labels[x])
+        classified_train_haralick.append(train_haralick[x])
+        classified_train_moments.append(train_moments[x])
+        classified_train_sizes.append(train_sizes[x])
+
+
+pickle.dump(classified_train_images, open("pkl/classified_train_images_cv2.pkl", "wb"))
+pickle.dump(train_labels, open("pkl/classified_train_labels_cv2.pkl", "wb"))
+pickle.dump(train_haralick, open( "features/classified_train_haralick.pkl", "wb"))
+pickle.dump(train_moments, open("features/classified_train_moments.pkl", "wb"))
+pickle.dump(train_sizes, open("features/classified_train_sizes.pkl", "wb"))
