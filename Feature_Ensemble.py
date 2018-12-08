@@ -359,7 +359,7 @@ y_train, y_test = y_train, y_val
 
 # In[ ]:
 def CreateBalancedSampleWeights(y_train, largest_class_weight_coef):
-    classes = y_train.unique()
+    classes = np.unique(y_train)
     classes.sort()
     class_samples = np.bincount(y_train)
     total_samples = class_samples.sum()
