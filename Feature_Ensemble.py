@@ -378,8 +378,8 @@ from xgboost import XGBClassifier
 start_time = time.time()
 
 
-model = XGBClassifier(nthread=-1)
-model.fit(X_train, y_train, sample_weight=train_sample_weight, max_depth=500)
+model = XGBClassifier(nthread=-1, max_depth=10)
+model.fit(X_train, y_train, sample_weight=train_sample_weight)
 
 y_pred_train = model.predict(X_train)
 y_pred_val = model.predict(X_val)
