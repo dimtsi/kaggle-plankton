@@ -128,7 +128,7 @@ class ListsTestDataset(Dataset):
 # In[7]:
 #Transforms and Dataset Creation
 def create_datasets_dataloaders(X_train, y_train, X_val= None, y_val = None, batch_size = 32, norm_params= None):
-
+    print(norm_params)
     val_transforms = transforms. Compose([
         # transforms.resize(image, (64, 64)),
         # transforms.RandomCrop(64),
@@ -152,7 +152,7 @@ def create_datasets_dataloaders(X_train, y_train, X_val= None, y_val = None, bat
 
     train_dataset = ListsTrainDataset(X_train, y_train, transform = train_transforms)
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = batch_size,
-        shuffle = False, num_workers=4)
+        shuffle = True, num_workers=4)
 
     if y_val is not None:
         test_dataset = ListsTrainDataset(X_val, y_val, transform = val_transforms)
