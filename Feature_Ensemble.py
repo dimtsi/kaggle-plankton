@@ -242,7 +242,7 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.tree import DecisionTreeClassifier
 learning_rates = [1, 0.1, 0.01, 0.001, 0.0001]
-max_depth=[5, 20, 50, 100, 200]
+max_depth=[4, 5, 6, 7, 10, 15]
 n_estimators = [5, 10, 50, 100, 500]
 n_estimators
 
@@ -301,18 +301,18 @@ train_sample_weight = CreateBalancedSampleWeights(y_train, largest_class_weight_
 from xgboost import XGBClassifier
 start_time = time.time()
 
+for depth in max_depth:
+    model = XGBClassifier(nthread=-1, max_depth=depth, min_child_weight = 0.1)
+    # model.fit(X_train, y_train, sample_weight=train_sample_weight)
+    model.fit(X_train, y_train)
 
-model = XGBClassifier(nthread=-1, max_depth=6, min_child_weight = 0.1)
-# model.fit(X_train, y_train, sample_weight=train_sample_weight)
-model.fit(X_train, y_train)
+    y_pred_train = model.predict(X_train)
+    y_pred_val = model.predict(X_val)
 
-y_pred_train = model.predict(X_train)
-y_pred_val = model.predict(X_val)
+    print("Training Accuracy: " +str(accuracy_score(y_train, y_pred_train)))
+    print("Validation Accuracy: " +str(accuracy_score(y_test, y_pred_val)))
 
-print("Training Accuracy: " +str(accuracy_score(y_train, y_pred_train)))
-print("Validation Accuracy: " +str(accuracy_score(y_test, y_pred_val)))
+    elapsed_time = time.time() - start_time
+    print("elapsed time: "+str(elapsed_time))
 
-elapsed_time = time.time() - start_time
-print("elapsed time: "+str(elapsed_time))
-
-print(y_pred_val)
+    print(y_pred_val)
