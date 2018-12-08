@@ -334,7 +334,7 @@ n_estimators
 # In[ ]:
 
 
-X_train, X_val = scaled_features_train, scaled_features_val
+X_train, X_val = FINAL_FEATURES_TRAIN, FINAL_FEATURES_VAL
 y_train, y_test = y_train, y_val
 
 # for lr in learning_rates:
