@@ -126,7 +126,7 @@ feature_extractor_cnn
 feature_extractor_dict = feature_extractor_cnn.state_dict()
 cnn_dict = cnn.state_dict().copy()
 pretrained_dict = {k: v for k, v in cnn_dict.items() if k in feature_extractor_dict}
-feature_extractor_dict.update(pretrained_dict) 
+feature_extractor_dict.update(pretrained_dict)
 feature_extractor_cnn.load_state_dict(feature_extractor_dict)
 feature_extractor_cnn = feature_extractor_cnn.eval().cuda()
 
@@ -179,7 +179,7 @@ for train_indexes, validation_indexes in kf.split(X = train_images, y = train_la
 
     handcrafted_train = []
     handcrafted_val = []
-    
+
     for i in train_indexes:
         X_train.append(train_images[i])
         y_train.append(train_labels[i])
@@ -270,10 +270,10 @@ y_train, y_test = y_train, y_val
 #                             algorithm="SAMME")
 
 #             model = abc.fit(X_train, y_train)
-            
+
 #             y_pred_train = model.predict(X_train)
 #             y_pred_val = model.predict(X_val)
-            
+
 #             print("lr:" +str(lr) +" est:"+ str(est)+" depth:"+str(depth) )
 #             print("Training Accuracy: " +str(accuracy_score(y_train, y_pred_train)))
 #             print("Validation Accuracy: " +str(accuracy_score(y_test, y_pred_val)))
@@ -303,7 +303,8 @@ start_time = time.time()
 
 
 model = XGBClassifier(nthread=-1, max_depth=3, min_child_weight = 0.1)
-model.fit(X_train, y_train, sample_weight=train_sample_weight)
+# model.fit(X_train, y_train, sample_weight=train_sample_weight)
+model.fit(X_train, y_train)
 
 y_pred_train = model.predict(X_train)
 y_pred_val = model.predict(X_val)
@@ -315,4 +316,3 @@ elapsed_time = time.time() - start_time
 print("elapsed time: "+str(elapsed_time))
 
 print(y_pred_val)
-
