@@ -399,7 +399,7 @@ if __name__ == "__main__":
             class_sample_counts
             class_weights = 1./torch.Tensor(class_sample_counts)
             train_samples_weight = [class_weights[class_id] for class_id in y_train]
-            train_sampler = torch.utils.data.sampler.WeightedRandomSampler(train_samples_weight, len(y_train))
+            train_sampler = torch.utils.data.sampler.WeightedRandomSampler(train_samples_weight, len(y_train), replacement = False)
 
 
 
