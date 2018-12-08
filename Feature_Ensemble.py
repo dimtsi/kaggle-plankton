@@ -14,14 +14,14 @@ import importlib
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader,TensorDataset
-from torchvision.models.resnet import *
 from torch.autograd import Variable
 from torchvision import transforms
 
 import NNs
 importlib.reload(NNs)
 import math
-from NNs import ResNetMine, ResNetDynamic, Bottleneck, SuperNet
+from NNs import ResNetMine, ResNetDynamic, Bottleneck, SuperNet, ResNet
+from NNs import *
 
 import glob
 import cv2
