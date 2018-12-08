@@ -198,7 +198,7 @@ feature_extractor_cnn = nn.Sequential(*list(cnn.children())[:-1])
 feature_extractor_dict = feature_extractor_cnn.state_dict()
 cnn_dict = cnn.state_dict().copy()
 pretrained_dict = {k: v for k, v in cnn_dict.items() if k in feature_extractor_dict}
-feature_extractor_dict.update(pretrained_dict) 
+feature_extractor_dict.update(pretrained_dict)
 feature_extractor_cnn.load_state_dict(feature_extractor_dict)
 feature_extractor_cnn = feature_extractor_cnn.eval().cuda()
 
@@ -251,7 +251,7 @@ for train_indexes, validation_indexes in kf.split(X = train_images, y = train_la
 
     handcrafted_train = []
     handcrafted_val = []
-    
+
     for i in train_indexes:
         X_train.append(train_images[i])
         y_train.append(train_labels[i])
@@ -333,31 +333,39 @@ n_estimators
 # In[ ]:
 
 
-X_train, X_val = FINAL_FEATURES_TRAIN, FINAL_FEATURES_VAL
+X_train, X_val = scaled_features_train, scaled_features_val
 y_train, y_test = y_train, y_val
 
-for lr in learning_rates:
-    for depth in max_depth:
-        for est in n_estimators:
-
-            abc = AdaBoostClassifier(
-                            DecisionTreeClassifier(max_depth=depth),
-                            n_estimators=est,
-                            learning_rate = lr,
-                            algorithm="SAMME")
-
-            model = abc.fit(X_train, y_train)
-            
-            y_pred_train = model.predict(X_train)
-            y_pred_val = model.predict(X_val)
-            
-            print("lr:" +str(lr) +" est:"+ str(est)+" depth:"+str(depth) )
-            print("Training Accuracy: " +str(accuracy_score(y_train, y_pred_train)))
-            print("Validation Accuracy: " +str(accuracy_score(y_test, y_pred_val)))
+# for lr in learning_rates:
+#     for depth in max_depth:
+#         for est in n_estimators:
+#
+#             abc = AdaBoostClassifier(
+#                             DecisionTreeClassifier(max_depth=depth),
+#                             n_estimators=est,
+#                             learning_rate = lr,
+#                             algorithm="SAMME")
+#
+#             model = abc.fit(X_train, y_train)
+#
+#             y_pred_train = model.predict(X_train)
+#             y_pred_val = model.predict(X_val)
+#
+#             print("lr:" +str(lr) +" est:"+ str(est)+" depth:"+str(depth) )
+#             print("Training Accuracy: " +str(accuracy_score(y_train, y_pred_train)))
+#             print("Validation Accuracy: " +str(accuracy_score(y_test, y_pred_val)))
 
 
 # In[ ]:
 
+from xgboost import XGBClassifier
 
 
+model = XGBClassifier(nthread=12)
+model.fit(X_train, y_train)
 
+y_pred_train = model.predict(X_train)
+y_pred_val = model.predict(X_val)
+
+print("Training Accuracy: " +str(accuracy_score(y_train, y_pred_train)))
+print("Validation Accuracy: " +str(accuracy_score(y_test, y_pred_val)))
