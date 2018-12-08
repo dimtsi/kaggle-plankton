@@ -190,7 +190,7 @@ cnn = ResNetDynamic(pretrained.block, pretrained.layers,
             num_layers = 2, pretrained_nn = None)
 #
 cnn.load_state_dict(torch.load('best_model.pt')['state_dict'])
-feature_extractor_cnn = nn.Sequential(*list(cnn.children())[:-1])
+feature_extractor_cnn = nn.Sequential(*list(cnn.children()))#[:-1]
 
 
 # In[20]:
