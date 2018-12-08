@@ -301,8 +301,8 @@ train_sample_weight = CreateBalancedSampleWeights(y_train, largest_class_weight_
 from xgboost import XGBClassifier
 start_time = time.time()
 
-for depth in max_depth:
-    model = XGBClassifier(nthread=-1, max_depth=depth, min_child_weight = 0.1)
+for lr in learning_rates:
+    model = XGBClassifier(nthread=-1, learning_rate = lr, min_child_weight = 0.001, max_depth=7)
     # model.fit(X_train, y_train, sample_weight=train_sample_weight)
     model.fit(X_train, y_train)
 
