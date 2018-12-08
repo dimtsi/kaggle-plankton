@@ -125,7 +125,7 @@ def create_datasets_dataloaders(X_train, y_train, X_val= None, y_val = None, bat
 
     train_dataset = ListsTrainDataset(X_train, y_train, transform = train_transforms)
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = batch_size,
-        shuffle = True, num_workers=4, sampler = train_sampler)
+        shuffle = False, num_workers=4, sampler = train_sampler)
 
     if y_val is not None:
         test_dataset = ListsTrainDataset(X_val, y_val, transform = val_transforms)
