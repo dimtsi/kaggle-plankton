@@ -80,7 +80,7 @@ class ResNetDynamic(nn.Module):
         self.layers = layers
         self.block = block
         super(ResNetDynamic, self).__init__()
-        self.conv1 = nn.Conv2d(1, 64, kernel_size=3, stride=2, padding=3,
+        self.conv1 = nn.Conv2d(1, 64, kernel_size=3, stride=2, padding=1,
                                bias=False)
         self.bn1 = nn.BatchNorm2d(64)
         self.relu = nn.LeakyReLU(0.3, inplace=True)
@@ -97,9 +97,9 @@ class ResNetDynamic(nn.Module):
             layer_planes *= 2
         self.inside_layers = nn.Sequential(inside_layers)
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.flatten = Flatten()
         self.final_size = 64* block.expansion * 2**(num_layers-1)
         self.fc1 = nn.Sequential(
+            Flatten(),
             nn.Linear(self.final_size, self.final_size//2),
             nn.LeakyReLU(0.3),
             nn.Dropout(0.3)
@@ -155,7 +155,6 @@ class ResNetDynamic(nn.Module):
         x = self.inside_layers(x)
 
         x = self.avgpool(x)
-        x = self.flatten(x)
         x = self.fc1(x)
         x = self.fc2(x)
         return x
