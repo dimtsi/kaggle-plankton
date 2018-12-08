@@ -459,10 +459,10 @@ if __name__ == "__main__":
 
         ## Create Datasets and Dataloaders
         train_dataset, val_dataset = create_train_val_datasets(X_train, y_train, X_val, y_val, norm_params =norm)
-        train_sampler = ImbalancedDatasetSampler(train_dataset)
+        # train_sampler = ImbalancedDatasetSampler(train_dataset)
 
         train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32,
-            shuffle = False, num_workers=4, sampler = train_sampler)
+            shuffle = True, num_workers=4)
 
         test_loader = torch.utils.data.DataLoader(val_dataset,
                                     batch_size = 32, shuffle = False)
