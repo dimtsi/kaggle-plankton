@@ -378,7 +378,7 @@ from xgboost import XGBClassifier
 start_time = time.time()
 
 
-model = XGBClassifier(nthread=-1, max_depth=10)
+model = XGBClassifier(nthread=-1, max_depth=3)
 model.fit(X_train, y_train, sample_weight=train_sample_weight)
 
 y_pred_train = model.predict(X_train)
