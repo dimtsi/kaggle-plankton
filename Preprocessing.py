@@ -23,43 +23,16 @@ from torch.autograd import Variable
 
 from torch.utils.data import Dataset, DataLoader,TensorDataset
 from torchvision import transforms
+from NNs import BasicBlock, Bottleneck, ResNet
+import importlib
+import NNs
+import math
+importlib.reload(NNs)
+from NNs import ResNetDynamic, ResNetMine, CNN, SuperNet
+from NNs import *
 
 from torchsummary import summary
 # %matplotlib inline
-
-
-# In[2]:
-
-train_images = pickle.load(open("pkl/classified_resized64.pkl", "rb"))
-# train_images = train_images[:1000]
-train_labels = pickle.load(open("pkl/classified_train_labels.pkl", "rb"))
-train_filenames = pickle.load(open("pkl/train_filenames.pkl", "rb"))
-test_images = pickle.load(open("pkl/test_resized64.pkl", "rb"))
-test_filenames = pickle.load(open("pkl/test_filenames.pkl", "rb"))
-
-
-#PIL
-
-widths, heights = [], []
-sumx, sumy = 0, 0
-for i in train_images:
-    sumx += i.size[0]
-    widths.append(i.size[0])
-    sumy += i.size[1]
-    heights.append(i.size[1])
-
-
-fig, (ax1, ax2) = plt.subplots(1, 2)
-ax1.hist(widths)
-ax2.hist(heights, color = 'orange')
-fig.set_size_inches(12, 5)
-
-avg_width = np.mean(widths)
-avg_height = np.mean(heights)
-print('Average width {} , Average height: {}'.format(avg_width, avg_height))
-
-norm_mean_width = np.mean(widths)
-norm_mean_height = np.mean(heights)
 
 
 def calc_means_stds(image_list):
@@ -167,9 +140,6 @@ def create_datasets_dataloaders(X_train, y_train, X_val= None, y_val = None, bat
 # In[8]:
 
 
-from torchvision.models.resnet import BasicBlock, Bottleneck, ResNet
-
-
 def save_model(epoch, model, optimizer, scheduler):
     train_state = {
     'epoch': epoch,
@@ -180,15 +150,7 @@ def save_model(epoch, model, optimizer, scheduler):
     torch.save(train_state, 'trained_model.pt')
 
 # In[9]:
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-import timeit
 
-##Class weights for imbalance
-from sklearn.utils.class_weight import compute_class_weight
-labels_df = pd.read_csv('train_onelabel.csv')
-class_weights = compute_class_weight('balanced', np.arange(121), labels_df['class'])
-class_weights = np.interp(class_weights, (class_weights.min(), class_weights.max()), (0, +1))
-class_weights = torch.from_numpy(class_weights).float().to(device)
 # class_weights = class_weights.type(torch.FloatTensor)
 #=============================TRAINING ===================================#
 
@@ -308,67 +270,10 @@ def train_and_validate(model, train_loader, test_loader, num_epochs):
 
 # In[ ]:
 
-import importlib
-import NNs
-import math
-importlib.reload(NNs)
-from NNs import ResNetDynamic, ResNetMine, CNN, SuperNet
-from NNs import *
 
 # from torchvision.models.resnet import *
 
-from sklearn.model_selection import StratifiedKFold
 
-pretrained = resnet50(pretrained = True)
-cnn = ResNetDynamic(pretrained.block, pretrained.layers,
-            num_layers = 2, pretrained_nn = None)
-#
-# cnn.load_state_dict(torch.load('trained_model.pt')['state_dict'])
-# cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
-# models = []
-# models.append(cnn1)
-# models.append(cnn2)
-# cnn = SuperNet(models)
-
-trained_models = []
-def run_KFolds():
-    kf = StratifiedKFold(n_splits=12, random_state=None, shuffle=True)
-    for train_indexes, validation_indexes in kf.split(X = train_images, y = train_labels):
-        X_train = []
-        y_train = []
-        X_val = []
-        y_val = []
-        norm = {}
-
-        for i in train_indexes:
-            X_train.append(train_images[i])
-            y_train.append(train_labels[i])
-        for j in validation_indexes:
-            X_val.append(train_images[j])
-            y_val.append(train_labels[j])
-
-        norm['train_norm_mean'], norm['train_norm_std'] = calc_means_stds(X_train)
-
-        train_loader, test_loader = create_datasets_dataloaders(
-            X_train, y_train, X_val, y_val, batch_size = 32, norm_params = norm)
-
-        #Training
-        # if torch.cuda.device_count() > 1:
-        #   print("Let's use", torch.cuda.device_count(), "GPUs!")
-        #   # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 cGPUs
-        # #   cnn = nn.DataParallel(cnn)
-        #   cnn = nn.DataParallel(cnn, device_ids=[0, 1])
-        cnn.to(device)
-
-        # cnn = CNN().cuda()
-        summary(cnn, (1,64,64))
-
-    #     print(summary(cnn, (1,28,28)))
-        trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100)
-        trained_models.append(trained_model)
-        break
-
-run_KFolds()
 
 
 def train_on_whole():
@@ -391,9 +296,6 @@ def train_on_whole():
 # train_on_whole()
 
 # predict on testset
-final_model = cnn
-final_model.load_state_dict(torch.load('trained_model.pt')['state_dict'])
-mean_norm_test, std_norm_test = calc_means_stds(train_images)
 
 def predict_test_set(model, filenames):
     test_transforms = transforms. Compose([
@@ -417,4 +319,102 @@ def predict_test_set(model, filenames):
     results_df.to_csv('results.csv',sep = ',', index = False)
 
 # final_model
-predict_test_set(final_model, test_filenames)
+
+if __name__ == "__main__":
+
+    train_images = pickle.load(open("pkl/classified_resized64.pkl", "rb"))
+    train_labels = pickle.load(open("pkl/classified_train_labels.pkl", "rb"))
+    train_filenames = pickle.load(open("pkl/train_filenames.pkl", "rb"))
+    test_images = pickle.load(open("pkl/test_resized64.pkl", "rb"))
+    test_filenames = pickle.load(open("pkl/test_filenames.pkl", "rb"))
+
+    #PIL
+
+    widths, heights = [], []
+    sumx, sumy = 0, 0
+    for i in train_images:
+        sumx += i.size[0]
+        widths.append(i.size[0])
+        sumy += i.size[1]
+        heights.append(i.size[1])
+
+
+    fig, (ax1, ax2) = plt.subplots(1, 2)
+    ax1.hist(widths)
+    ax2.hist(heights, color = 'orange')
+    fig.set_size_inches(12, 5)
+
+    avg_width = np.mean(widths)
+    avg_height = np.mean(heights)
+    print('Average width {} , Average height: {}'.format(avg_width, avg_height))
+
+    norm_mean_width = np.mean(widths)
+    norm_mean_height = np.mean(heights)
+
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    import timeit
+
+    ##Class weights for imbalance
+    from sklearn.utils.class_weight import compute_class_weight
+    labels_df = pd.read_csv('train_onelabel.csv')
+    class_weights = compute_class_weight('balanced', np.arange(121), labels_df['class'])
+    class_weights = np.interp(class_weights, (class_weights.min(), class_weights.max()), (0, +1))
+    class_weights = torch.from_numpy(class_weights).float().to(device)
+
+    from sklearn.model_selection import StratifiedKFold
+
+    pretrained = resnet50(pretrained = True)
+    cnn = ResNetDynamic(pretrained.block, pretrained.layers,
+                num_layers = 2, pretrained_nn = None)
+    #
+    # cnn.load_state_dict(torch.load('trained_model.pt')['state_dict'])
+    # cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
+    # models = []
+    # models.append(cnn1)
+    # models.append(cnn2)
+    # cnn = SuperNet(models)
+
+    trained_models = []
+    def run_KFolds():
+        kf = StratifiedKFold(n_splits=12, random_state=None, shuffle=True)
+        for train_indexes, validation_indexes in kf.split(X = train_images, y = train_labels):
+            X_train = []
+            y_train = []
+            X_val = []
+            y_val = []
+            norm = {}
+
+            for i in train_indexes:
+                X_train.append(train_images[i])
+                y_train.append(train_labels[i])
+            for j in validation_indexes:
+                X_val.append(train_images[j])
+                y_val.append(train_labels[j])
+
+            norm['train_norm_mean'], norm['train_norm_std'] = calc_means_stds(X_train)
+
+            train_loader, test_loader = create_datasets_dataloaders(
+                X_train, y_train, X_val, y_val, batch_size = 32, norm_params = norm)
+
+            #Training
+            # if torch.cuda.device_count() > 1:
+            #   print("Let's use", torch.cuda.device_count(), "GPUs!")
+            #   # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 cGPUs
+            # #   cnn = nn.DataParallel(cnn)
+            #   cnn = nn.DataParallel(cnn, device_ids=[0, 1])
+            cnn.to(device)
+
+            # cnn = CNN().cuda()
+            summary(cnn, (1,64,64))
+
+        #     print(summary(cnn, (1,28,28)))
+            trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100)
+            trained_models.append(trained_model)
+            break
+
+    run_KFolds()
+
+    final_model = cnn
+    final_model.load_state_dict(torch.load('trained_model.pt')['state_dict'])
+    mean_norm_test, std_norm_test = calc_means_stds(train_images)
+    predict_test_set(final_model, test_filenames)

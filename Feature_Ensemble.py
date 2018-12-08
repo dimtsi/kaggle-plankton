@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[14]:
+# In[1]:
 
 
 import numpy as np
@@ -15,24 +15,26 @@ import time
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader,TensorDataset
+from torchvision.models.resnet import *
 from torch.autograd import Variable
 from torchvision import transforms
 
 import NNs
 importlib.reload(NNs)
 import math
-from NNs import ResNetMine, ResNetDynamic, Bottleneck, SuperNet, ResNet
-from NNs import *
+from NNs import ResNetMine, ResNetDynamic, Bottleneck
 
 import glob
 import cv2
 
 from torchsummary import summary
+from Preprocessing import *
+from Preprocessing import ListsTrainDataset, ListsTestDataset
 
 
 # ## LOAD DATA
 
-# In[15]:
+# In[2]:
 
 
 train_images = pickle.load(open("pkl/train_resized64.pkl", "rb"))
@@ -45,7 +47,7 @@ test_filenames = pickle.load(open("pkl/test_filenames.pkl", "rb"))
 
 # ## Load handcrafted features
 
-# In[16]:
+# In[3]:
 
 
 train_haralick = pickle.load(open("features/train_haralick.pkl", "rb"))
@@ -62,30 +64,7 @@ test_handcrafted_features = np.concatenate([test_haralick, test_moments,  test_s
 
 # ### New Dataset
 
-# In[17]:
-
-
-class ListsTestDataset(Dataset):
-    def __init__(self, list_of_images, transform=None):
-        """
-        Args:
-            csv_path (string): path to csv file
-            height (int): image height
-            width (int): image width
-            transform: pytorch transforms for transforms and tensor conversion
-        """
-        self.data = list_of_images
-        self.transform = transform
-
-    def __getitem__(self, index):
-        single_image = self.data[index]
-        if self.transform is not None:
-            img_as_tensor = self.transform(single_image)
-        # Return image ONLY
-        return img_as_tensor
-
-    def __len__(self):
-        return len(self.data)
+# In[4]:
 
 
 class ListsTrainFeatureDataset(Dataset):
@@ -128,85 +107,33 @@ class ListsTestFeatureDataset(Dataset):
         return len(self.data)
 
 
-# In[18]:
-
-
-def calc_means_stds(image_list):
-    np_images = []
-
-    for im in image_list:
-        new_im = np.array(im)
-        np_images.append(new_im)
-    np_images = np.array(np_images)
-
-    img_mean = np.mean(np_images)/255
-    img_std = np.std(np_images)/255
-    return (img_mean, img_std)
-
-def create_datasets_dataloaders(X_train, y_train, X_val= None, y_val = None, batch_size = 32, norm_params= None):
-
-    val_transforms = transforms. Compose([
-        # transforms.resize(image, (64, 64)),
-        # transforms.RandomCrop(64),
-        transforms.Grayscale(),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[norm_params['train_norm_mean']],
-                    std =[norm_params['train_norm_std']])
-    ])
-
-    train_transforms = transforms. Compose([
-        # transforms.CenterCrop(64),
-        transforms.Grayscale(),
-        # transforms.resize(image, (64, 64)),
-        transforms.RandomHorizontalFlip(p=0.5),
-        transforms.RandomRotation(degrees=360),
-        # transforms.RandomAffine(360, shear=20),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[norm_params['train_norm_mean']],
-                    std =[norm_params['train_norm_std']])
-    ])
-
-    train_dataset = ListsTrainDataset(X_train, y_train, transform = train_transforms)
-    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = batch_size,
-        shuffle = True, num_workers=4)
-
-    if y_val is not None:
-        test_dataset = ListsTrainDataset(X_val, y_val, transform = val_transforms)
-    else:
-        test_dataset = ListsTestDataset(X_val, transform = test_transforms)
-
-    test_loader = torch.utils.data.DataLoader(test_dataset,
-                                batch_size = batch_size, shuffle = False)
-    return (train_loader, test_loader)
-
-
 # ## CUSTOM NETWORK
 
-# In[19]:
+# In[9]:
 
 
 pretrained = resnet50(pretrained = True)
-cnn = ResNetDynamic(pretrained.block, pretrained.layers,
-            num_layers = 2, pretrained_nn = None)
+cnn = ResNetDynamic(pretrained.block, pretrained.layers, num_layers = 2, pretrained_nn = None)
 #
-cnn.load_state_dict(torch.load('best_model.pt')['state_dict'])
-feature_extractor_cnn = nn.Sequential(*list(cnn.children()))#[:-1]
+cnn.load_state_dict(torch.load('best_new.pt')['state_dict'])
+feature_extractor_cnn = nn.Sequential(*list(cnn.children())[:-2])
+feature_extractor_cnn
 
 
-# In[20]:
+# In[10]:
 
 
 feature_extractor_dict = feature_extractor_cnn.state_dict()
 cnn_dict = cnn.state_dict().copy()
 pretrained_dict = {k: v for k, v in cnn_dict.items() if k in feature_extractor_dict}
-feature_extractor_dict.update(pretrained_dict)
+feature_extractor_dict.update(pretrained_dict) 
 feature_extractor_cnn.load_state_dict(feature_extractor_dict)
 feature_extractor_cnn = feature_extractor_cnn.eval().cuda()
 
 
 # ## Get features from pretrained NN
 
-# In[21]:
+# In[11]:
 
 
 def get_cnn_features(model, x):
@@ -235,7 +162,7 @@ def get_cnn_features(model, x):
     return features.numpy()
 
 
-# In[22]:
+# In[12]:
 
 
 from sklearn.model_selection import StratifiedKFold
@@ -252,7 +179,7 @@ for train_indexes, validation_indexes in kf.split(X = train_images, y = train_la
 
     handcrafted_train = []
     handcrafted_val = []
-
+    
     for i in train_indexes:
         X_train.append(train_images[i])
         y_train.append(train_labels[i])
@@ -282,28 +209,7 @@ for train_indexes, validation_indexes in kf.split(X = train_images, y = train_la
     break
 
 
-# In[23]:
-
-
-FINAL_FEATURES_TRAIN = np.concatenate([cnn_train_features, handcrafted_train], axis =1)
-FINAL_FEATURES_VAL = np.concatenate([cnn_val_features, handcrafted_val], axis =1)
-print(FINAL_FEATURES_TRAIN.shape)
-print(FINAL_FEATURES_VAL.shape)
-
-
-# In[24]:
-
-
-from sklearn.linear_model import SGDClassifier
-
-
-# In[25]:
-
-
-handcrafted_train
-
-
-# In[27]:
+# In[14]:
 
 
 from sklearn.preprocessing import StandardScaler
@@ -312,7 +218,7 @@ scaled_features_train = scaler.fit_transform(FINAL_FEATURES_TRAIN)
 scaled_features_val = scaler.fit_transform(FINAL_FEATURES_VAL)
 
 
-# In[28]:
+# In[15]:
 
 
 # %%time
@@ -331,33 +237,41 @@ n_estimators = [5, 10, 50, 100, 500]
 n_estimators
 
 
+# In[16]:
+
+
+X_train, X_val = scaled_features_train, scaled_features_val
+y_train, y_test = y_train, y_val
+
+
 # In[ ]:
 
 
-X_train, X_val = FINAL_FEATURES_TRAIN, FINAL_FEATURES_VAL
-y_train, y_test = y_train, y_val
+# ##ADABOOST
 
 # for lr in learning_rates:
 #     for depth in max_depth:
 #         for est in n_estimators:
-#
+
 #             abc = AdaBoostClassifier(
 #                             DecisionTreeClassifier(max_depth=depth),
 #                             n_estimators=est,
 #                             learning_rate = lr,
 #                             algorithm="SAMME")
-#
+
 #             model = abc.fit(X_train, y_train)
-#
+            
 #             y_pred_train = model.predict(X_train)
 #             y_pred_val = model.predict(X_val)
-#
+            
 #             print("lr:" +str(lr) +" est:"+ str(est)+" depth:"+str(depth) )
 #             print("Training Accuracy: " +str(accuracy_score(y_train, y_pred_train)))
 #             print("Validation Accuracy: " +str(accuracy_score(y_test, y_pred_val)))
 
 
 # In[ ]:
+
+
 def CreateBalancedSampleWeights(y_train, largest_class_weight_coef):
     classes = np.unique(y_train)
     classes.sort()
@@ -391,3 +305,4 @@ elapsed_time = time.time() - start_time
 print("elapsed time: "+str(elapsed_time))
 
 print(y_pred_val)
+
