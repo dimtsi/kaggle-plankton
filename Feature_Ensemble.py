@@ -314,5 +314,5 @@ for depth in max_depth:
 
     elapsed_time = time.time() - start_time
     print("elapsed time: "+str(elapsed_time))
-
+    print("depth: "+str(depth))
     print(y_pred_val)
