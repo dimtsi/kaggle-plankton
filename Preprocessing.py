@@ -329,18 +329,6 @@ cnn = ResNetDynamic(pretrained.block, pretrained.layers,
 # models.append(cnn1)
 # models.append(cnn2)
 # cnn = SuperNet(models)
-norm = {}
-X_train = train_images
-X_val=train_images
-y_train= train_labels
-y_val=train_labels
-
-norm['train_norm_mean'], norm['train_norm_std'] = calc_means_stds(X_train)
-X_val = train_images[:5]
-norm['val_norm_mean'], norm['val_norm_std'] = calc_means_stds(X_val)
-norm
-train_loader, test_loader = create_datasets_dataloaders(
-    X_train, y_train, X_val, y_val, batch_size = 32, norm_params = norm)
 
 trained_models = []
 def run_KFolds():
