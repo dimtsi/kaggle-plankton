@@ -10,6 +10,7 @@ import pickle
 import pandas as pd
 from collections import OrderedDict
 import importlib
+import time
 
 import torch
 import torch.nn as nn
@@ -359,9 +360,10 @@ y_train, y_test = y_train, y_val
 # In[ ]:
 
 from xgboost import XGBClassifier
+start_time = time.time()
 
 
-model = XGBClassifier(nthread=12)
+model = XGBClassifier(nthread=-1)
 model.fit(X_train, y_train)
 
 y_pred_train = model.predict(X_train)
@@ -369,3 +371,6 @@ y_pred_val = model.predict(X_val)
 
 print("Training Accuracy: " +str(accuracy_score(y_train, y_pred_train)))
 print("Validation Accuracy: " +str(accuracy_score(y_test, y_pred_val)))
+
+elapsed_time = time.time() - start_time
+print("elapsed time: "+str(elapsed_time))
