@@ -358,13 +358,28 @@ y_train, y_test = y_train, y_val
 
 
 # In[ ]:
+def CreateBalancedSampleWeights(y_train, largest_class_weight_coef):
+    classes = y_train.unique()
+    classes.sort()
+    class_samples = np.bincount(y_train)
+    total_samples = class_samples.sum()
+    n_classes = len(class_samples)
+    weights = total_samples / (n_classes * class_samples * 1.0)
+    class_weight_dict = {key : value for (key, value) in zip(classes, weights)}
+    class_weight_dict[classes[1]] = class_weight_dict[classes[1]] * largest_class_weight_coef
+    sample_weights = [class_weight_dict[y] for y in y_train]
+
+    return sample_weights
+max_weight_coeff = 0.0654138
+
+train_sample_weight = CreateBalancedSampleWeights(label_train, largest_class_weight_coef=max_weight_coeff)
 
 from xgboost import XGBClassifier
 start_time = time.time()
 
 
 model = XGBClassifier(nthread=-1)
-model.fit(X_train, y_train)
+model.fit(X_train, y_train, sample_weight=train_sample_weight)
 
 y_pred_train = model.predict(X_train)
 y_pred_val = model.predict(X_val)
