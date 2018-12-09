@@ -171,7 +171,7 @@ def train_and_validate_with_features(model, train_loader, val_loader, num_epochs
             optimizer.step()
             _, argmax = torch.max(outputs, 1)
             accuracy_train = (labels == argmax.squeeze()).float().mean()*100
-            accuracies_train.append(accuracy_train)
+            accuracies_train.append(accuracy_train.cpu())
             # Show progress
             if (i+1) % 32 == 0:
                 log = " ".join([
