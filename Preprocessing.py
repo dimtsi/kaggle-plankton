@@ -356,8 +356,7 @@ def predict_on_my_test_set(model, mean_norm_test, std_norm_test):
             print("saved best model")
             save_model(epoch, model, optimizer, scheduler)
         print('TEST SET ACCURACY: %.4f %%' % test_accuracy)
-        save_model(epoch, model, optimizer, scheduler)
-    return model
+        # save_model(epoch, model, optimizer, scheduler)
 
 # predict on testset
 
@@ -405,7 +404,6 @@ if __name__ == "__main__":
 
     test_mine_images = [i for j, i in enumerate(train_images) if j in test_set_mine_indexes]
     test_mine_labels = [i for j, i in enumerate(train_labels) if j in test_set_mine_indexes]
-
 
     ###========================MAIN EXECUTION=========================###
 
@@ -460,7 +458,7 @@ if __name__ == "__main__":
     models.append(cnn1)
     models.append(cnn2)
     cnn = EnsembleClassifier(models)
-
+    cnn1_dict = torch.load('ensemble.pt')['state_dict']
 
 
     trained_models = []
@@ -534,9 +532,12 @@ if __name__ == "__main__":
         cnn.to(device)
         trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100, device = device)
 
-    train_ensemble_on_test()
+    # train_ensemble_on_test()
+
+    mean_norm_test, std_norm_test = calc_means_stds(train_images)
 
     final_model = cnn
-    final_model.load_state_dict(torch.load('trained_model.pt')['state_dict'])
-    mean_norm_test, std_norm_test = calc_means_stds(train_images)
-    # predict_test_set_kaggle(final_model, test_filenames, mean_norm_test, std_norm_test)
+    final_model.load_state_dict(torch.load('ensemble.pt')['state_dict'])
+
+    predict_on_my_test_set()
+    predict_test_set_kaggle(final_model, test_filenames, mean_norm_test, std_norm_test)
