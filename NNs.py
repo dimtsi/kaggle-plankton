@@ -20,7 +20,6 @@ import cv2
 
 from torchsummary import summary
 from Preprocessing import *
-from Preprocessing import ListsTrainDataset, ListsTestDataset
 
 class ResNetMine(nn.Module):
 
