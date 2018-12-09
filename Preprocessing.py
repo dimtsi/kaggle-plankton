@@ -488,7 +488,7 @@ if __name__ == "__main__":
             trained_models.append(trained_model)
             break
 
-    run_KFolds()
+    # run_KFolds()
 
     final_model = cnn
     final_model.load_state_dict(torch.load('trained_model.pt')['state_dict'])
