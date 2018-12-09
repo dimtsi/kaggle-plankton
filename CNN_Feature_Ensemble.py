@@ -42,18 +42,19 @@ test_filenames = pickle.load(open("pkl/test_filenames.pkl", "rb"))
 # In[3]:
 
 
-# train_haralick = pickle.load(open("features/train_haralick.pkl", "rb"))
+train_haralick = pickle.load(open("features/train_haralick.pkl", "rb"))
 # train_moments = pickle.load(open("features/train_moments.pkl", "rb"))
-train_sizes = pickle.load(open("features/train_sizes.pkl", "rb"))
+# train_sizes = pickle.load(open("features/train_sizes.pkl", "rb"))
 
-# test_haralick = pickle.load(open("features/test_haralick.pkl", "rb"))
+test_haralick = pickle.load(open("features/test_haralick.pkl", "rb"))
 # test_moments = pickle.load(open("features/test_moments.pkl", "rb"))
-test_sizes = pickle.load(open("features/test_sizes.pkl", "rb"))
+# test_sizes = pickle.load(open("features/test_sizes.pkl", "rb"))
 
 # train_handcrafted_features = np.concatenate([train_haralick, train_moments,  train_sizes], axis =1)
 # test_handcrafted_features = np.concatenate([test_haralick, test_moments,  test_sizes], axis =1)
-train_handcrafted_features = train_sizes
-test_handcrafted_features = test_sizes
+
+train_handcrafted_features = train_haralick
+test_handcrafted_features = test_haralick
 
 # ## New Dataset for Features
 
@@ -144,7 +145,7 @@ def create_train_val_datasets(X_train, y_train, X_val = None, y_val = None,
 
 def train_and_validate_with_features(model, train_loader, val_loader, num_epochs):
     learning_rate = 0.001
-    weight_decay = 1e-4
+    weight_decay = 1e-6
     batch_size = train_loader.batch_size
     criterion = nn.CrossEntropyLoss();
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay = weight_decay);
@@ -165,7 +166,7 @@ def train_and_validate_with_features(model, train_loader, val_loader, num_epochs
             labels = Variable(labels).squeeze(1).long().to(device)#.cpu()
             # Forward + Backward + Optimize
             optimizer.zero_grad()
-            outputs = model((images, features))
+            outputs = model([images, features])
             loss = criterion(outputs, labels)
             loss.backward()
             losses.append(loss.item())
