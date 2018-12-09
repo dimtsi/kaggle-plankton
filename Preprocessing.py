@@ -177,7 +177,10 @@ def create_train_val_datasets(X_train, y_train, X_val = None, y_val = None, norm
 
         train_dataset = ListsTrainDataset(X_train, y_train, transform = train_transforms)
 
-        if y_val is not None:
+        if X_val is None and y_val is None:
+            return train_dataset
+
+        elif X_val is not None:
             test_dataset = ListsTrainDataset(X_val, y_val, transform = val_transforms)
         else:
             test_dataset = ListsTestDataset(X_val, transform = test_transforms)
@@ -323,9 +326,42 @@ def train_and_validate(model, train_loader, test_loader, num_epochs, device):
         print(toc-tic)
     return model
 
+
+def predict_on_my_test_set(model, mean_norm_test, std_norm_test):
+
+    test_transforms = transforms. Compose([
+        transforms.Grayscale(),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[mean_norm_test],
+                    std =[std_norm_test])
+    ])
+
+    test_mine_dataset = ListsTrainDataset(test_mine_images, test_mine_labels, transform = test_transforms)
+    test_mine_loader = torch.utils.data.DataLoader(test_mine_dataset, batch_size = 32, shuffle = False)
+
+    best_accuracy = 0
+    model.eval().to(device)
+    correct = 0
+    total = 0
+    for images, labels in test_mine_loader:
+        images = Variable(images).to(device)
+        labels= labels.squeeze(1)
+        outputs = model(images)
+        _, predicted = torch.max(outputs.data, 1)
+        total += labels.size(0)
+        correct += (predicted.cpu().long() == labels).sum()
+        test_accuracy = 100*correct.item() / total
+        if val_accuracy >= best_val_accuracy:
+            best_val_accuracy = val_accuracy
+            print("saved best model")
+            save_model(epoch, model, optimizer, scheduler)
+        print('TEST SET ACCURACY: %.4f %%' % test_accuracy)
+        save_model(epoch, model, optimizer, scheduler)
+    return model
+
 # predict on testset
 
-def predict_test_set(model, filenames,  mean_norm_test, std_norm_test):
+def predict_test_set_kaggle(model, filenames,  mean_norm_test, std_norm_test):
     test_transforms = transforms. Compose([
         transforms.Grayscale(),
         transforms.ToTensor(),
@@ -395,7 +431,7 @@ if __name__ == "__main__":
     norm_mean_width = np.mean(widths)
     norm_mean_height = np.mean(heights)
 
-    device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     import timeit
 
     ##Class weights for imbalance
@@ -408,20 +444,20 @@ if __name__ == "__main__":
     from sklearn.model_selection import StratifiedKFold
 
     pretrained = resnet50(pretrained = True)
-    cnn = ResNetDynamic(pretrained.block, pretrained.layers,
+    cnn1 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
 
-    # cnn2 = ResNetDynamic(pretrained.block, pretrained.layers,
-    #             num_layers = 2, pretrained_nn = None)
-    # #
-    # cnn1.load_state_dict(torch.load('best_model.pt')['state_dict'])
-    # cnn2.load_state_dict(torch.load('best2.pt')['state_dict'])
+    cnn2 = ResNetDynamic(pretrained.block, pretrained.layers,
+                num_layers = 2, pretrained_nn = None)
     #
-    # # cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
-    # models = []
-    # models.append(cnn1)
-    # models.append(cnn2)
-    # cnn = EnsembleClassifier(models)
+    cnn1.load_state_dict(torch.load('test_model7.pt')['state_dict'])
+    cnn2.load_state_dict(torch.load('test_model15.pt'), map_location={'cuda:1': 'cuda:0'})
+
+    # cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
+    models = []
+    models.append(cnn1)
+    models.append(cnn2)
+    cnn = EnsembleClassifier(models)
 
 
 
@@ -476,9 +512,28 @@ if __name__ == "__main__":
             trained_models.append(trained_model)
             break
 
-    run_KFolds()
+    # run_KFolds()
+
+    def train_ensemble_on_test():
+        norm['train_norm_mean'], norm['train_norm_std'] = calc_means_stds(train_images)
+        train_dataset, val_dataset = create_train_val_datasets(train_images, train_labels,
+                                                               test_mine_images,
+                                                               test_mine_labels,
+                                                               norm_params =norm)
+        # train_sampler = ImbalancedDatasetSampler(train_dataset)
+
+        train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32,
+            shuffle = True, num_workers=4)
+
+        test_loader = torch.utils.data.DataLoader(val_dataset,
+                                    batch_size = 32, shuffle = False)
+
+        cnn.to(device)
+        trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100, device = device)
+
+    train_ensemble_on_test()
 
     final_model = cnn
     final_model.load_state_dict(torch.load('trained_model.pt')['state_dict'])
     mean_norm_test, std_norm_test = calc_means_stds(train_images)
-    # predict_test_set(final_model, test_filenames, mean_norm_test, std_norm_test)
+    # predict_test_set_kaggle(final_model, test_filenames, mean_norm_test, std_norm_test)
