@@ -125,7 +125,7 @@ class ResNetDynamic(nn.Module):
         self.fc1 = nn.Sequential(
             nn.Linear(self.final_size, self.final_size),
             nn.LeakyReLU(0.3),
-            nn.Dropout(0.4)
+            nn.Dropout(0.5)
             )
         self.fc2 = nn.Linear(self.final_size, num_classes)
         ##

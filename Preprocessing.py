@@ -257,7 +257,7 @@ def train_and_validate(model, train_loader, test_loader, num_epochs):
     criterion = nn.CrossEntropyLoss();
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay = weight_decay);
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-    optimizer, 'max', factor=0.1, patience=5, verbose=True)
+    optimizer, 'max', factor=0.1, patience=10, verbose=True)
 #     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate);
     #Training
     history = {'batch': [], 'loss': [], 'accuracy': []}
