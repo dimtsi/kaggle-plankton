@@ -1,8 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
 
 import numpy as np
 import math;
@@ -16,13 +11,11 @@ import timeit
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader,TensorDataset
-from torchvision.models.resnet import *
 from torch.autograd import Variable
 from torchvision import transforms
-from NNs import FeatureBoostedCNN, ResNetMine, ResNetDynamic, Bottleneck, Flatten
-
-# import NNs
-# importlib.reload(NNs)
+import NNs
+from NNs import *
+from NNs import FeatureBoostedCNN
 import math
 import glob
 import cv2
@@ -31,11 +24,9 @@ from torchsummary import summary
 from Preprocessing import *
 from Preprocessing import ListsTrainDataset, ListsTestDataset
 
-
 # ## LOAD DATA
 
 # In[2]:
-
 
 train_images = pickle.load(open("pkl/train_resized64.pkl", "rb"))
 # train_images = train_images[:1000]
@@ -129,7 +120,7 @@ def create_train_val_datasets(X_train, y_train, X_val = None, y_val = None,
             transforms.Grayscale(),
             # transforms.resize(image, (64, 64)),
             transforms.RandomHorizontalFlip(p=0.5),
-            transforms.RandomRotation(degrees=360),
+            # transforms.RandomRotation(degrees=360),
             # transforms.RandomAffine(360, shear=20),
             transforms.ToTensor(),
             transforms.Normalize(mean=[norm_params['train_norm_mean']],
@@ -253,8 +244,23 @@ handcrafted_val = scaler.fit_transform(handcrafted_val)
 
 
 # In[8]:
+class FeatureBoostedCNN(nn.Module):
+
+    def __init__(self, network, num_extra_feats=0, num_classes=121):
+        super(FeatureBoostedCNN, self).__init__()
+        self.convolutional =  nn.Sequential(*list(network.children())[:-2])
+        self.cnn_final_size =  64* network.block.expansion * 2**(network.num_layers-1)
+        self.flattened_size = self.cnn_final_size + num_extra_feats
+        # self.fc1 = nn.Linear(self.flattened_size, self.flattened_size//2)
+        self.fc2 = nn.Linear(self.flattened_size, num_classes)
 
 
+    def forward(self, x):
+        x1 = self.convolutional(x[0])
+        x1 = torch.cat((x1, x[1]),1)
+        # x1 = self.fc1(x1)
+        x1 = self.fc2(x1)
+        return x1
 
 pretrained = resnet50(pretrained = True)
 cnn = ResNetDynamic(pretrained.block, pretrained.layers,
@@ -285,14 +291,9 @@ train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32,
 val_loader = torch.utils.data.DataLoader(val_dataset,
                             batch_size = 32, shuffle = False)
 
-
 # In[10]:
 
 
-train_dataset.features
-
-
-# In[11]:
 
 
 train_and_validate_with_features(ensemble_nn, train_loader, val_loader, num_epochs=100)
