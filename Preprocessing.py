@@ -351,10 +351,6 @@ def predict_on_my_test_set(model, mean_norm_test, std_norm_test):
         total += labels.size(0)
         correct += (predicted.cpu().long() == labels).sum()
         test_accuracy = 100*correct.item() / total
-        if val_accuracy >= best_val_accuracy:
-            best_val_accuracy = val_accuracy
-            print("saved best model")
-            save_model(epoch, model, optimizer, scheduler)
         print('TEST SET ACCURACY: %.4f %%' % test_accuracy)
         # save_model(epoch, model, optimizer, scheduler)
 
