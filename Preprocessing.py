@@ -169,7 +169,7 @@ def create_train_val_datasets(X_train, y_train, X_val = None, y_val = None, norm
             # transforms.resize(image, (64, 64)),
             transforms.RandomHorizontalFlip(p=0.5),
             transforms.RandomRotation(degrees=360),
-            # transforms.RandomAffine(360, shear=20),
+            # transforms.RandomAffine(16),
             transforms.ToTensor(),
             transforms.Normalize(mean=[norm_params['train_norm_mean']],
                         std =[norm_params['train_norm_std']])
@@ -384,7 +384,6 @@ def predict_test_set(model, filenames,  mean_norm_test, std_norm_test):
 
 
 if __name__ == "__main__":
-
     train_images = pickle.load(open("pkl/classified_padded64.pkl", "rb"))
     train_labels = pickle.load(open("pkl/classified_train_labels.pkl", "rb"))
     test_images = pickle.load(open("pkl/test_padded64.pkl", "rb"))
@@ -440,7 +439,7 @@ if __name__ == "__main__":
 
     trained_models = []
     def run_KFolds():
-        kf = StratifiedKFold(n_splits=95, random_state=None, shuffle=True)
+        kf = StratifiedKFold(n_splits=90, random_state=None, shuffle=True)
         for train_indexes, validation_indexes in kf.split(X = train_images, y = train_labels):
             X_train = []
             y_train = []
