@@ -315,7 +315,6 @@ def train_and_validate(model, train_loader, test_loader, num_epochs, device):
         scheduler.step(correct.item() / total)
         if val_accuracy >= best_val_accuracy:
             best_val_accuracy = val_accuracy
-            print("saved best model")
             save_model(epoch, model, optimizer, scheduler, name = 'test_model3.pt')
         toc=timeit.default_timer()
         if epoch+1 == 70 and learning_rate == 0.001:
