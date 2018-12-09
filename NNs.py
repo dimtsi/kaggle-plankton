@@ -220,13 +220,33 @@ class SuperNet(nn.Module):
 
     def forward(self, x):
         x1 = self.net1(x)
-
         x2 = self.net2(x)
         z = z.view(z.size(0), -1)
         z = self.fc(z)
         return z
 
+class EnsembleClassifier(nn.Module):
 
+    def __init__(self, networks, num_classes=121):
+        super(type(self), self).__init__()
+        self.net1 =  nn.Sequential(*list(networks[0].children()))#[:-1]
+        self.net1.requires_grad = False
+        self.net2 =  nn.Sequential(*list(networks[1].children()))#[:-1]
+        self.net2.requires_grad = False
+        self.fusion = Fusion()
+        self.final_size = 0
+        for net in networks:
+            self.final_size += num_classes
+
+        self.fc = nn.Linear(self.final_size, num_classes)
+
+    def forward(self, x):
+        # print((list(self.net1.children()))[-1].state_dict())
+        x1 = self.net1(x)
+        x2 = self.net2(x)
+        z = self.fusion([x1, x2])
+        z = self.fc(z)
+        return z
 
 
 class PretrainedResnetMine(ResNetMine):

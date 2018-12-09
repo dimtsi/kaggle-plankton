@@ -28,7 +28,7 @@ import NNs
 import math
 importlib.reload(NNs)
 from NNs import *
-from NNs import ResNetDynamic, ResNetMine, CNN, SuperNet
+from NNs import ResNetDynamic, ResNetMine, CNN, SuperNet, EnsembleClassifier
 
 from torchsummary import summary
 # %matplotlib inline
@@ -384,6 +384,8 @@ def predict_test_set(model, filenames,  mean_norm_test, std_norm_test):
 
 
 if __name__ == "__main__":
+    print("weighted classes")
+
     train_images = pickle.load(open("pkl/classified_padded64.pkl", "rb"))
     train_labels = pickle.load(open("pkl/classified_train_labels.pkl", "rb"))
     test_images = pickle.load(open("pkl/test_padded64.pkl", "rb"))
@@ -425,15 +427,20 @@ if __name__ == "__main__":
     from sklearn.model_selection import StratifiedKFold
 
     pretrained = resnet50(pretrained = True)
-    cnn = ResNetDynamic(pretrained.block, pretrained.layers,
+    cnn1 = ResNetDynamic(pretrained.block, pretrained.layers,
+                num_layers = 2, pretrained_nn = None)
+
+    cnn2 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
     #
-    # cnn.load_state_dict(torch.load('trained_model.pt')['state_dict'])
+    cnn1.load_state_dict(torch.load('best_model.pt')['state_dict'])
+    cnn2.load_state_dict(torch.load('best2.pt')['state_dict'])
+
     # cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
-    # models = []
-    # models.append(cnn1)
-    # models.append(cnn2)
-    # cnn = SuperNet(models)
+    models = []
+    models.append(cnn1)
+    models.append(cnn2)
+    cnn = EnsembleClassifier(models)
 
 
 
@@ -481,14 +488,14 @@ if __name__ == "__main__":
             cnn.to(device)
 
             # cnn = CNN().cuda()
-            summary(cnn, (1,64,64))
+            # summary(cnn, (1,64,64))
 
         #     print(summary(cnn, (1,28,28)))
             trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100)
             trained_models.append(trained_model)
             break
 
-    # run_KFolds()
+    run_KFolds()
 
     final_model = cnn
     final_model.load_state_dict(torch.load('trained_model.pt')['state_dict'])
