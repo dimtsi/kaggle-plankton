@@ -252,12 +252,12 @@ class FeatureBoostedCNN(nn.Module):
         self.cnn_final_size =  64* network.block.expansion * 2**(network.num_layers-1)
         self.flattened_size = self.cnn_final_size + num_extra_feats
         self.fc1 = nn.Sequential(
-            nn.Linear(self.flattened_size, self.flattened_size//2),
+            # nn.Linear(self.flattened_size, self.flattened_size//2),
             nn.LeakyReLU(0.3),
             nn.Dropout(0.4)
             )
         self.dropout = nn.Dropout()
-        self.fc2 = nn.Linear(self.flattened_size//2, num_classes)
+        self.fc2 = nn.Linear(self.flattened_size, num_classes)
 
 
     def forward(self, x):
@@ -269,7 +269,7 @@ class FeatureBoostedCNN(nn.Module):
 
 pretrained = resnet50(pretrained = True)
 cnn = ResNetDynamic(pretrained.block, pretrained.layers,
-            num_layers = 3, pretrained_nn = pretrained)
+            num_layers = 2, pretrained_nn = None)
 
 # cnn.load_state_dict(torch.load('best_new.pt')['state_dict'])
 # feature_extractor_cnn = nn.Sequential(*list(cnn.children())[:-2])
