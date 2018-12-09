@@ -175,14 +175,14 @@ class FeatureBoostedCNN(nn.Module):
         super(type(self), self).__init__()
         self.convolutional =  nn.Sequential(*list(network.children())[:-2])
         self.cnn_final_size =  64* network.block.expansion * 2**(network.num_layers-1)
-        self.flatten = Flatten()
-        self.flattened_size = 50 + num_extra_feats
+        self.flattened_size = self.cnn_final_size//2 + num_extra_feats
         self.fc1 = nn.Sequential(
-            nn.Linear(self.cnn_final_size, 50),
+            nn.Linear(self.cnn_final_size, self.cnn_final_size//2),
             nn.LeakyReLU(0.3),
             nn.Dropout(0.4)
             )
         self.fc2 = nn.Linear(self.flattened_size, num_classes)
+
      def forward(self, x):
         x1 = self.convolutional(x[0])
         x1 = self.fc1(x1)
