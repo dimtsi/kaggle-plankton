@@ -193,7 +193,7 @@ def create_train_val_datasets(X_train, y_train, X_val = None, y_val = None, norm
 def save_model(epoch, model, optimizer, scheduler):
     train_state = {
     'epoch': epoch,
-    'model' : model,
+    # 'model' : model,
     'state_dict': model.state_dict(),
     'optimizer': optimizer.state_dict(),
     'scheduler': scheduler.state_dict()
@@ -440,7 +440,7 @@ if __name__ == "__main__":
 
     trained_models = []
     def run_KFolds():
-        kf = StratifiedKFold(n_splits=90, random_state=None, shuffle=True)
+        kf = StratifiedKFold(n_splits=95, random_state=None, shuffle=True)
         for train_indexes, validation_indexes in kf.split(X = train_images, y = train_labels):
             X_train = []
             y_train = []
@@ -455,6 +455,7 @@ if __name__ == "__main__":
                 X_val.append(train_images[j])
                 y_val.append(train_labels[j])
 
+            print("train: "+ str(len(X_train)) + " val: " +str(len(X_val)))
             norm['train_norm_mean'], norm['train_norm_std'] = calc_means_stds(X_train)
 
             class_sample_counts = np.bincount(y_train)
