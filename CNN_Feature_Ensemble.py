@@ -82,6 +82,8 @@ class ListsTrainFeatureDataset(Dataset):
     def __len__(self):
         return len(self.data)
 
+    def obtain_features()
+
 
 
 class ListsTestFeatureDataset(Dataset):

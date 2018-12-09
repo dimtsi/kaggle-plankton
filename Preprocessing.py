@@ -258,7 +258,7 @@ def train_and_validate(model, train_loader, test_loader, num_epochs):
     criterion = nn.CrossEntropyLoss();
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay = weight_decay);
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-    optimizer, 'max', factor=0.1, patience=10, verbose=True)
+    optimizer, 'max', factor=0.1, patience=7, verbose=True)
 #     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate);
     #Training
     history = {'batch': [], 'loss': [], 'accuracy': []}
@@ -322,35 +322,6 @@ def train_and_validate(model, train_loader, test_loader, num_epochs):
                     print("MANUAL CHANGE OF LR")
         print(toc-tic)
     return model
-
-
-
-# In[ ]:
-
-
-# from torchvision.models.resnet import *
-
-
-
-
-def train_on_whole():
-    train_transforms = transforms. Compose([
-        transforms.Grayscale(),
-        transforms.RandomRotation(degrees=360),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[mean_norm_train],
-                    std =[mean_std_train])
-    ])
-    train_dataset = ListsTrainDataset(train_images, train_labels, transform = train_transforms)
-    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32, shuffle = True)
-
-    cnn.to(device)
-    # cnn.load_state_dict(torch.load('trained_model.pt')['state_dict'])
-    summary(cnn, (1,64,64))
-    model = train_only(cnn, train_loader, num_epochs=100)
-    return model
-
-# train_on_whole()
 
 # predict on testset
 
@@ -495,7 +466,7 @@ if __name__ == "__main__":
             trained_models.append(trained_model)
             break
 
-    run_KFolds()
+    # run_KFolds()
 
     final_model = cnn
     final_model.load_state_dict(torch.load('trained_model.pt')['state_dict'])
