@@ -50,11 +50,11 @@ test_haralick = pickle.load(open("features/test_haralick.pkl", "rb"))
 test_moments = pickle.load(open("features/test_moments.pkl", "rb"))
 test_sizes = pickle.load(open("features/test_sizes.pkl", "rb"))
 
-train_handcrafted_features = np.concatenate([train_haralick, train_moments,  train_sizes], axis =1)
-test_handcrafted_features = np.concatenate([test_haralick, test_moments,  test_sizes], axis =1)
+# train_handcrafted_features = np.concatenate([train_haralick, train_moments,  train_sizes], axis =1)
+# test_handcrafted_features = np.concatenate([test_haralick, test_moments,  test_sizes], axis =1)
 
-# train_handcrafted_features = train_haralick
-# test_handcrafted_features = test_haralick
+train_handcrafted_features = train_haralick
+test_handcrafted_features = test_haralick
 
 # ## New Dataset for Features
 
@@ -145,7 +145,7 @@ def create_train_val_datasets(X_train, y_train, X_val = None, y_val = None,
 
 def train_and_validate_with_features(model, train_loader, val_loader, num_epochs):
     learning_rate = 0.001
-    weight_decay = 1e-6
+    weight_decay = 0
     batch_size = train_loader.batch_size
     criterion = nn.CrossEntropyLoss();
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay = weight_decay);
