@@ -29,9 +29,9 @@ from Preprocessing import *
 
 # In[2]:
 
-train_images = pickle.load(open("pkl/train_resized64.pkl", "rb"))
+train_images = pickle.load(open("pkl/classified_resized64.pkl", "rb"))
 # train_images = train_images[:1000]
-train_labels = pickle.load(open("pkl/train_labels.pkl", "rb"))
+train_labels = pickle.load(open("pkl/classified_train_labels.pkl", "rb"))
 train_filenames = pickle.load(open("pkl/train_filenames.pkl", "rb"))
 test_images = pickle.load(open("pkl/test_resized64.pkl", "rb"))
 test_filenames = pickle.load(open("pkl/test_filenames.pkl", "rb"))
@@ -42,17 +42,18 @@ test_filenames = pickle.load(open("pkl/test_filenames.pkl", "rb"))
 # In[3]:
 
 
-train_haralick = pickle.load(open("features/train_haralick.pkl", "rb"))
-train_moments = pickle.load(open("features/train_moments.pkl", "rb"))
+# train_haralick = pickle.load(open("features/train_haralick.pkl", "rb"))
+# train_moments = pickle.load(open("features/train_moments.pkl", "rb"))
 train_sizes = pickle.load(open("features/train_sizes.pkl", "rb"))
 
-test_haralick = pickle.load(open("features/test_haralick.pkl", "rb"))
-test_moments = pickle.load(open("features/test_moments.pkl", "rb"))
+# test_haralick = pickle.load(open("features/test_haralick.pkl", "rb"))
+# test_moments = pickle.load(open("features/test_moments.pkl", "rb"))
 test_sizes = pickle.load(open("features/test_sizes.pkl", "rb"))
 
-train_handcrafted_features = np.concatenate([train_haralick, train_moments,  train_sizes], axis =1)
-test_handcrafted_features = np.concatenate([test_haralick, test_moments,  test_sizes], axis =1)
-
+# train_handcrafted_features = np.concatenate([train_haralick, train_moments,  train_sizes], axis =1)
+# test_handcrafted_features = np.concatenate([test_haralick, test_moments,  test_sizes], axis =1)
+train_handcrafted_features = train_sizes
+test_handcrafted_features = test_sizes
 
 # ## New Dataset for Features
 
