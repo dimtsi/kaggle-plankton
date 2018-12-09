@@ -1,19 +1,11 @@
-
-import numpy as np
-import math;
-import pickle
-import pandas as pd
-from collections import OrderedDict
-import importlib
-import time
-import timeit
-
 import torch
 import torch.nn as nn
+import math;
+from collections import OrderedDict
+
 from torch.utils.data import Dataset, DataLoader,TensorDataset
 from torch.autograd import Variable
 from torchvision import transforms
-import NNs
 import math
 import glob
 import cv2
@@ -97,7 +89,7 @@ class ResNetDynamic(nn.Module):
         self.num_layers = num_layers
         self.layers = layers
         self.block = block
-        super(ResNetDynamic, self).__init__()
+        super(type(self), self).__init__()
         self.conv1 = nn.Conv2d(1, 64, kernel_size=3, stride=2, padding=1,
                                bias=False)
         self.bn1 = nn.BatchNorm2d(64)
@@ -178,12 +170,25 @@ class ResNetDynamic(nn.Module):
         x = self.fc2(x)
         return x
 
-
+class FeatureBoostedCNN(nn.Module):
+     def __init__(self, network, num_extra_feats=0, num_classes=121):
+        super(type(self), self).__init__()
+        self.convolutional =  nn.Sequential(*list(network.children())[:-2])
+        self.cnn_final_size =  64* network.block.expansion * 2**(network.num_layers-1)
+        self.flattened_size = self.cnn_final_size + num_extra_feats
+        self.fc1 = nn.Linear(self.flattened_size, self.flattened_size//2)
+        self.fc2 = nn.Linear(self.flattened_size//2, num_classes)
+     def forward(self, x):
+        x1 = self.convolutional(x[0])
+        x1 = torch.cat((x1, x[1]),1)
+        x1 = self.fc1(x1)
+        x1 = self.fc2(x1)
+        return x1
 
 class SuperNet(nn.Module):
 
     def __init__(self, networks, num_classes=121):
-        super(SuperNet, self).__init__()
+        super(type(self), self).__init__()
         self.net1 =  nn.Sequential(*list(networks[0].children())[:-1])
         self.net2 =  nn.Sequential(*list(networks[1].children())[:-1])
 
@@ -207,7 +212,7 @@ class SuperNet(nn.Module):
 class PretrainedResnetMine(ResNetMine):
 
     def __init__(self, block, layers, num_classes=121, pretrained_nn = None):
-        super(PretrainedResnetMine, self).__init__(block, layers)
+        super(type(self), self).__init__(block, layers)
         self.layer1.load_state_dict(pretrained_nn.layer1.state_dict())
         self.layer2.load_state_dict(pretrained_nn.layer2.state_dict())
         print(self.layer1.state_dict())
@@ -226,7 +231,7 @@ class Flatten(nn.Module):
 
 class CNN(nn.Module):
     def __init__(self):
-        super(CNN, self).__init__()
+        super(type(self), self).__init__()
         self.layer1 = nn.Sequential(
             nn.Conv2d(1, 50, kernel_size=3, padding=1),
             nn.ReLU(),
@@ -277,7 +282,7 @@ class BasicBlock(nn.Module):
     expansion = 1
 
     def __init__(self, inplanes, planes, stride=1, downsample=None):
-        super(BasicBlock, self).__init__()
+        super(type(self), self).__init__()
         self.conv1 = conv3x3(inplanes, planes, stride)
         self.bn1 = nn.BatchNorm2d(planes)
         self.relu = nn.ReLU(inplace=True)
@@ -309,7 +314,7 @@ class Bottleneck(nn.Module):
     expansion = 4
 
     def __init__(self, inplanes, planes, stride=1, downsample=None):
-        super(Bottleneck, self).__init__()
+        super(type(self), self).__init__()
         self.conv1 = nn.Conv2d(inplanes, planes, kernel_size=1, bias=False)
         self.bn1 = nn.BatchNorm2d(planes)
         self.conv2 = nn.Conv2d(planes, planes, kernel_size=3, stride=stride,
@@ -346,7 +351,7 @@ class Bottleneck(nn.Module):
 class FeatureBoostedCNN(nn.Module):
 
     def __init__(self, network, num_extra_feats=0, num_classes=121):
-        super(FeatureBoostedCNN, self).__init__()
+        super(type(self), self).__init__()
         self.convolutional =  nn.Sequential(*list(network.children())[:-2])
         self.cnn_final_size =  64* network.block.expansion * 2**(network.num_layers-1)
         self.flattened_size = self.cnn_final_size + num_extra_feats
@@ -370,7 +375,7 @@ class ResNet(nn.Module):
 
     def __init__(self, block, layers, num_classes=1000):
         self.inplanes = 64
-        super(ResNet, self).__init__()
+        super(type(self), self).__init__()
         self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3,
                                bias=False)
         self.bn1 = nn.BatchNorm2d(64)
