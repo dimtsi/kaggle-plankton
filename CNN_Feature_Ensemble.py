@@ -5,6 +5,7 @@ import pickle
 import pandas as pd
 from collections import OrderedDict
 import importlib
+from importlib import reload
 import time
 import timeit
 
@@ -14,12 +15,12 @@ from torch.utils.data import Dataset, DataLoader,TensorDataset
 from torch.autograd import Variable
 from torchvision import transforms
 import NNs
-from NNs import *
+reload(NNs)
+
 from NNs import FeatureBoostedCNN
 import math
 import glob
 import cv2
-
 from torchsummary import summary
 import Preprocessing
 from Preprocessing import *
@@ -245,10 +246,10 @@ handcrafted_val = scaler.fit_transform(handcrafted_val)
 
 # In[8]:
 
-
+importlib.reload(NNs)
 pretrained = resnet50(pretrained = True)
 cnn = ResNetDynamic(pretrained.block, pretrained.layers,
-            num_layers = 2, pretrained_nn = None)
+            num_layers = 4, pretrained_nn = None)
 
 # cnn.load_state_dict(torch.load('best_new.pt')['state_dict'])
 # feature_extractor_cnn = nn.Sequential(*list(cnn.children())[:-2])
@@ -256,6 +257,7 @@ cnn = ResNetDynamic(pretrained.block, pretrained.layers,
 num_handcrafted = handcrafted_train.shape[1]
 ensemble_nn = FeatureBoostedCNN(cnn, num_handcrafted)
 
+print(ensemble_nn)
 
 # In[9]:
 
