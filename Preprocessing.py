@@ -23,13 +23,12 @@ from torch.autograd import Variable
 
 from torch.utils.data import Dataset, DataLoader,TensorDataset
 from torchvision import transforms
-from NNs import BasicBlock, Bottleneck, ResNet
 import importlib
 import NNs
 import math
 importlib.reload(NNs)
-from NNs import ResNetDynamic, ResNetMine, CNN, SuperNet
 from NNs import *
+from NNs import ResNetDynamic, ResNetMine, CNN, SuperNet
 
 from torchsummary import summary
 # %matplotlib inline

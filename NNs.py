@@ -1,7 +1,26 @@
+
+import numpy as np
+import math;
+import pickle
+import pandas as pd
+from collections import OrderedDict
+import importlib
+import time
+import timeit
+
 import torch
 import torch.nn as nn
-import math;
-from collections import OrderedDict
+from torch.utils.data import Dataset, DataLoader,TensorDataset
+from torch.autograd import Variable
+from torchvision import transforms
+import NNs
+import math
+import glob
+import cv2
+
+from torchsummary import summary
+from Preprocessing import *
+from Preprocessing import ListsTrainDataset, ListsTestDataset
 
 class ResNetMine(nn.Module):
 
@@ -325,6 +344,28 @@ class Bottleneck(nn.Module):
 
         return out
 
+class FeatureBoostedCNN(nn.Module):
+
+    def __init__(self, network, num_extra_feats=0, num_classes=121):
+        super(FeatureBoostedCNN, self).__init__()
+        self.convolutional =  nn.Sequential(*list(network.children())[:-2])
+        self.cnn_final_size =  64* network.block.expansion * 2**(network.num_layers-1)
+        self.flattened_size = self.cnn_final_size + num_extra_feats
+        self.fc1 = nn.Sequential(
+            # nn.Linear(self.flattened_size, self.flattened_size//2),
+            nn.LeakyReLU(0.3),
+            nn.Dropout(0.4)
+            )
+        self.dropout = nn.Dropout()
+        self.fc2 = nn.Linear(self.flattened_size, num_classes)
+
+
+    def forward(self, x):
+        x1 = self.convolutional(x[0])
+        x1 = torch.cat((x1, x[1]),1)
+        x1 = self.fc1(x1)
+        x1 = self.fc2(x1)
+        return x1
 
 class ResNet(nn.Module):
 
@@ -448,21 +489,3 @@ def resnet152(pretrained=False, **kwargs):
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet152']))
     return model
-
-class FeatureBoostedCNN(nn.Module):
-
-    def __init__(self, network, num_extra_feats=0, num_classes=121):
-        super(FeatureBoostedCNN, self).__init__()
-        self.convolutional =  nn.Sequential(*list(network.children())[:-2])
-        self.cnn_final_size =  64* network.block.expansion * 2**(network.num_layers-1)
-        self.flattened_size = self.cnn_final_size + num_extra_feats
-        self.fc1 = nn.Linear(self.flattened_size, self.flattened_size//2)
-        self.fc2 = nn.Linear(self.flattened_size//2, num_classes)
-
-
-    def forward(self, x):
-        x1 = self.convolutional(x[0])
-        x1 = torch.cat((x1, x[1]),1)
-        x1 = self.fc1(x1)
-        x1 = self.fc2(x1)
-        return x1
