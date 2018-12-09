@@ -355,7 +355,7 @@ def predict_test_set(model, filenames,  mean_norm_test, std_norm_test):
 
 
 if __name__ == "__main__":
-    print("weighted classes")
+    # print("weighted classes")
 
     train_images = pickle.load(open("pkl/classified_padded64.pkl", "rb"))
     train_labels = pickle.load(open("pkl/classified_train_labels.pkl", "rb"))
@@ -427,7 +427,7 @@ if __name__ == "__main__":
 
     trained_models = []
     def run_KFolds():
-        kf = StratifiedKFold(n_splits=7, random_state=None, shuffle=True)
+        kf = StratifiedKFold(n_splits=15, random_state=None, shuffle=True)
         for train_indexes, validation_indexes in kf.split(X = train_images, y = train_labels):
             X_train = []
             y_train = []
@@ -476,9 +476,9 @@ if __name__ == "__main__":
             trained_models.append(trained_model)
             break
 
-    # run_KFolds()
+    run_KFolds()
 
     final_model = cnn
     final_model.load_state_dict(torch.load('trained_model.pt')['state_dict'])
     mean_norm_test, std_norm_test = calc_means_stds(train_images)
-    predict_test_set(final_model, test_filenames, mean_norm_test, std_norm_test)
+    # predict_test_set(final_model, test_filenames, mean_norm_test, std_norm_test)
