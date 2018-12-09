@@ -198,7 +198,7 @@ def save_model(epoch, model, optimizer, scheduler):
     'optimizer': optimizer.state_dict(),
     'scheduler': scheduler.state_dict()
     }
-    torch.save(train_state, 'trained_model.pt')
+    torch.save(train_state, 'trained_model15.pt')
 
 # In[9]:
 
