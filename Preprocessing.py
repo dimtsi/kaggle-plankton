@@ -193,7 +193,7 @@ def create_train_val_datasets(X_train, y_train, X_val = None, y_val = None, norm
 # In[8]:
 
 
-def save_model(epoch, model, optimizer, scheduler):
+def save_model(epoch, model, optimizer, scheduler, name = 'trained_model.pt'):
     train_state = {
     'epoch': epoch,
     # 'model' : model,
@@ -201,7 +201,7 @@ def save_model(epoch, model, optimizer, scheduler):
     'optimizer': optimizer.state_dict(),
     'scheduler': scheduler.state_dict()
     }
-    torch.save(train_state, 'trained_model15.pt')
+    torch.save(train_state, name)
 
 # In[9]:
 
@@ -315,7 +315,7 @@ def train_and_validate(model, train_loader, test_loader, num_epochs, device):
         if val_accuracy >= best_val_accuracy:
             best_val_accuracy = val_accuracy
             print("saved best model")
-            save_model(epoch, model, optimizer, scheduler)
+            save_model(epoch, model, optimizer, scheduler, name = 'ensemble.pt')
         toc=timeit.default_timer()
         if epoch+1 == 70 and learning_rate == 0.001:
             for group in optimizer.param_groups:
@@ -450,8 +450,10 @@ if __name__ == "__main__":
     cnn2 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
     #
-    cnn1.load_state_dict(torch.load('test_model7.pt')['state_dict'])
-    cnn2.load_state_dict(torch.load('test_model15.pt'), map_location={'cuda:1': 'cuda:0'})
+    cnn1_dict = torch.load('test_model7.pt')['state_dict']
+    cnn2_dict = torch.load('test_model15.pt', map_location={'cuda:1': 'cuda:0'})['state_dict']
+    cnn1.load_state_dict(cnn1_dict)
+    cnn2.load_state_dict(cnn2_dict)
 
     # cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
     models = []
@@ -515,6 +517,7 @@ if __name__ == "__main__":
     # run_KFolds()
 
     def train_ensemble_on_test():
+        norm = {}
         norm['train_norm_mean'], norm['train_norm_std'] = calc_means_stds(train_images)
         train_dataset, val_dataset = create_train_val_datasets(train_images, train_labels,
                                                                test_mine_images,
