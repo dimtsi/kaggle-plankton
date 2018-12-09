@@ -362,8 +362,18 @@ if __name__ == "__main__":
     test_images = pickle.load(open("pkl/test_padded64.pkl", "rb"))
     test_filenames = pickle.load(open("pkl/test_filenames.pkl", "rb"))
 
-    #PIL
+    ##create separate test set
+    test_set_mine_indexes = pickle.load(open("pkl/test_set_mine_indexes_classified.pkl", "rb"))
+    train_images = [i for j, i in enumerate(train_images) if j not in test_set_mine_indexes]
+    train_labels = [i for j, i in enumerate(train_labels) if j not in test_set_mine_indexes]
 
+    test_mine_images = [i for j, i in enumerate(train_images) if j in test_set_mine_indexes]
+    test_mine_labels = [i for j, i in enumerate(train_labels) if j in test_set_mine_indexes]
+
+
+    ###========================MAIN EXECUTION=========================###
+
+    #PIL
     widths, heights = [], []
     sumx, sumy = 0, 0
     for i in train_images:
@@ -398,33 +408,33 @@ if __name__ == "__main__":
     from sklearn.model_selection import StratifiedKFold
 
     pretrained = resnet50(pretrained = True)
-    cnn1 = ResNetDynamic(pretrained.block, pretrained.layers,
+    cnn = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
 
-    cnn2 = ResNetDynamic(pretrained.block, pretrained.layers,
-                num_layers = 2, pretrained_nn = None)
+    # cnn2 = ResNetDynamic(pretrained.block, pretrained.layers,
+    #             num_layers = 2, pretrained_nn = None)
+    # #
+    # cnn1.load_state_dict(torch.load('best_model.pt')['state_dict'])
+    # cnn2.load_state_dict(torch.load('best2.pt')['state_dict'])
     #
-    cnn1.load_state_dict(torch.load('best_model.pt')['state_dict'])
-    cnn2.load_state_dict(torch.load('best2.pt')['state_dict'])
-
-    # cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
-    models = []
-    models.append(cnn1)
-    models.append(cnn2)
-    cnn = EnsembleClassifier(models)
+    # # cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
+    # models = []
+    # models.append(cnn1)
+    # models.append(cnn2)
+    # cnn = EnsembleClassifier(models)
 
 
 
     trained_models = []
     def run_KFolds():
-        kf = StratifiedKFold(n_splits=12, random_state=None, shuffle=True)
+        kf = StratifiedKFold(n_splits=7, random_state=None, shuffle=True)
         for train_indexes, validation_indexes in kf.split(X = train_images, y = train_labels):
             X_train = []
             y_train = []
             X_val = []
             y_val = []
             norm = {}
-
+            num_val_limit = 0.7*len(y_val)
             for i in train_indexes:
                 X_train.append(train_images[i])
                 y_train.append(train_labels[i])
