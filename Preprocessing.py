@@ -498,6 +498,6 @@ if __name__ == "__main__":
     run_KFolds()
 
     final_model = cnn
-    final_model.load_state_dict(torch.load('trained_model.pt')['state_dict'])
+    final_model.load_state_dict(torch.load('saved_model.pt')['state_dict'])
     mean_norm_test, std_norm_test = calc_means_stds(train_images)
     predict_test_set(final_model, test_filenames, mean_norm_test, std_norm_test)
