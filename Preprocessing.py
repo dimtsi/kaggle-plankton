@@ -316,7 +316,7 @@ def train_and_validate(model, train_loader, test_loader, num_epochs, device):
         if val_accuracy >= best_val_accuracy:
             best_val_accuracy = val_accuracy
             print("saved best model")
-            save_model(epoch, model, optimizer, scheduler, name = 'test_model15.pt')
+            save_model(epoch, model, optimizer, scheduler, name = 'test_model3.pt')
         toc=timeit.default_timer()
         if epoch+1 == 70 and learning_rate == 0.001:
             for group in optimizer.param_groups:
@@ -426,7 +426,7 @@ if __name__ == "__main__":
     norm_mean_width = np.mean(widths)
     norm_mean_height = np.mean(heights)
 
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
     import timeit
 
     ##Class weights for imbalance
@@ -460,7 +460,7 @@ if __name__ == "__main__":
 
     trained_models = []
     def run_KFolds():
-        kf = StratifiedKFold(n_splits=15, random_state=None, shuffle=True)
+        kf = StratifiedKFold(n_splits=3, random_state=None, shuffle=True)
         for train_indexes, validation_indexes in kf.split(X = train_images_no_test, y = train_labels_no_test):
             X_train = []
             y_train = []
