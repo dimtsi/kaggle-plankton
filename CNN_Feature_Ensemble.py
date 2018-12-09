@@ -121,7 +121,7 @@ def create_train_val_datasets(X_train, y_train, X_val = None, y_val = None,
             # transforms.resize(image, (64, 64)),
             transforms.RandomHorizontalFlip(p=0.5),
             transforms.RandomRotation(degrees=360),
-            transforms.RandomAffine(360, shear=20),
+            # transforms.RandomAffine(360, shear=20),
             transforms.ToTensor(),
             transforms.Normalize(mean=[norm_params['train_norm_mean']],
                         std =[norm_params['train_norm_std']])
@@ -269,7 +269,7 @@ class FeatureBoostedCNN(nn.Module):
 
 pretrained = resnet50(pretrained = True)
 cnn = ResNetDynamic(pretrained.block, pretrained.layers,
-            num_layers = 1, pretrained_nn = None)
+            num_layers = 3, pretrained_nn = pretrained)
 
 # cnn.load_state_dict(torch.load('best_new.pt')['state_dict'])
 # feature_extractor_cnn = nn.Sequential(*list(cnn.children())[:-2])
