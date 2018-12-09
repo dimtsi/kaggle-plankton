@@ -257,13 +257,13 @@ class FeatureBoostedCNN(nn.Module):
             nn.Dropout(0.4)
             )
         self.dropout = nn.Dropout()
-        self.fc2 = nn.Linear(self.flattened_size, num_classes)
+        self.fc2 = nn.Linear(self.flattened_size//2, num_classes)
 
 
     def forward(self, x):
         x1 = self.convolutional(x[0])
         x1 = torch.cat((x1, x[1]),1)
-        # x1 = self.fc1(x1)
+        x1 = self.fc1(x1)
         x1 = self.fc2(x1)
         return x1
 
