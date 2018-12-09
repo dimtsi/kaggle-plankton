@@ -193,6 +193,7 @@ def create_train_val_datasets(X_train, y_train, X_val = None, y_val = None, norm
 def save_model(epoch, model, optimizer, scheduler):
     train_state = {
     'epoch': epoch,
+    'model' : model,
     'state_dict': model.state_dict(),
     'optimizer': optimizer.state_dict(),
     'scheduler': scheduler.state_dict()
@@ -313,8 +314,12 @@ def train_and_validate(model, train_loader, test_loader, num_epochs):
             print("saved best model")
             save_model(epoch, model, optimizer, scheduler)
         toc=timeit.default_timer()
-        if epoch == 80 and learning_rate == 0.001:
-            scheduler.
+        if epoch+1 == 70 and learning_rate == 0.001:
+            for group in optimizer.param_groups:
+                if 'lr' in group.keys():
+                    group['lr'] = 1e-4
+                    scheduler._reset()
+                    print("MANUAL CHANGE OF LR")
         print(toc-tic)
     return model
 
@@ -435,7 +440,7 @@ if __name__ == "__main__":
 
     trained_models = []
     def run_KFolds():
-        kf = StratifiedKFold(n_splits=99, random_state=None, shuffle=True)
+        kf = StratifiedKFold(n_splits=90, random_state=None, shuffle=True)
         for train_indexes, validation_indexes in kf.split(X = train_images, y = train_labels):
             X_train = []
             y_train = []
