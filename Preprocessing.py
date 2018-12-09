@@ -201,6 +201,7 @@ def save_model(epoch, model, optimizer, scheduler, name = 'trained_model.pt'):
     'optimizer': optimizer.state_dict(),
     'scheduler': scheduler.state_dict()
     }
+    print("Saved model at: "+str(name))
     torch.save(train_state, name)
 
 # In[9]:
@@ -315,7 +316,7 @@ def train_and_validate(model, train_loader, test_loader, num_epochs, device):
         if val_accuracy >= best_val_accuracy:
             best_val_accuracy = val_accuracy
             print("saved best model")
-            save_model(epoch, model, optimizer, scheduler, name = 'ensemble.pt')
+            save_model(epoch, model, optimizer, scheduler, name = 'test_model15.pt')
         toc=timeit.default_timer()
         if epoch+1 == 70 and learning_rate == 0.001:
             for group in optimizer.param_groups:
@@ -395,8 +396,8 @@ if __name__ == "__main__":
 
     ##create separate test set
     test_set_mine_indexes = pickle.load(open("pkl/test_set_mine_indexes_classified.pkl", "rb"))
-    train_images = [i for j, i in enumerate(train_images) if j not in test_set_mine_indexes]
-    train_labels = [i for j, i in enumerate(train_labels) if j not in test_set_mine_indexes]
+    train_images_no_test = [i for j, i in enumerate(train_images) if j not in test_set_mine_indexes]
+    train_labels_no_test = [i for j, i in enumerate(train_labels) if j not in test_set_mine_indexes]
 
     test_mine_images = [i for j, i in enumerate(train_images) if j in test_set_mine_indexes]
     test_mine_labels = [i for j, i in enumerate(train_labels) if j in test_set_mine_indexes]
@@ -438,44 +439,43 @@ if __name__ == "__main__":
     from sklearn.model_selection import StratifiedKFold
 
     pretrained = resnet50(pretrained = True)
-    cnn1 = ResNetDynamic(pretrained.block, pretrained.layers,
+    cnn = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
 
-    cnn2 = ResNetDynamic(pretrained.block, pretrained.layers,
-                num_layers = 2, pretrained_nn = None)
+    # cnn2 = ResNetDynamic(pretrained.block, pretrained.layers,
+    #             num_layers = 2, pretrained_nn = None)
+    # #
+    # cnn1_dict = torch.load('test_model7.pt')['state_dict']
+    # cnn2_dict = torch.load('test_model15.pt', map_location={'cuda:1': 'cuda:0'})['state_dict']
+    # cnn1.load_state_dict(cnn1_dict)
+    # cnn2.load_state_dict(cnn2_dict)
     #
-    cnn1_dict = torch.load('test_model7.pt')['state_dict']
-    cnn2_dict = torch.load('test_model15.pt', map_location={'cuda:1': 'cuda:0'})['state_dict']
-    cnn1.load_state_dict(cnn1_dict)
-    cnn2.load_state_dict(cnn2_dict)
-
-    # cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
-    models = []
-    models.append(cnn1)
-    models.append(cnn2)
-    cnn = EnsembleClassifier(models)
-    cnn1_dict = torch.load('ensemble.pt')['state_dict']
+    # # cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
+    # models = []
+    # models.append(cnn1)
+    # models.append(cnn2)
+    # cnn = EnsembleClassifier(models)
+    # cnn1_dict = torch.load('ensemble.pt')['state_dict']
 
 
     trained_models = []
     def run_KFolds():
         kf = StratifiedKFold(n_splits=15, random_state=None, shuffle=True)
-        for train_indexes, validation_indexes in kf.split(X = train_images, y = train_labels):
+        for train_indexes, validation_indexes in kf.split(X = train_images_no_test, y = train_labels_no_test):
             X_train = []
             y_train = []
             X_val = []
             y_val = []
             norm = {}
-            num_val_limit = 0.7*len(y_val)
             for i in train_indexes:
-                X_train.append(train_images[i])
-                y_train.append(train_labels[i])
+                X_train.append(train_images_no_test[i])
+                y_train.append(train_labels_no_test[i])
             for j in validation_indexes:
-                X_val.append(train_images[j])
-                y_val.append(train_labels[j])
+                X_val.append(train_images_no_test[j])
+                y_val.append(train_labels_no_test[j])
 
             print("train: "+ str(len(X_train)) + " val: " +str(len(X_val)))
-            norm['train_norm_mean'], norm['train_norm_std'] = calc_means_stds(X_train)
+            norm['train_norm_mean'], norm['train_norm_std'] = calc_means_stds(train_images)
 
             class_sample_counts = np.bincount(y_train)
             class_sample_counts
@@ -508,12 +508,12 @@ if __name__ == "__main__":
             trained_models.append(trained_model)
             break
 
-    # run_KFolds()
+    run_KFolds()
 
     def train_ensemble_on_test():
         norm = {}
         norm['train_norm_mean'], norm['train_norm_std'] = calc_means_stds(train_images)
-        train_dataset, val_dataset = create_train_val_datasets(train_images, train_labels,
+        train_dataset, val_dataset = create_train_val_datasets(train_images_no_test, train_labels_no_test,
                                                                test_mine_images,
                                                                test_mine_labels,
                                                                norm_params =norm)
@@ -530,10 +530,10 @@ if __name__ == "__main__":
 
     # train_ensemble_on_test()
 
-    mean_norm_test, std_norm_test = calc_means_stds(train_images)
-
-    final_model = cnn
-    final_model.load_state_dict(torch.load('ensemble.pt')['state_dict'])
-
-    predict_on_my_test_set(final_model, mean_norm_test, std_norm_test)
-    predict_test_set_kaggle(final_model, test_filenames, mean_norm_test, std_norm_test)
+    # mean_norm_test, std_norm_test = calc_means_stds(train_images)
+    #
+    # final_model = cnn
+    # final_model.load_state_dict(torch.load('ensemble.pt')['state_dict'])
+    #
+    # predict_on_my_test_set(final_model, mean_norm_test, std_norm_test)
+    # predict_test_set_kaggle(final_model, test_filenames, mean_norm_test, std_norm_test)
