@@ -251,7 +251,7 @@ def train_only(model, train_loader, num_epochs):
     return model
 
 
-def train_and_validate(model, train_loader, test_loader, num_epochs):
+def train_and_validate(model, train_loader, test_loader, num_epochs, device):
     learning_rate = 0.001
     weight_decay = 0
     batch_size = train_loader.batch_size
@@ -472,7 +472,7 @@ if __name__ == "__main__":
             # summary(cnn, (1,64,64))
 
         #     print(summary(cnn, (1,28,28)))
-            trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100)
+            trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100, device = device)
             trained_models.append(trained_model)
             break
 
