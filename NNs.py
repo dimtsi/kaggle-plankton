@@ -190,12 +190,12 @@ class FeatureBoostedCNN(nn.Module):
         self.cnn_final_size =  64* network.block.expansion * 2**(network.num_layers-1)
         self.flattened_size = 256 + num_extra_feats
         self.flatten = Flatten()
+        self.fusion=Fusion()
         self.fc1 = nn.Sequential(
             # nn.Linear(self.cnn_final_size, self.cnn_final_size//2),
             nn.LeakyReLU(0.3),
             nn.Dropout(0.4)
             )
-        self.fusion=Fusion()
         self.fc2 = nn.Linear(self.flattened_size, num_classes)
 
      def forward(self, x):
