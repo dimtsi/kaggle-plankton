@@ -313,6 +313,8 @@ def train_and_validate(model, train_loader, test_loader, num_epochs):
             print("saved best model")
             save_model(epoch, model, optimizer, scheduler)
         toc=timeit.default_timer()
+        if epoch == 80 and learning_rate == 0.001:
+            scheduler.
         print(toc-tic)
     return model
 
@@ -433,7 +435,7 @@ if __name__ == "__main__":
 
     trained_models = []
     def run_KFolds():
-        kf = StratifiedKFold(n_splits=12, random_state=None, shuffle=True)
+        kf = StratifiedKFold(n_splits=99, random_state=None, shuffle=True)
         for train_indexes, validation_indexes in kf.split(X = train_images, y = train_labels):
             X_train = []
             y_train = []
