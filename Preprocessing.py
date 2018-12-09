@@ -265,7 +265,7 @@ def train_and_validate(model, train_loader, test_loader, num_epochs, device):
     best_val_accuracy = 0
     for epoch in range(num_epochs):
         tic=timeit.default_timer()
-        model.train().cuda()
+        model.train().to(device)
         losses = [] #losses in epoch per batch
         accuracies_train = [] #accuracies in epoch per batch
         for i, (images, labels) in enumerate(train_loader):
