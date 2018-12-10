@@ -454,7 +454,7 @@ if __name__ == "__main__":
                 num_layers = 2, pretrained_nn = None)
     #
     cnn1_dict = torch.load('models/test_model15.pt')['state_dict']
-    cnn2_dict = torch.load('models/est_model3.pt', map_location={'cuda:1': 'cuda:0'})['state_dict']
+    cnn2_dict = torch.load('models/test_model3.pt', map_location={'cuda:1': 'cuda:0'})['state_dict']
     cnn3_dict = torch.load('models/test_model90.pt', map_location={'cuda:2': 'cuda:0'})['state_dict']
 
     cnn1.load_state_dict(cnn1_dict)
