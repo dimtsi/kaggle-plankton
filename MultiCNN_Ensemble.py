@@ -513,28 +513,31 @@ if __name__ == "__main__":
                                                                new_test_mine_images,
                                                                new_test_mine_labels,
                                                                norm_params =norm)
-        # train_sampler = ImbalancedDatasetSampler(train_dataset)
+        train_sampler = ImbalancedDatasetSampler(train_dataset)
 
         train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32,
-            shuffle = True, num_workers=4)
+            shuffle = True, num_workers=4, sampler = train_sampler)
 
         test_loader = torch.utils.data.DataLoader(val_dataset,
                                     batch_size = 32, shuffle = False)
 
         # cnn.to(device)
-        trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100, device = device, multiGPU = True)
+        trained_model = train_and_validate(cnn, train_loader, test_loader,
+                                           num_epochs=100, device = device,
+                                           multiGPU = True)
 
-    # train_ensemble_on_whole_test_mine()
+    train_ensemble_on_whole_test_mine()
 
 
     def train_ensemble_on_test():
         norm = {}
         norm['train_norm_mean'], norm['train_norm_std'] = calc_means_stds(train_images)
-        train_dataset, val_dataset = create_train_val_datasets(train_images_no_test, train_labels_no_test,
+        train_dataset, val_dataset = create_train_val_datasets(train_images_no_test,
+                                                               train_labels_no_test,
                                                                test_mine_images,
                                                                test_mine_labels,
-                                                               norm_params =norm)
-        # train_sampler = ImbalancedDatasetSampler(train_dataset)
+                                                               norm_params = norm)
+        train_sampler = ImbalancedDatasetSampler(train_dataset)
 
         train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32,
             shuffle = True, num_workers=4)
@@ -543,7 +546,9 @@ if __name__ == "__main__":
                                     batch_size = 32, shuffle = False)
 
         # cnn.to(device)
-        trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100, device = device, multiGPU = True)
+        trained_model = train_and_validate(cnn, train_loader, test_loader,
+                                           num_epochs=100, device = device,
+                                           multiGPU = True)
 
     # train_ensemble_on_test()
 
