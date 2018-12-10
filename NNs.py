@@ -236,12 +236,12 @@ class EnsembleClassifier(nn.Module):
         self.net2 =  nn.Sequential(*list(networks[1].children()))#[:-1]
         self.net2.to(self.devices[1])#[:-1]
         self.net2.requires_grad = False
-        self.net3 =  nn.Sequential(*list(networks[2].children())).to(self.devices[2])#[:-1]
+        self.net3 =  nn.Sequential(*list(networks[2].children()))#[:-1]
         self.net3.to(self.devices[2])#[:-1]
         self.net3.requires_grad = False
         self.fusion = Fusion()
         self.final_size = 0
-        for net in networks:
+        for net in networks:y
             self.final_size += num_classes
 
         self.fc = nn.Linear(self.final_size, num_classes)
@@ -249,13 +249,17 @@ class EnsembleClassifier(nn.Module):
     def forward(self, x):
         # print((list(self.net1.children()))[-1].state_dict())
         x1 = self.net1(x.to(self.devices[0]))
-        y = x.to(self.devices[1])
-        w = x.to(self.devices[2])
-        x2 = self.net2(y)
-        x3 = self.net3(w)
+        x2 = self.net2(x.to(self.devices[1]))
+        x3 = self.net3(x.to(self.devices[2])
         z = self.fusion([x1, x2.to(self.devices[0]), x3.to(self.devices[0])])
         z = self.fc(z)
         return z
+
+    def set_devices():
+        # print((list(self.net1.children()))[-1].state_dict())
+        self.net1 = self.net1(x.to(self.devices[0]))
+        self.net2 = self.net2(x.to(self.devices[1]))
+        self.net3 = self.net3(x.to(self.devices[2]))
 
 
 class PretrainedResnetMine(ResNetMine):
