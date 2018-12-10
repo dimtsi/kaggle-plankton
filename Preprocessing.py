@@ -489,11 +489,14 @@ if __name__ == "__main__":
             for i in train_indexes:
                 X_train.append(train_images_no_test[i])
                 y_train.append(train_labels_no_test[i])
-            for j in validation_indexes:
-                X_val.append(train_images_no_test[j])
-                y_val.append(train_labels_no_test[j])
+            # for j in validation_indexes:
+            #     X_val.append(train_images_no_test[j])
+            #     y_val.append(train_labels_no_test[j])
 
+            X_val = test_mine_images
+            y_val = test_mine_labels
             print("train: "+ str(len(X_train)) + " val: " +str(len(X_val)))
+            print(np.bincount(test_mine_labels))
             norm['train_norm_mean'], norm['train_norm_std'] = calc_means_stds(train_images)
 
             class_sample_counts = np.bincount(y_train)
@@ -503,8 +506,7 @@ if __name__ == "__main__":
 
             ## Create Datasets and Dataloaders
             train_dataset, val_dataset = create_train_val_datasets(X_train, y_train,
-                                                                   test_mine_images,
-                                                                   test_mine_labels,
+                                                                   X_val, y_val,
                                                                    norm_params =norm)
             # train_sampler = ImbalancedDatasetSampler(train_dataset)
 
