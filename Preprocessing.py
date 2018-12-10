@@ -437,7 +437,7 @@ if __name__ == "__main__":
     norm_mean_width = np.mean(widths)
     norm_mean_height = np.mean(heights)
 
-    device = torch.device("cuda:3" if torch.cuda.device_count()>2 else "cuda:0")
+    device = torch.device("cuda:1" if torch.cuda.device_count()>2 else "cuda:0")
     import timeit
 
     ##Class weights for imbalance
@@ -453,32 +453,9 @@ if __name__ == "__main__":
     cnn = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
 
-    # cnn2 = ResNetDynamic(pretrained.block, pretrained.layers,
-    #             num_layers = 2, pretrained_nn = None)
-    # cnn3 = ResNetDynamic(pretrained.block, pretrained.layers,
-    #             num_layers = 2, pretrained_nn = None)
-    # #
-    # cnn1_dict = torch.load('test_model15.pt')['state_dict']
-    # cnn2_dict = torch.load('test_model3.pt', map_location={'cuda:1': 'cuda:0'})['state_dict']
-    # cnn3_dict = torch.load('test_model90.pt', map_location={'cuda:2': 'cuda:0'})['state_dict']
-    #
-    # cnn1.load_state_dict(cnn1_dict)
-    # cnn2.load_state_dict(cnn2_dict)
-    # cnn3.load_state_dict(cnn3_dict)
-    #
-    # # cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
-    # models = []
-    # models.append(cnn1)
-    # models.append(cnn2)
-    # models.append(cnn3)
-    #
-    # cnn = EnsembleClassifier(models)
-    # cnn1_dict = torch.load('ensemble.pt')['state_dict']
-
-
     trained_models = []
     def run_KFolds():
-        kf = StratifiedKFold(n_splits=90, random_state=None, shuffle=True)
+        kf = StratifiedKFold(n_splits=3, random_state=None, shuffle=True)
         for train_indexes, validation_indexes in kf.split(X = train_images_no_test,
                                                           y = train_labels_no_test):
             X_train = []
@@ -530,7 +507,7 @@ if __name__ == "__main__":
         #     print(summary(cnn, (1,28,28)))
             trained_model = train_and_validate(cnn, train_loader, test_loader,
                                                num_epochs=100, device = device,
-                                               save_name = 'trained_model.pt')
+                                               save_name = 'test_model3.pt')
             trained_models.append(trained_model)
             break
 
