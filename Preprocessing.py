@@ -352,7 +352,7 @@ def predict_on_my_test_set(model, mean_norm_test, std_norm_test):
                                                    batch_size = 32, shuffle = False)
 
     best_accuracy = 0
-    model.eval().to(device)
+    model.eval()
     correct = 0
     total = 0
     for images, labels in test_mine_loader:
@@ -382,7 +382,7 @@ def predict_test_set_kaggle(model, filenames,  mean_norm_test, std_norm_test):
     model.eval().to(device)
     predictions = []
     for images in test_loader:
-        images = Variable(images).cuda()
+        images = Variable(images).to(device)
         outputs = model(images)
         _, prediction = torch.max(outputs.data, 1)
         predictions.extend(prediction.cpu().numpy())
@@ -539,5 +539,5 @@ if __name__ == "__main__":
     final_model = cnn
     final_model.load_state_dict(torch.load('trained_model.pt')['state_dict'])
 
-    predict_on_my_test_set(final_model, mean_norm_test, std_norm_test)
+    # predict_on_my_test_set(final_model, mean_norm_test, std_norm_test)
     predict_test_set_kaggle(final_model, test_filenames, mean_norm_test, std_norm_test)
