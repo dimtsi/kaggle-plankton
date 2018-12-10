@@ -267,7 +267,7 @@ def train_and_validate(model, train_loader, test_loader,
     optimizer = torch.optim.RMSprop(model.parameters(), lr=learning_rate,
                                     weight_decay = weight_decay,
                                     momentum = 0.6);
-    print("mom0.9")
+    print("mom0.6")
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
     optimizer, 'max', factor=0.1, patience=7, verbose=True)
 #     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate);
