@@ -356,7 +356,7 @@ def predict_on_my_test_set(model, mean_norm_test, std_norm_test):
 
 # predict on testset
 
-def predict_test_set_kaggle(model, filenames,  mean_norm_test, std_norm_test, device = device):
+def predict_test_set_kaggle(model, filenames,  mean_norm_test, std_norm_test):
     test_transforms = transforms. Compose([
         transforms.Grayscale(),
         transforms.ToTensor(),
