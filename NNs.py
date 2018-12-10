@@ -227,8 +227,9 @@ class SuperNet(nn.Module):
 
 class EnsembleClassifier(nn.Module):
 
-    def __init__(self, networks, num_classes=121):
+    def __init__(self, networks, num_classes=121, multiGPU = False):
         self.devices = [torch.device("cuda:0"), torch.device("cuda:1"), torch.device("cuda:2"), torch.device("cuda:3")]
+        self.multiGPU = multiGPU
         super(type(self), self).__init__()
         self.net1 =  nn.Sequential(*list(networks[0].children()))
         # self.net1.requires_grad = False
@@ -251,12 +252,21 @@ class EnsembleClassifier(nn.Module):
         self.fc2 = nn.Linear(self.final_size, num_classes)
 
     def forward(self, x):
-        x1 = self.net1(x.to(self.devices[0]))
-        x2 = self.net2(x.to(self.devices[1]))
-        x3 = self.net3(x.to(self.devices[2]))
-        x4 = self.net4(x.to(self.devices[3]))
+        if self.multiGPU == True:
+            x1 = self.net1(x.to(self.devices[0]))
+            x2 = self.net2(x.to(self.devices[1]))
+            x3 = self.net3(x.to(self.devices[2]))
+            x4 = self.net4(x.to(self.devices[3]))
+            z = self.fusion([x1, x2.to(self.devices[0]), x3.to(self.devices[0]), x4.to(self.devices[0])])#, x3.to(self.devices[0])
 
-        z = self.fusion([x1, x2.to(self.devices[0]), x3.to(self.devices[0]), x4.to(self.devices[0])])#, x3.to(self.devices[0])
+        else:
+            x1 = self.net1(x)
+            x2 = self.net2(x)
+            x3 = self.net3(x)
+            x4 = self.net4(x)
+            z = self.fusion([x1, x2.to(self.devices[0]), x3.to(self.devices[0]), x4.to(self.devices[0])])#, x3.to(self.devices[0])
+
+
         z = self.fc1(z)
         z = self.fc2(z)
         return z

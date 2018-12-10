@@ -270,8 +270,8 @@ def train_and_validate(model, train_loader, test_loader, num_epochs, device, mul
         if multiGPU == True:
             print("multiGPU")
             model.set_devices_multiGPU()
+            model.multiGPU = True
 
-    model.set_devices_multiGPU()
     history = {'batch': [], 'loss': [], 'accuracy': []}
     best_val_accuracy = 0
     for epoch in range(num_epochs):
