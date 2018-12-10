@@ -513,10 +513,10 @@ if __name__ == "__main__":
                                                                new_test_mine_images,
                                                                new_test_mine_labels,
                                                                norm_params =norm)
-        train_sampler = ImbalancedDatasetSampler(train_dataset)
+        # train_sampler = ImbalancedDatasetSampler(train_dataset)
 
         train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32,
-            shuffle = False, num_workers=4, sampler = train_sampler)
+            shuffle = True, num_workers=4)
 
         test_loader = torch.utils.data.DataLoader(val_dataset,
                                     batch_size = 32, shuffle = False)
