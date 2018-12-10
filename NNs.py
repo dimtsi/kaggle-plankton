@@ -248,7 +248,6 @@ class EnsembleClassifier(nn.Module):
 
     def forward(self, x):
         # print((list(self.net1.children()))[-1].state_dict())
-        self.set_devices()
         x1 = self.net1(x.to(self.devices[0]))
         x2 = self.net2(x.to(self.devices[1]))
         x3 = self.net3(x.to(self.devices[2]))
@@ -258,9 +257,9 @@ class EnsembleClassifier(nn.Module):
 
     def set_devices(self):
         # print((list(self.net1.children()))[-1].state_dict())
-        self.net1 = self.net1(x.to(self.devices[0]))
-        self.net2 = self.net2(x.to(self.devices[1]))
-        self.net3 = self.net3(x.to(self.devices[2]))
+        self.net1 = self.net1.to(self.devices[0])
+        self.net2 = self.net2.to(self.devices[1])
+        self.net3 = self.net3.to(self.devices[2])
 
 
 class PretrainedResnetMine(ResNetMine):
