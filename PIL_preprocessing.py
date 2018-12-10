@@ -19,7 +19,7 @@ classified_train_images = pickle.load(open("pkl/classified_train_images.pkl", "r
 
 
 def pad_and_resize(im):
-    desired_size = 64
+    desired_size = 80
     old_size = im.size  # old_size[0] is in (width, height) format
     ratio = float(desired_size)/max(old_size)
     new_size = tuple([int(x*ratio) for x in old_size])
