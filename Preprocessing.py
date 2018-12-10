@@ -439,7 +439,7 @@ if __name__ == "__main__":
     norm_mean_width = np.mean(widths)
     norm_mean_height = np.mean(heights)
 
-    device = torch.device("cuda:1" if torch.cuda.device_count()>2 else "cuda:0")
+    device = torch.device("cuda:0" if torch.cuda.device_count()>2 else "cuda:0")
     import timeit
 
     ##Class weights for imbalance
@@ -457,7 +457,7 @@ if __name__ == "__main__":
 
     trained_models = []
     def run_KFolds():
-        num_splits = 3
+        num_splits = 15
         kf = StratifiedKFold(n_splits=num_splits, random_state=None, shuffle=True)
         for train_indexes, validation_indexes in kf.split(X = train_images,
                                                           y = train_labels):
