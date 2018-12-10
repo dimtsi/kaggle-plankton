@@ -399,6 +399,8 @@ def predict_test_set_kaggle(model, filenames,  mean_norm_test, std_norm_test):
 
 if __name__ == "__main__":
     # print("weighted classes")
+    original_images = pickle.load(open("pkl/classified_padded64.pkl", "rb"))
+    original_labels = pickle.load(open("pkl/classified_train_labels.pkl", "rb"))
 
     train_images = pickle.load(open("pkl/augmented/classified_padded64.pkl", "rb"))
     train_labels = pickle.load(open("pkl/augmented/classified_all_labels.pkl", "rb"))
@@ -407,11 +409,11 @@ if __name__ == "__main__":
 
     ##create separate test set
     test_set_mine_indexes = pickle.load(open("pkl/test_set_mine_indexes_classified.pkl", "rb"))
-    train_images_no_test = [i for j, i in enumerate(train_images) if j not in test_set_mine_indexes]
-    train_labels_no_test = [i for j, i in enumerate(train_labels) if j not in test_set_mine_indexes]
-
-    test_mine_images = [i for j, i in enumerate(train_images) if j in test_set_mine_indexes]
-    test_mine_labels = [i for j, i in enumerate(train_labels) if j in test_set_mine_indexes]
+    # train_images_no_test = [i for j, i in enumerate(train_images) if j not in test_set_mine_indexes]
+    # train_labels_no_test = [i for j, i in enumerate(train_labels) if j not in test_set_mine_indexes]
+    #
+    test_mine_images = [i for j, i in enumerate(original_images) if j in test_set_mine_indexes]
+    test_mine_labels = [i for j, i in enumerate(original_labels) if j in test_set_mine_indexes]
 
     ###========================MAIN EXECUTION=========================###
 
@@ -457,16 +459,16 @@ if __name__ == "__main__":
     def run_KFolds():
         num_splits = 3
         kf = StratifiedKFold(n_splits=num_splits, random_state=None, shuffle=True)
-        for train_indexes, validation_indexes in kf.split(X = train_images_no_test,
-                                                          y = train_labels_no_test):
+        for train_indexes, validation_indexes in kf.split(X = train_images,
+                                                          y = train_labels):
             X_train = []
             y_train = []
             X_val = []
             y_val = []
             norm = {}
             for i in train_indexes:
-                X_train.append(train_images_no_test[i])
-                y_train.append(train_labels_no_test[i])
+                X_train.append(train_images[i])
+                y_train.append(train_images[i])
             # for j in validation_indexes:
             #     X_val.append(train_images_no_test[j])
             #     y_val.append(train_labels_no_test[j])
@@ -475,7 +477,7 @@ if __name__ == "__main__":
             y_val = test_mine_labels
             print("train: "+ str(len(X_train)) + " val: " +str(len(X_val)))
             print(np.bincount(test_mine_labels))
-            norm['train_norm_mean'], norm['train_norm_std'] = calc_means_stds(train_images)
+            norm['train_norm_mean'], norm['train_norm_std'] = calc_means_stds(original_images)
 
             class_sample_counts = np.bincount(y_train)
             class_sample_counts
@@ -515,7 +517,7 @@ if __name__ == "__main__":
     run_KFolds()
 
 
-    mean_norm_test, std_norm_test = calc_means_stds(train_images)
+    mean_norm_test, std_norm_test = calc_means_stds(original_images)
 
     final_model = cnn
     final_model.load_state_dict(torch.load('models/trained_model.pt')['state_dict'])
