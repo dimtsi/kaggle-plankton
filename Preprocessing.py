@@ -505,6 +505,7 @@ if __name__ == "__main__":
             # #   cnn = nn.DataParallel(cnn)
             #   cnn = nn.DataParallel(cnn, device_ids=[0, 1])
             cnn.to(device)
+            cnn.set_devices()
 
             # cnn = CNN().cuda()
             # summary(cnn, (1,64,64))

@@ -256,7 +256,7 @@ class EnsembleClassifier(nn.Module):
         z = self.fc(z)
         return z
 
-    def set_devices():
+    def set_devices(self):
         # print((list(self.net1.children()))[-1].state_dict())
         self.net1 = self.net1(x.to(self.devices[0]))
         self.net2 = self.net2(x.to(self.devices[1]))
