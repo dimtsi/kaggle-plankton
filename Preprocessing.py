@@ -323,12 +323,12 @@ def train_and_validate(model, train_loader, test_loader, num_epochs, device, mul
             best_val_accuracy = val_accuracy
             save_model(epoch, model, optimizer, scheduler, name = save_name)
         toc=timeit.default_timer()
-        if epoch+1 == 70 and learning_rate == 0.001:
+        if epoch+1 == 70:
             for group in optimizer.param_groups:
                 if 'lr' in group.keys():
-                    group['lr'] = 1e-4
-                    scheduler._reset()
-                    print("MANUAL CHANGE OF LR")
+                    if group['lr'] = 1e-4
+                        scheduler._reset()
+                        print("MANUAL CHANGE OF LR")
         print(toc-tic)
     return model
 
