@@ -228,7 +228,7 @@ class SuperNet(nn.Module):
 class EnsembleClassifier(nn.Module):
 
     def __init__(self, networks, num_classes=121):
-        self.devices = [torch.device("cuda:1"), torch.device("cuda:2"), torch.device("cuda:3")]
+        self.devices = [torch.device("cuda:0"), torch.device("cuda:1"), torch.device("cuda:2")]
         super(type(self), self).__init__()
         self.net1 =  nn.Sequential(*list(networks[0].children()))
         # self.net1.to(self.devices[0])#[:-1]
@@ -254,9 +254,9 @@ class EnsembleClassifier(nn.Module):
         return z
 
     def set_devices_multiGPU(self):
-        self.net1.cuda(1)
-        self.net2.cuda(2)
-        self.net3.cuda(3)
+        self.net1.to(self.devices[0])
+        self.net2.to(self.devices[1])
+        self.net3.to(self.devices[2])
 
 
 class PretrainedResnetMine(ResNetMine):
