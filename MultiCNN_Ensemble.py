@@ -484,6 +484,40 @@ if __name__ == "__main__":
     cnn = EnsembleClassifier(models)
     # cnn1_dict = torch.load('ensemble.pt')['state_dict']
 
+
+
+
+    def train_ensemble_on_whole_test_mine():
+        norm = {}
+        norm['train_norm_mean'], norm['train_norm_std'] = calc_means_stds(train_images)
+
+        split = 1500
+        additional_images = test_mine_images[:split]
+        new_test_mine_images = test_mine_images[split:]
+        additional_labels = test_mine_labels[:split]
+        new_test_mine_labels = test_mine_labels[split:]
+
+        extended_train_images = (train_images_no_test+additional_images).copy()
+        extended_train_labels = (train_labels_no_test+additional_labels).copy()
+
+        train_dataset, val_dataset = create_train_val_datasets(extended_train_images, extended_train_labels,
+                                                               new_test_mine_images,
+                                                               new_test_mine_labels,
+                                                               norm_params =norm)
+        # train_sampler = ImbalancedDatasetSampler(train_dataset)
+
+        train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32,
+            shuffle = True, num_workers=4)
+
+        test_loader = torch.utils.data.DataLoader(val_dataset,
+                                    batch_size = 32, shuffle = False)
+
+        # cnn.to(device)
+        trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100, device = device, multiGPU = True)
+
+        train_ensemble_on_whole_test_mine()
+
+
     def train_ensemble_on_test():
         norm = {}
         norm['train_norm_mean'], norm['train_norm_std'] = calc_means_stds(train_images)
@@ -502,7 +536,7 @@ if __name__ == "__main__":
         # cnn.to(device)
         trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100, device = device, multiGPU = False)
 
-    train_ensemble_on_test()
+    # train_ensemble_on_test()
 
     mean_norm_test, std_norm_test = calc_means_stds(train_images)
 
