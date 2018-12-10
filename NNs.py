@@ -241,7 +241,7 @@ class EnsembleClassifier(nn.Module):
         self.net3.requires_grad = False
         self.fusion = Fusion()
         self.final_size = 0
-        for net in networks:y
+        for net in networks:
             self.final_size += num_classes
 
         self.fc = nn.Linear(self.final_size, num_classes)
