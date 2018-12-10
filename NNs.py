@@ -230,11 +230,11 @@ class EnsembleClassifier(nn.Module):
     def __init__(self, networks, num_classes=121):
         self.devices = [torch.device("cuda:1"), torch.device("cuda:2"), torch.device("cuda:3")]
         super(type(self), self).__init__()
-        self.net1 =  nn.Sequential(*list(networks[0].children())).to(devices[0])#[:-1]
+        self.net1 =  nn.Sequential(*list(networks[0].children())).to(self.devices[0])#[:-1]
         self.net1.requires_grad = False
-        self.net2 =  nn.Sequential(*list(networks[1].children())).to(devices[1])#[:-1]
+        self.net2 =  nn.Sequential(*list(networks[1].children())).to(self.devices[1])#[:-1]
         self.net2.requires_grad = False
-        self.net3 =  nn.Sequential(*list(networks[2].children())).to(devices[2])#[:-1]
+        self.net3 =  nn.Sequential(*list(networks[2].children())).to(self.devices[2])#[:-1]
         self.net3.requires_grad = False
         self.fusion = Fusion()
         self.final_size = 0
