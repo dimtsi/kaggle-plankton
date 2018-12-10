@@ -383,7 +383,7 @@ def predict_test_set_kaggle(model, filenames,  mean_norm_test, std_norm_test, mu
             print("multiGPU")
             model.set_devices_multiGPU()
 
-    model.eval().to(device)
+    model.eval()
     predictions = []
     for images in test_loader:
         images = Variable(images).cuda()
