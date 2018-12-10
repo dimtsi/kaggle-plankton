@@ -342,20 +342,21 @@ def predict_on_my_test_set(model, mean_norm_test, std_norm_test, multiGPU=False)
         transforms.Normalize(mean=[mean_norm_test],
                     std =[std_norm_test])
     ])
-    if isinstance(model, EnsembleClassifier):
-        if multiGPU == True:
-            print("multiGPU")
-            model.set_devices_multiGPU()
 
     test_mine_dataset = ListsTrainDataset(test_mine_images, test_mine_labels, transform = test_transforms)
     test_mine_loader = torch.utils.data.DataLoader(test_mine_dataset, batch_size = 32, shuffle = False)
 
     best_accuracy = 0
-    model.eval()
+    model.eval().to(device)
+    if isinstance(model, EnsembleClassifier):
+        if multiGPU == True:
+            print("multiGPU")
+            model.set_devices_multiGPU()
+
     correct = 0
     total = 0
     for images, labels in test_mine_loader:
-        images = Variable(images)
+        images = Variable(images).to(device)
         labels= labels.squeeze(1)
         outputs = model(images).cpu()
         _, predicted = torch.max(outputs.data, 1)
