@@ -531,13 +531,13 @@ if __name__ == "__main__":
             trained_models.append(trained_model)
             break
 
-    run_KFolds()
+    # run_KFolds()
 
 
-    # mean_norm_test, std_norm_test = calc_means_stds(train_images)
-    #
-    # final_model = cnn
-    # final_model.load_state_dict(torch.load('ensemble.pt')['state_dict'])
-    #
-    # predict_on_my_test_set(final_model, mean_norm_test, std_norm_test)
-    # predict_test_set_kaggle(final_model, test_filenames, mean_norm_test, std_norm_test)
+    mean_norm_test, std_norm_test = calc_means_stds(train_images)
+
+    final_model = cnn
+    final_model.load_state_dict(torch.load('trained_model.pt')['state_dict'])
+
+    predict_on_my_test_set(final_model, mean_norm_test, std_norm_test)
+    predict_test_set_kaggle(final_model, test_filenames, mean_norm_test, std_norm_test)
