@@ -326,7 +326,8 @@ def train_and_validate(model, train_loader, test_loader, num_epochs, device, mul
         if epoch+1 == 70:
             for group in optimizer.param_groups:
                 if 'lr' in group.keys():
-                    if group['lr'] = 1e-4
+                    if group['lr'] == 0.001:
+                        group['lr'] == 0.0001
                         scheduler._reset()
                         print("MANUAL CHANGE OF LR")
         print(toc-tic)
