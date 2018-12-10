@@ -234,7 +234,7 @@ class EnsembleClassifier(nn.Module):
         # self.net1.to(self.devices[0])#[:-1]
         self.net1.requires_grad = False
         self.net2 =  nn.Sequential(*list(networks[1].children()))#[:-1]
-        self.net2.cuda(3)# self.net2.to(self.devices[1])#[:-1]
+        # self.net2.cuda(3)# self.net2.to(self.devices[1])#[:-1]
         self.net2.requires_grad = False
         self.net3 =  nn.Sequential(*list(networks[2].children()))#[:-1]
         # self.net3.to(self.devices[2])#[:-1]
@@ -247,12 +247,10 @@ class EnsembleClassifier(nn.Module):
         self.fc = nn.Linear(self.final_size, num_classes)
 
     def forward(self, x):
-        self.net2.cuda(3)
-        # print((list(self.net1.children()))[-1].state_dict())
-        y=x.to(self.devices[2])
-        print(y)
+        self.net2.cuda(2)
+        self.net3.cuda(3)
         x1 = self.net1(x.to(self.devices[0]))
-        x2 = self.net2(y)
+        x2 = self.net2(x.to(self.devices[1])
         x3 = self.net3(x.to(self.devices[2]))
         z = self.fusion([x1, x2.to(self.devices[0]), x3.to(self.devices[0])])
         z = self.fc(z)
