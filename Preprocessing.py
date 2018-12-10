@@ -532,7 +532,7 @@ if __name__ == "__main__":
         test_loader = torch.utils.data.DataLoader(val_dataset,
                                     batch_size = 32, shuffle = False)
 
-        cnn.to(device)
+        # cnn.to(device)
         trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100, device = device)
 
     train_ensemble_on_test()
