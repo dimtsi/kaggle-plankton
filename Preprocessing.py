@@ -307,7 +307,7 @@ def train_and_validate(model, train_loader, test_loader, num_epochs, device, mul
           "Training Accuracy: %.4f" % np.mean(accuracies_train)])
         print('\r{}'.format(epoch_log))
         ##VALIDATION SCORE AFTER EVERY EPOCH
-        model.eval().to(device)
+        model.eval()
         correct = 0
         total = 0
         for images, labels in test_loader:
