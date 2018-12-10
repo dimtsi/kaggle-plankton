@@ -515,7 +515,7 @@ if __name__ == "__main__":
         # cnn.to(device)
         trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100, device = device, multiGPU = True)
 
-        train_ensemble_on_whole_test_mine()
+train_ensemble_on_whole_test_mine()
 
 
     def train_ensemble_on_test():
@@ -534,7 +534,7 @@ if __name__ == "__main__":
                                     batch_size = 32, shuffle = False)
 
         # cnn.to(device)
-        trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100, device = device, multiGPU = False)
+        trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100, device = device, multiGPU = True)
 
     # train_ensemble_on_test()
 
