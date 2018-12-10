@@ -516,7 +516,7 @@ if __name__ == "__main__":
         train_sampler = ImbalancedDatasetSampler(train_dataset)
 
         train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32,
-            shuffle = True, num_workers=4, sampler = train_sampler)
+            shuffle = False, num_workers=4, sampler = train_sampler)
 
         test_loader = torch.utils.data.DataLoader(val_dataset,
                                     batch_size = 32, shuffle = False)
