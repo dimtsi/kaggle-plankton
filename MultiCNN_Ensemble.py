@@ -477,7 +477,7 @@ if __name__ == "__main__":
     cnn4 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
     cnn4_dict = torch.load('models/test_model90.pt', map_location={'cuda:2': 'cuda:0'})['state_dict']
-    cnn4.load_state_dict(cnn3_dict)
+    cnn4.load_state_dict(cnn4_dict)
     models.append(cnn4)
 
     # cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
