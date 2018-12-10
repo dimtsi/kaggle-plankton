@@ -472,7 +472,7 @@ if __name__ == "__main__":
 
     cnn2 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
-    cnn2_dict = torch.load('models/test_model1splits5.pt')['state_dict']
+    cnn2_dict = torch.load('models/test_model15splits.pt')['state_dict']
     cnn2.load_state_dict(cnn2_dict)
     models.append(cnn2)
 
