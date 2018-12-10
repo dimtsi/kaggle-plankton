@@ -266,10 +266,11 @@ def train_and_validate(model, train_loader, test_loader, num_epochs, device):
 #     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate);
     #Training
     model.train().to(device)
-    if isinstance(EnsembleClassifier):
+    if isinstance(model, EnsembleClassifier):
         if model.multiGPU == True:
+            print("multiGPU")
             model.set_devices_multiGPU()
-            
+
     model.set_devices_multiGPU()
     history = {'batch': [], 'loss': [], 'accuracy': []}
     best_val_accuracy = 0
@@ -539,7 +540,7 @@ if __name__ == "__main__":
                                     batch_size = 32, shuffle = False)
 
         # cnn.to(device)
-        trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100, device = device)
+        trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100, device = device, multiGPU = True)
 
     train_ensemble_on_test()
 
