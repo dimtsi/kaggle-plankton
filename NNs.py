@@ -234,7 +234,7 @@ class EnsembleClassifier(nn.Module):
         # self.net1.to(self.devices[0])#[:-1]
         self.net1.requires_grad = False
         self.net2 =  nn.Sequential(*list(networks[1].children()))#[:-1]
-        # self.net2.cuda(3)# self.net2.to(self.devices[1])#[:-1]
+        self.net2.cuda(2)
         self.net2.requires_grad = False
         self.net3 =  nn.Sequential(*list(networks[2].children()))#[:-1]
         # self.net3.to(self.devices[2])#[:-1]
@@ -247,8 +247,6 @@ class EnsembleClassifier(nn.Module):
         self.fc = nn.Linear(self.final_size, num_classes)
 
     def forward(self, x):
-        self.net2.cuda(2)
-        self.net3.cuda(3)
         x1 = self.net1(x.to(self.devices[0]))
         x2 = self.net2(x.to(self.devices[1]))
         x3 = self.net3(x.to(self.devices[2]))
@@ -256,11 +254,11 @@ class EnsembleClassifier(nn.Module):
         z = self.fc(z)
         return z
 
-    def set_devices(self):
+    def set_devices_multiGPU()(self):
         # print((list(self.net1.children()))[-1].state_dict())
-        self.net1 = self.net1.to(self.devices[0])
-        self.net2 = self.net2.to(self.devices[1])
-        self.net3 = self.net3.to(self.devices[2])
+        self.net1.cuda(1)
+        self.net2.cuda(2)
+        self.net3.cuda(3)
 
 
 class PretrainedResnetMine(ResNetMine):
