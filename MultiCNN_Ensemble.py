@@ -511,6 +511,8 @@ if __name__ == "__main__":
 
         extended_train_images = (train_images+additional_images).copy()
         extended_train_labels = (train_labels+additional_labels).copy()
+        print("train: "+ str(len(extended_train_images))
+              + " val: " +str(len(new_test_mine_images)))
 
         train_dataset, val_dataset = create_train_val_datasets(extended_train_images,
                                                                extended_train_labels,
@@ -542,7 +544,8 @@ if __name__ == "__main__":
                                                                test_mine_labels,
                                                                norm_params = norm)
         train_sampler = ImbalancedDatasetSampler(train_dataset)
-
+        print("train: "+ str(len(train_images))
+              + " val: " +str(len(test_mine_images)))
         train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32,
             shuffle = True, num_workers=4)
 
@@ -561,5 +564,5 @@ if __name__ == "__main__":
     final_model = cnn.to(device)
     final_model.load_state_dict(torch.load('models/ensemble.pt')['state_dict'])
     #
-    predict_on_my_test_set(final_model, mean_norm_test, std_norm_test, multiGPU=False)
+    # predict_on_my_test_set(final_model, mean_norm_test, std_norm_test, multiGPU=False)
     predict_test_set_kaggle(final_model, test_filenames, mean_norm_test, std_norm_test, multiGPU=False)
