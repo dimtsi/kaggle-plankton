@@ -1,10 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[14]:
-
-
-import Augmentor
 import pickle
 import numpy as np
 import pandas as pd
@@ -68,7 +61,7 @@ transform = transforms.Compose([
 # plt.imshow(train_images[0])
 for i in range(3):
     plt.imshow(transform(train_images[0]))
-    
+
 np.bincount(train_labels)
 # plt.imshow(train_images[0])
 
@@ -121,7 +114,7 @@ for x in range(len(all_images_with_aug)):
     else:
         classified_train_images.append(all_images_with_aug[x])
         classified_train_labels.append(all_labels[x])
-       
+
 pickle.dump( classified_train_images, open("pkl/augmented/classified_all_images.pkl", "wb" ))
 pickle.dump( classified_train_labels, open("pkl/augmented/classified_all_labels.pkl", "wb"))
 
@@ -288,4 +281,3 @@ preprocessed_train_images[78]
 
 pickle.dump( preprocessed_train_images, open( "pkl/augmented/train_resized80", "wb" ) )
 pickle.dump( preprocessed_classified_images, open( "pkl/augmented/classified_resized80.pkl", "wb" ) )
-
