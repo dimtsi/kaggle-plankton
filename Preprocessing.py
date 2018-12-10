@@ -255,7 +255,7 @@ def train_only(model, train_loader, num_epochs):
     return model
 
 
-def train_and_validate(model, train_loader, test_loader, num_epochs, device):
+def train_and_validate(model, train_loader, test_loader, num_epochs, device, multiGPU = False):
     learning_rate = 0.001
     weight_decay = 0
     batch_size = train_loader.batch_size
@@ -267,7 +267,7 @@ def train_and_validate(model, train_loader, test_loader, num_epochs, device):
     #Training
     model.train().to(device)
     if isinstance(model, EnsembleClassifier):
-        if model.multiGPU == True:
+        if multiGPU == True:
             print("multiGPU")
             model.set_devices_multiGPU()
 
