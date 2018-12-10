@@ -455,7 +455,7 @@ if __name__ == "__main__":
 
     trained_models = []
     def run_KFolds():
-        kf = StratifiedKFold(n_splits=3, random_state=None, shuffle=True)
+        kf = StratifiedKFold(n_splits=90, random_state=None, shuffle=True)
         for train_indexes, validation_indexes in kf.split(X = train_images_no_test,
                                                           y = train_labels_no_test):
             X_train = []

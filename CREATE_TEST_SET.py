@@ -8,12 +8,12 @@
 
 import pickle
 from sklearn.model_selection import StratifiedKFold
-
+import numpy as np
 
 train_images = pickle.load(open("pkl/train_padded64.pkl", "rb"))
 train_labels = pickle.load(open("pkl/train_labels.pkl", "rb"))
 
-kf = StratifiedKFold(n_splits=9, random_state=None, shuffle=True)
+kf = StratifiedKFold(n_splits=10, random_state=None, shuffle=True)
 for train_indexes, validation_indexes in kf.split(X = train_images, y = train_labels):
     X_train = []
     y_train = []
@@ -30,7 +30,7 @@ for train_indexes, validation_indexes in kf.split(X = train_images, y = train_la
     break
 
 pickle.dump(validation_indexes, open("pkl/test_set_mine_indexes.pkl", "wb"))
-
+print(np.bincount(y_val))
 
 # In[2]:
 
