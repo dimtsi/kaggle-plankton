@@ -266,8 +266,8 @@ def train_and_validate(model, train_loader, test_loader,
     # optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay = weight_decay);
     optimizer = torch.optim.RMSprop(model.parameters(), lr=learning_rate,
                                     weight_decay = weight_decay,
-                                    momentum = 0.3);
-    print("mom0.3")
+                                    momentum = 0.6);
+    print("mom0.6")
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
     optimizer, 'max', factor=0.1, patience=7, verbose=True)
 #     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate);
@@ -443,7 +443,7 @@ if __name__ == "__main__":
     norm_mean_width = np.mean(widths)
     norm_mean_height = np.mean(heights)
 
-    device = torch.device("cuda:1" if torch.cuda.device_count()>2 else "cuda:0")
+    device = torch.device("cuda:0" if torch.cuda.device_count()>2 else "cuda:0")
     import timeit
 
     ##Class weights for imbalance
