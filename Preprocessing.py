@@ -169,7 +169,7 @@ def create_train_val_datasets(X_train, y_train, X_val = None, y_val = None, norm
             # transforms.resize(image, (64, 64)),
             transforms.RandomHorizontalFlip(p=0.5),
             transforms.RandomRotation(degrees=360),
-            transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.2)
+            transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.2),
             transforms.ToTensor(),
             transforms.Normalize(mean=[norm_params['train_norm_mean']],
                         std =[norm_params['train_norm_std']])
@@ -400,13 +400,13 @@ def predict_test_set_kaggle(model, filenames,  mean_norm_test, std_norm_test):
 if __name__ == "__main__":
     # print("weighted classes")
 
-    train_images = pickle.load(open("pkl/classified_padded64.pkl", "rb"))
-    train_labels = pickle.load(open("pkl/classified_train_labels.pkl", "rb"))
+    train_images = pickle.load(open("pkl/augmented/classified_padded64.pkl", "rb"))
+    train_labels = pickle.load(open("pkl/augmented/classified_all_labels.pkl", "rb"))
     test_images = pickle.load(open("pkl/test_padded64.pkl", "rb"))
     test_filenames = pickle.load(open("pkl/test_filenames.pkl", "rb"))
 
     ##create separate test set
-    test_set_mine_indexes = pickle.load(open("pkl/test_set_mine_indexes_classified.pkl", "rb"))
+    test_set_mine_indexes = pickle.load(open("pkl/augmented/test_set_mine_indexes_classified.pkl", "rb"))
     train_images_no_test = [i for j, i in enumerate(train_images) if j not in test_set_mine_indexes]
     train_labels_no_test = [i for j, i in enumerate(train_labels) if j not in test_set_mine_indexes]
 
