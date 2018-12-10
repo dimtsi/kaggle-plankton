@@ -402,7 +402,7 @@ if __name__ == "__main__":
 
     train_images = pickle.load(open("pkl/augmented/classified_padded64.pkl", "rb"))
     train_labels = pickle.load(open("pkl/augmented/classified_all_labels.pkl", "rb"))
-    test_images = pickle.load(open("pkl/augmented/test_padded64.pkl", "rb"))
+    test_images = pickle.load(open("pkl/test_padded64.pkl", "rb"))
     test_filenames = pickle.load(open("pkl/test_filenames.pkl", "rb"))
 
     ##create separate test set

@@ -10,12 +10,10 @@ import pickle
 from sklearn.model_selection import StratifiedKFold
 
 
-train_images = pickle.load(open("pkl/augmented/train_padded64.pkl", "rb"))
-train_labels = pickle.load(open("pkl/augmented/all_labels.pkl", "rb"))
-
+train_images = pickle.load(open("pkl/train_padded64.pkl", "rb"))
+train_labels = pickle.load(open("pkl/train_labels.pkl", "rb"))
 
 kf = StratifiedKFold(n_splits=9, random_state=None, shuffle=True)
-
 for train_indexes, validation_indexes in kf.split(X = train_images, y = train_labels):
     X_train = []
     y_train = []
@@ -31,7 +29,7 @@ for train_indexes, validation_indexes in kf.split(X = train_images, y = train_la
         y_val.append(train_labels[j])
     break
 
-pickle.dump(validation_indexes, open("pkl/augmented/test_set_mine_indexes.pkl", "wb"))
+pickle.dump(validation_indexes, open("pkl/test_set_mine_indexes.pkl", "wb"))
 
 
 # In[2]:
@@ -39,8 +37,8 @@ pickle.dump(validation_indexes, open("pkl/augmented/test_set_mine_indexes.pkl", 
 # In[3]:
 
 
-train_images = pickle.load(open("pkl/augmented/classified_padded64.pkl", "rb"))
-train_labels = pickle.load(open("pkl/augmented/classified_all_labels.pkl", "rb"))
+train_images = pickle.load(open("pkl/classified_padded64.pkl", "rb"))
+train_labels = pickle.load(open("pkl/classified_train_labels.pkl", "rb"))
 
 kf = StratifiedKFold(n_splits=9, random_state=None, shuffle=True)
 for train_indexes, validation_indexes in kf.split(X = train_images, y = train_labels):
@@ -58,7 +56,7 @@ for train_indexes, validation_indexes in kf.split(X = train_images, y = train_la
         y_val.append(train_labels[j])
     break
 
-pickle.dump(validation_indexes, open("pkl/augmented/test_set_mine_indexes_classified.pkl", "wb"))
+pickle.dump(validation_indexes, open("pkl/test_set_mine_indexes_classified.pkl", "wb"))
 
 
 
