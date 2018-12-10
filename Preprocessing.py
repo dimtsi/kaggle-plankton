@@ -406,7 +406,7 @@ if __name__ == "__main__":
     test_filenames = pickle.load(open("pkl/test_filenames.pkl", "rb"))
 
     ##create separate test set
-    test_set_mine_indexes = pickle.load(open("pkl/augmented/test_set_mine_indexes_classified.pkl", "rb"))
+    test_set_mine_indexes = pickle.load(open("pkl/test_set_mine_indexes_classified.pkl", "rb"))
     train_images_no_test = [i for j, i in enumerate(train_images) if j not in test_set_mine_indexes]
     train_labels_no_test = [i for j, i in enumerate(train_labels) if j not in test_set_mine_indexes]
 
@@ -503,7 +503,8 @@ if __name__ == "__main__":
 
             ## Create Datasets and Dataloaders
             train_dataset, val_dataset = create_train_val_datasets(X_train, y_train,
-                                                                   X_val, y_val,
+                                                                   test_mine_images,
+                                                                   test_mine_labels,
                                                                    norm_params =norm)
             # train_sampler = ImbalancedDatasetSampler(train_dataset)
 
