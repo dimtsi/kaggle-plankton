@@ -167,9 +167,9 @@ def create_train_val_datasets(X_train, y_train, X_val = None, y_val = None, norm
             # transforms.CenterCrop(64),
             transforms.Grayscale(),
             # transforms.resize(image, (64, 64)),
-            transforms.RandomHorizontalFlip(p=0.5),
-            transforms.RandomRotation(degrees=360),
-            # transforms.RandomAffine(16),
+            # transforms.RandomHorizontalFlip(p=0.5),
+            # transforms.RandomRotation(degrees=360),
+            transforms.RandomAffine(16),
             transforms.ToTensor(),
             transforms.Normalize(mean=[norm_params['train_norm_mean']],
                         std =[norm_params['train_norm_std']])
@@ -255,7 +255,7 @@ def train_only(model, train_loader, num_epochs):
     return model
 
 
-def train_and_validate(model, train_loader, test_loader, num_epochs, device, multiGPU = False):
+def train_and_validate(model, train_loader, test_loader, num_epochs, device, multiGPU = False, save_name = 'trained_model.pt'):
     learning_rate = 0.001
     weight_decay = 0
     batch_size = train_loader.batch_size
@@ -271,7 +271,6 @@ def train_and_validate(model, train_loader, test_loader, num_epochs, device, mul
             print("multiGPU")
             model.set_devices_multiGPU()
 
-    model.set_devices_multiGPU()
     history = {'batch': [], 'loss': [], 'accuracy': []}
     best_val_accuracy = 0
     for epoch in range(num_epochs):
@@ -322,7 +321,7 @@ def train_and_validate(model, train_loader, test_loader, num_epochs, device, mul
         scheduler.step(correct.item() / total)
         if val_accuracy >= best_val_accuracy:
             best_val_accuracy = val_accuracy
-            save_model(epoch, model, optimizer, scheduler, name = 'ensemble.pt')
+            save_model(epoch, model, optimizer, scheduler, name = save_name)
         toc=timeit.default_timer()
         if epoch+1 == 70 and learning_rate == 0.001:
             for group in optimizer.param_groups:
@@ -432,7 +431,7 @@ if __name__ == "__main__":
     norm_mean_width = np.mean(widths)
     norm_mean_height = np.mean(heights)
 
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:3" if torch.cuda.device_count()>2 else "cuda:0")
     import timeit
 
     ##Class weights for imbalance
@@ -445,29 +444,29 @@ if __name__ == "__main__":
     from sklearn.model_selection import StratifiedKFold
 
     pretrained = resnet50(pretrained = True)
-    cnn1 = ResNetDynamic(pretrained.block, pretrained.layers,
+    cnn = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
 
-    cnn2 = ResNetDynamic(pretrained.block, pretrained.layers,
-                num_layers = 2, pretrained_nn = None)
-    cnn3 = ResNetDynamic(pretrained.block, pretrained.layers,
-                num_layers = 2, pretrained_nn = None)
+    # cnn2 = ResNetDynamic(pretrained.block, pretrained.layers,
+    #             num_layers = 2, pretrained_nn = None)
+    # cnn3 = ResNetDynamic(pretrained.block, pretrained.layers,
+    #             num_layers = 2, pretrained_nn = None)
+    # #
+    # cnn1_dict = torch.load('test_model15.pt')['state_dict']
+    # cnn2_dict = torch.load('test_model3.pt', map_location={'cuda:1': 'cuda:0'})['state_dict']
+    # cnn3_dict = torch.load('test_model90.pt', map_location={'cuda:2': 'cuda:0'})['state_dict']
     #
-    cnn1_dict = torch.load('test_model15.pt')['state_dict']
-    cnn2_dict = torch.load('test_model3.pt', map_location={'cuda:1': 'cuda:0'})['state_dict']
-    cnn3_dict = torch.load('test_model90.pt', map_location={'cuda:2': 'cuda:0'})['state_dict']
-
-    cnn1.load_state_dict(cnn1_dict)
-    cnn2.load_state_dict(cnn2_dict)
-    cnn3.load_state_dict(cnn3_dict)
-
-    # cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
-    models = []
-    models.append(cnn1)
-    models.append(cnn2)
-    models.append(cnn3)
-
-    cnn = EnsembleClassifier(models)
+    # cnn1.load_state_dict(cnn1_dict)
+    # cnn2.load_state_dict(cnn2_dict)
+    # cnn3.load_state_dict(cnn3_dict)
+    #
+    # # cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
+    # models = []
+    # models.append(cnn1)
+    # models.append(cnn2)
+    # models.append(cnn3)
+    #
+    # cnn = EnsembleClassifier(models)
     # cnn1_dict = torch.load('ensemble.pt')['state_dict']
 
 
@@ -512,7 +511,6 @@ if __name__ == "__main__":
             # #   cnn = nn.DataParallel(cnn)
             #   cnn = nn.DataParallel(cnn, device_ids=[0, 1])
             cnn.to(device)
-            cnn.set_devices()
 
             # cnn = CNN().cuda()
             # summary(cnn, (1,64,64))
@@ -522,7 +520,7 @@ if __name__ == "__main__":
             trained_models.append(trained_model)
             break
 
-    # run_KFolds()
+    run_KFolds()
 
     def train_ensemble_on_test():
         norm = {}
@@ -540,14 +538,14 @@ if __name__ == "__main__":
                                     batch_size = 32, shuffle = False)
 
         # cnn.to(device)
-        trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100, device = device, multiGPU = True)
+        trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100, device = device, multiGPU = False, save_name = 'affine90')
 
-    train_ensemble_on_test()
+    # train_ensemble_on_test()
 
     # mean_norm_test, std_norm_test = calc_means_stds(train_images)
     #
     # final_model = cnn
     # final_model.load_state_dict(torch.load('ensemble.pt')['state_dict'])
     #
-    predict_on_my_test_set(final_model, mean_norm_test, std_norm_test)
+    # predict_on_my_test_set(final_model, mean_norm_test, std_norm_test)
     # predict_test_set_kaggle(final_model, test_filenames, mean_norm_test, std_norm_test)
