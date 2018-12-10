@@ -202,7 +202,7 @@ def save_model(epoch, model, optimizer, scheduler, name = 'trained_model.pt'):
     'scheduler': scheduler.state_dict()
     }
     print("Saved model at: "+str(name))
-    torch.save(train_state, name)
+    torch.save(train_state, 'models/'+str(name))
 
 # In[9]:
 
@@ -453,9 +453,9 @@ if __name__ == "__main__":
     cnn3 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
     #
-    cnn1_dict = torch.load('test_model15.pt')['state_dict']
-    cnn2_dict = torch.load('test_model3.pt', map_location={'cuda:1': 'cuda:0'})['state_dict']
-    cnn3_dict = torch.load('test_model90.pt', map_location={'cuda:2': 'cuda:0'})['state_dict']
+    cnn1_dict = torch.load('models/test_model15.pt')['state_dict']
+    cnn2_dict = torch.load('models/est_model3.pt', map_location={'cuda:1': 'cuda:0'})['state_dict']
+    cnn3_dict = torch.load('models/test_model90.pt', map_location={'cuda:2': 'cuda:0'})['state_dict']
 
     cnn1.load_state_dict(cnn1_dict)
     cnn2.load_state_dict(cnn2_dict)
@@ -492,10 +492,10 @@ if __name__ == "__main__":
 
     train_ensemble_on_test()
 
-    # mean_norm_test, std_norm_test = calc_means_stds(train_images)
-    #
-    # final_model = cnn
-    # final_model.load_state_dict(torch.load('ensemble.pt')['state_dict'])
+    mean_norm_test, std_norm_test = calc_means_stds(train_images)
+
+    final_model = cnn
+    final_model.load_state_dict(torch.load('models/ensemble.pt')['state_dict'])
     #
     predict_on_my_test_set(final_model, mean_norm_test, std_norm_test)
     predict_test_set_kaggle(final_model, test_filenames, mean_norm_test, std_norm_test)

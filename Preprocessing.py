@@ -169,7 +169,7 @@ def create_train_val_datasets(X_train, y_train, X_val = None, y_val = None, norm
             # transforms.resize(image, (64, 64)),
             # transforms.RandomHorizontalFlip(p=0.5),
             # transforms.RandomRotation(degrees=360),
-            transforms.RandomAffine(16),
+            transforms.RandomAffine(360, shear=20),
             transforms.ToTensor(),
             transforms.Normalize(mean=[norm_params['train_norm_mean']],
                         std =[norm_params['train_norm_std']])
@@ -202,7 +202,7 @@ def save_model(epoch, model, optimizer, scheduler, name = 'trained_model.pt'):
     'scheduler': scheduler.state_dict()
     }
     print("Saved model at: "+str(name))
-    torch.save(train_state, name)
+    torch.save(train_state, 'models/'+str(name))
 
 # In[9]:
 
@@ -516,31 +516,12 @@ if __name__ == "__main__":
             # summary(cnn, (1,64,64))
 
         #     print(summary(cnn, (1,28,28)))
-            trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100, device = device)
+            trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100, device = device, save_name = 'affine90.pt')
             trained_models.append(trained_model)
             break
 
     run_KFolds()
 
-    def train_ensemble_on_test():
-        norm = {}
-        norm['train_norm_mean'], norm['train_norm_std'] = calc_means_stds(train_images)
-        train_dataset, val_dataset = create_train_val_datasets(train_images_no_test, train_labels_no_test,
-                                                               test_mine_images,
-                                                               test_mine_labels,
-                                                               norm_params =norm)
-        # train_sampler = ImbalancedDatasetSampler(train_dataset)
-
-        train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32,
-            shuffle = True, num_workers=4)
-
-        test_loader = torch.utils.data.DataLoader(val_dataset,
-                                    batch_size = 32, shuffle = False)
-
-        # cnn.to(device)
-        trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100, device = device, multiGPU = False, save_name = 'affine90')
-
-    # train_ensemble_on_test()
 
     # mean_norm_test, std_norm_test = calc_means_stds(train_images)
     #
