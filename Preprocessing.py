@@ -265,11 +265,17 @@ def train_and_validate(model, train_loader, test_loader, num_epochs, device):
     optimizer, 'max', factor=0.1, patience=7, verbose=True)
 #     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate);
     #Training
+    model.train().to(device)
+    if isinstance(EnsembleClassifier):
+        if model.multiGPU == True:
+            model.set_devices_multiGPU()
+            
+    model.set_devices_multiGPU()
     history = {'batch': [], 'loss': [], 'accuracy': []}
     best_val_accuracy = 0
     for epoch in range(num_epochs):
+        model.train()
         tic=timeit.default_timer()
-        model.train().to(device)
         losses = [] #losses in epoch per batch
         accuracies_train = [] #accuracies in epoch per batch
         for i, (images, labels) in enumerate(train_loader):
