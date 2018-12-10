@@ -455,7 +455,8 @@ if __name__ == "__main__":
 
     trained_models = []
     def run_KFolds():
-        kf = StratifiedKFold(n_splits=3, random_state=None, shuffle=True)
+        num_splits = 3
+        kf = StratifiedKFold(n_splits=num_splits, random_state=None, shuffle=True)
         for train_indexes, validation_indexes in kf.split(X = train_images_no_test,
                                                           y = train_labels_no_test):
             X_train = []
@@ -507,7 +508,7 @@ if __name__ == "__main__":
         #     print(summary(cnn, (1,28,28)))
             trained_model = train_and_validate(cnn, train_loader, test_loader,
                                                num_epochs=100, device = device,
-                                               save_name = 'test_model3.pt')
+                                               save_name = 'test_model'+str(num_splits)+'splits.pt')
             trained_models.append(trained_model)
             break
 
