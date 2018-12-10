@@ -254,7 +254,7 @@ class EnsembleClassifier(nn.Module):
         z = self.fc(z)
         return z
 
-    def set_devices_multiGPU()(self):
+    def set_devices_multiGPU(self):
         # print((list(self.net1.children()))[-1].state_dict())
         self.net1.cuda(1)
         self.net2.cuda(2)
