@@ -294,25 +294,25 @@ def CreateBalancedSampleWeights(y_train, largest_class_weight_coef):
     sample_weights = [class_weight_dict[y] for y in y_train]
 
     return sample_weights
-max_weight_coeff = 0.0654138
+    max_weight_coeff = 0.0654138
 
-train_sample_weight = CreateBalancedSampleWeights(y_train, largest_class_weight_coef=max_weight_coeff)
+    train_sample_weight = CreateBalancedSampleWeights(y_train, largest_class_weight_coef=max_weight_coeff)
 
-from xgboost import XGBClassifier
-start_time = time.time()
+    from xgboost import XGBClassifier
+    start_time = time.time()
 
-for lr in learning_rates:
-    model = XGBClassifier(nthread=-1, learning_rate = lr, min_child_weight = 0.001, max_depth=7)
-    # model.fit(X_train, y_train, sample_weight=train_sample_weight)
-    model.fit(X_train, y_train)
+    for lr in learning_rates:
+        model = XGBClassifier(nthread=-1, learning_rate = lr, min_child_weight = 0.001, max_depth=7)
+        # model.fit(X_train, y_train, sample_weight=train_sample_weight)
+        model.fit(X_train, y_train)
 
-    y_pred_train = model.predict(X_train)
-    y_pred_val = model.predict(X_val)
+        y_pred_train = model.predict(X_train)
+        y_pred_val = model.predict(X_val)
 
-    print("Training Accuracy: " +str(accuracy_score(y_train, y_pred_train)))
-    print("Validation Accuracy: " +str(accuracy_score(y_test, y_pred_val)))
+        print("Training Accuracy: " +str(accuracy_score(y_train, y_pred_train)))
+        print("Validation Accuracy: " +str(accuracy_score(y_test, y_pred_val)))
 
-    elapsed_time = time.time() - start_time
-    print("elapsed time: "+str(elapsed_time))
-    print("depth: "+str(lr))
-    print(y_pred_val)
+        elapsed_time = time.time() - start_time
+        print("elapsed time: "+str(elapsed_time))
+        print("depth: "+str(lr))
+        print(y_pred_val)
