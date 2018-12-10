@@ -54,9 +54,9 @@ train_haralick = []
 test_haralick = []
 
 for im in train_images:
-    train_haralick.append(haralick(image))
+    train_haralick.append(haralick(im))
 for im in test_images:
-    test_haralick.append(haralick(image))
+    test_haralick.append(haralick(im))
 
 train_haralick = np.array(train_haralick)
 test_haralick = np.array(test_haralick)
