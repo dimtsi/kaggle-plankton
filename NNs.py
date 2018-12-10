@@ -275,7 +275,7 @@ class EnsembleClassifier(nn.Module):
         self.net1.to(self.devices[0])
         self.net2.to(self.devices[1])
         self.net3.to(self.devices[2])
-        self.net4.to(self.devices[3])
+        # self.net4.to(self.devices[3])
 
 class PretrainedResnetMine(ResNetMine):
 
