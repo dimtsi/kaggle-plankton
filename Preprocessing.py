@@ -263,7 +263,11 @@ def train_and_validate(model, train_loader, test_loader,
     weight_decay = 0
     batch_size = train_loader.batch_size
     criterion = nn.CrossEntropyLoss();
-    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay = weight_decay);
+    # optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay = weight_decay);
+    optimizer = torch.optim.RMSprop(model.parameters(), lr=learning_rate,
+                                    weight_decay = weight_decay,
+                                    momentum = 0.9);
+    print("mom0.9")
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
     optimizer, 'max', factor=0.1, patience=7, verbose=True)
 #     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate);
