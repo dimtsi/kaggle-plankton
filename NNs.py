@@ -233,6 +233,8 @@ class EnsembleClassifier(nn.Module):
         self.net1.requires_grad = False
         self.net2 =  nn.Sequential(*list(networks[1].children()))#[:-1]
         self.net2.requires_grad = False
+        self.net3 =  nn.Sequential(*list(networks[2].children()))#[:-1]
+        self.net3.requires_grad = False
         self.fusion = Fusion()
         self.final_size = 0
         for net in networks:
@@ -244,7 +246,8 @@ class EnsembleClassifier(nn.Module):
         # print((list(self.net1.children()))[-1].state_dict())
         x1 = self.net1(x)
         x2 = self.net2(x)
-        z = self.fusion([x1, x2])
+        x3 = self.net3(x)
+        z = self.fusion([x1, x2, x3])
         z = self.fc(z)
         return z
 

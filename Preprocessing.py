@@ -315,7 +315,7 @@ def train_and_validate(model, train_loader, test_loader, num_epochs, device):
         scheduler.step(correct.item() / total)
         if val_accuracy >= best_val_accuracy:
             best_val_accuracy = val_accuracy
-            save_model(epoch, model, optimizer, scheduler, name = 'test_model90.pt')
+            save_model(epoch, model, optimizer, scheduler, name = 'ensemble.pt')
         toc=timeit.default_timer()
         if epoch+1 == 70 and learning_rate == 0.001:
             for group in optimizer.param_groups:
@@ -425,7 +425,7 @@ if __name__ == "__main__":
     norm_mean_width = np.mean(widths)
     norm_mean_height = np.mean(heights)
 
-    device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     import timeit
 
     ##Class weights for imbalance
@@ -438,22 +438,29 @@ if __name__ == "__main__":
     from sklearn.model_selection import StratifiedKFold
 
     pretrained = resnet50(pretrained = True)
-    cnn = ResNetDynamic(pretrained.block, pretrained.layers,
+    cnn1 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
 
-    # cnn2 = ResNetDynamic(pretrained.block, pretrained.layers,
-    #             num_layers = 2, pretrained_nn = None)
-    # #
-    # cnn1_dict = torch.load('test_model7.pt')['state_dict']
-    # cnn2_dict = torch.load('test_model15.pt', map_location={'cuda:1': 'cuda:0'})['state_dict']
-    # cnn1.load_state_dict(cnn1_dict)
-    # cnn2.load_state_dict(cnn2_dict)
+    cnn2 = ResNetDynamic(pretrained.block, pretrained.layers,
+                num_layers = 2, pretrained_nn = None)
+    cnn3 = ResNetDynamic(pretrained.block, pretrained.layers,
+                num_layers = 2, pretrained_nn = None)
     #
-    # # cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
-    # models = []
-    # models.append(cnn1)
-    # models.append(cnn2)
-    # cnn = EnsembleClassifier(models)
+    cnn1_dict = torch.load('test_model15.pt')['state_dict']
+    cnn2_dict = torch.load('test_model3.pt', map_location={'cuda:1': 'cuda:0'})['state_dict']
+    cnn3_dict = torch.load('test_model90.pt', map_location={'cuda:2': 'cuda:0'})['state_dict']
+
+    cnn1.load_state_dict(cnn1_dict)
+    cnn2.load_state_dict(cnn2_dict)
+    cnn3.load_state_dict(cnn3_dict)
+
+    # cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
+    models = []
+    models.append(cnn1)
+    models.append(cnn2)
+    models.append(cnn3)
+
+    cnn = EnsembleClassifier(models)
     # cnn1_dict = torch.load('ensemble.pt')['state_dict']
 
 
@@ -507,7 +514,7 @@ if __name__ == "__main__":
             trained_models.append(trained_model)
             break
 
-    run_KFolds()
+    # run_KFolds()
 
     def train_ensemble_on_test():
         norm = {}
@@ -527,12 +534,12 @@ if __name__ == "__main__":
         cnn.to(device)
         trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100, device = device)
 
-    # train_ensemble_on_test()
+    train_ensemble_on_test()
 
     # mean_norm_test, std_norm_test = calc_means_stds(train_images)
     #
     # final_model = cnn
     # final_model.load_state_dict(torch.load('ensemble.pt')['state_dict'])
     #
-    # predict_on_my_test_set(final_model, mean_norm_test, std_norm_test)
+    predict_on_my_test_set(final_model, mean_norm_test, std_norm_test)
     # predict_test_set_kaggle(final_model, test_filenames, mean_norm_test, std_norm_test)
