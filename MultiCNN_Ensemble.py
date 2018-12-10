@@ -472,19 +472,19 @@ if __name__ == "__main__":
 
     cnn2 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
-    cnn2_dict = torch.load('models/test_model15.pt')['state_dict']
+    cnn2_dict = torch.load('models/test_model1splits5.pt')['state_dict']
     cnn2.load_state_dict(cnn2_dict)
     models.append(cnn2)
 
     cnn3 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
-    cnn3_dict = torch.load('models/test_model3.pt', map_location={'cuda:1': 'cuda:0'})['state_dict']
+    cnn3_dict = torch.load('models/test_model3splits.pt', map_location={'cuda:1': 'cuda:0'})['state_dict']
     cnn3.load_state_dict(cnn3_dict)
     models.append(cnn3)
 
     cnn4 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
-    cnn4_dict = torch.load('models/test_model90.pt', map_location={'cuda:2': 'cuda:0'})['state_dict']
+    cnn4_dict = torch.load('models/test_model90splits.pt', map_location={'cuda:2': 'cuda:0'})['state_dict']
     cnn4.load_state_dict(cnn4_dict)
     models.append(cnn4)
 
