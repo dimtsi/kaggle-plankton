@@ -248,7 +248,7 @@ class EnsembleClassifier(nn.Module):
 
     def forward(self, x):
         # print((list(self.net1.children()))[-1].state_dict())
-        print(self.net2.get_device())
+        print(self.net2.device)
         x1 = self.net1(x.to(self.devices[0]))
         x2 = self.net2(x.to(self.devices[1]))
         x3 = self.net3(x.to(self.devices[2]))
