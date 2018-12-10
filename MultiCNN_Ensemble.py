@@ -532,7 +532,7 @@ if __name__ == "__main__":
                                            num_epochs=100, device = device,
                                            multiGPU = True)
 
-    train_ensemble_on_whole_test_mine()
+    # train_ensemble_on_whole_test_mine()
 
 
     def train_ensemble_on_test():
