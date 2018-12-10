@@ -458,19 +458,23 @@ if __name__ == "__main__":
     cnn1 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
 
-    # cnn2 = ResNetDynamic(pretrained.block, pretrained.layers,
-    #             num_layers = 2, pretrained_nn = None)
+    cnn2 = ResNetDynamic(pretrained.block, pretrained.layers,
+                num_layers = 2, pretrained_nn = None)
     cnn3 = ResNetDynamic(pretrained.block, pretrained.layers,
+                num_layers = 2, pretrained_nn = None)
+    cnn4 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
     #
     cnn1_dict = torch.load('models/affine90.pt')['state_dict']
-    # cnn1_dict = torch.load('models/test_model15.pt')['state_dict']
-    # cnn2_dict = torch.load('models/test_model3.pt', map_location={'cuda:1': 'cuda:0'})['state_dict']
-    cnn3_dict = torch.load('models/test_model90.pt', map_location={'cuda:2': 'cuda:0'})['state_dict']
+    cnn2_dict = torch.load('models/test_model15.pt')['state_dict']
+    cnn3_dict = torch.load('models/test_model3.pt', map_location={'cuda:1': 'cuda:0'})['state_dict']
+    cnn4_dict = torch.load('models/test_model90.pt', map_location={'cuda:2': 'cuda:0'})['state_dict']
 
     cnn1.load_state_dict(cnn1_dict)
-    # cnn2.load_state_dict(cnn2_dict)
+    cnn2.load_state_dict(cnn2_dict)
     cnn3.load_state_dict(cnn3_dict)
+    cnn4.load_state_dict(cnn3_dict)
+
 
     # cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
     models = []
