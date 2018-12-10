@@ -532,7 +532,7 @@ if __name__ == "__main__":
             trained_models.append(trained_model)
             break
 
-    # run_KFolds()
+    run_KFolds()
 
 
     mean_norm_test, std_norm_test = calc_means_stds(train_images)
