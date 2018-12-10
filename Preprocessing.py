@@ -468,7 +468,7 @@ if __name__ == "__main__":
             norm = {}
             for i in train_indexes:
                 X_train.append(train_images[i])
-                y_train.append(train_images[i])
+                y_train.append(train_labels[i])
             # for j in validation_indexes:
             #     X_val.append(train_images_no_test[j])
             #     y_val.append(train_labels_no_test[j])
