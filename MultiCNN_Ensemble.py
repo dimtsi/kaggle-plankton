@@ -500,7 +500,7 @@ if __name__ == "__main__":
                                     batch_size = 32, shuffle = False)
 
         # cnn.to(device)
-        trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100, device = device, multiGPU = True)
+        trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100, device = device, multiGPU = False)
 
     train_ensemble_on_test()
 
