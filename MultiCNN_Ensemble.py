@@ -334,7 +334,7 @@ def train_and_validate(model, train_loader, test_loader, num_epochs, device, mul
     return model
 
 
-def predict_on_my_test_set(model, mean_norm_test, std_norm_test):
+def predict_on_my_test_set(model, mean_norm_test, std_norm_test, multiGPU=False):
 
     test_transforms = transforms. Compose([
         transforms.Grayscale(),
@@ -342,12 +342,16 @@ def predict_on_my_test_set(model, mean_norm_test, std_norm_test):
         transforms.Normalize(mean=[mean_norm_test],
                     std =[std_norm_test])
     ])
+    if isinstance(model, EnsembleClassifier):
+        if multiGPU == True:
+            print("multiGPU")
+            model.set_devices_multiGPU()
 
     test_mine_dataset = ListsTrainDataset(test_mine_images, test_mine_labels, transform = test_transforms)
     test_mine_loader = torch.utils.data.DataLoader(test_mine_dataset, batch_size = 32, shuffle = False)
 
     best_accuracy = 0
-    model.eval().to(device)
+    model.eval()
     correct = 0
     total = 0
     for images, labels in test_mine_loader:
@@ -363,7 +367,7 @@ def predict_on_my_test_set(model, mean_norm_test, std_norm_test):
 
 # predict on testset
 
-def predict_test_set_kaggle(model, filenames,  mean_norm_test, std_norm_test):
+def predict_test_set_kaggle(model, filenames,  mean_norm_test, std_norm_test, multiGPU = True):
     test_transforms = transforms. Compose([
         transforms.Grayscale(),
         transforms.ToTensor(),
@@ -373,6 +377,11 @@ def predict_test_set_kaggle(model, filenames,  mean_norm_test, std_norm_test):
 
     test_dataset = ListsTestDataset(test_images, transform = test_transforms)
     test_loader = torch.utils.data.DataLoader(test_dataset, batch_size = 32, shuffle = False)
+
+    if isinstance(model, EnsembleClassifier):
+        if multiGPU == True:
+            print("multiGPU")
+            model.set_devices_multiGPU()
 
     model.eval().to(device)
     predictions = []
@@ -497,5 +506,5 @@ if __name__ == "__main__":
     final_model = cnn
     final_model.load_state_dict(torch.load('models/ensemble.pt')['state_dict'])
     #
-    predict_on_my_test_set(final_model, mean_norm_test, std_norm_test)
-    predict_test_set_kaggle(final_model, test_filenames, mean_norm_test, std_norm_test)
+    predict_on_my_test_set(final_model, mean_norm_test, std_norm_test, multiGPU=True)
+    predict_test_set_kaggle(final_model, test_filenames, mean_norm_test, std_norm_test, multiGPU=True)
