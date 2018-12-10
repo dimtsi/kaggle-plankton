@@ -167,9 +167,9 @@ def create_train_val_datasets(X_train, y_train, X_val = None, y_val = None, norm
             # transforms.CenterCrop(64),
             transforms.Grayscale(),
             # transforms.resize(image, (64, 64)),
-            # transforms.RandomHorizontalFlip(p=0.5),
-            # transforms.RandomRotation(degrees=360),
-            transforms.RandomAffine(360, shear=20),
+            transforms.RandomHorizontalFlip(p=0.5),
+            transforms.RandomRotation(degrees=360),
+            # transforms.RandomAffine(360, shear=20),
             transforms.ToTensor(),
             transforms.Normalize(mean=[norm_params['train_norm_mean']],
                         std =[norm_params['train_norm_std']])
@@ -255,7 +255,10 @@ def train_only(model, train_loader, num_epochs):
     return model
 
 
-def train_and_validate(model, train_loader, test_loader, num_epochs, device, multiGPU = False, save_name = 'trained_model.pt'):
+def train_and_validate(model, train_loader, test_loader,
+                       num_epochs, device,
+                       multiGPU = False,
+                       save_name = 'trained_model.pt'):
     learning_rate = 0.001
     weight_decay = 0
     batch_size = train_loader.batch_size
@@ -343,8 +346,10 @@ def predict_on_my_test_set(model, mean_norm_test, std_norm_test):
                     std =[std_norm_test])
     ])
 
-    test_mine_dataset = ListsTrainDataset(test_mine_images, test_mine_labels, transform = test_transforms)
-    test_mine_loader = torch.utils.data.DataLoader(test_mine_dataset, batch_size = 32, shuffle = False)
+    test_mine_dataset = ListsTrainDataset(test_mine_images, test_mine_labels,
+                                           transform = test_transforms)
+    test_mine_loader = torch.utils.data.DataLoader(test_mine_dataset,
+                                                   batch_size = 32, shuffle = False)
 
     best_accuracy = 0
     model.eval().to(device)
@@ -474,7 +479,8 @@ if __name__ == "__main__":
     trained_models = []
     def run_KFolds():
         kf = StratifiedKFold(n_splits=90, random_state=None, shuffle=True)
-        for train_indexes, validation_indexes in kf.split(X = train_images_no_test, y = train_labels_no_test):
+        for train_indexes, validation_indexes in kf.split(X = train_images_no_test,
+                                                          y = train_labels_no_test):
             X_train = []
             y_train = []
             X_val = []
@@ -496,7 +502,9 @@ if __name__ == "__main__":
             train_samples_weight = [class_weights[class_id] for class_id in y_train]
 
             ## Create Datasets and Dataloaders
-            train_dataset, val_dataset = create_train_val_datasets(X_train, y_train, X_val, y_val, norm_params =norm)
+            train_dataset, val_dataset = create_train_val_datasets(X_train, y_train,
+                                                                   X_val, y_val,
+                                                                   norm_params =norm)
             # train_sampler = ImbalancedDatasetSampler(train_dataset)
 
             train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32,
@@ -517,7 +525,9 @@ if __name__ == "__main__":
             # summary(cnn, (1,64,64))
 
         #     print(summary(cnn, (1,28,28)))
-            trained_model = train_and_validate(cnn, train_loader, test_loader, num_epochs=100, device = device, save_name = 'affine90.pt')
+            trained_model = train_and_validate(cnn, train_loader, test_loader,
+                                               num_epochs=100, device = device,
+                                               save_name = 'trained_model.pt')
             trained_models.append(trained_model)
             break
 

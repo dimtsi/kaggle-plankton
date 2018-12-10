@@ -214,7 +214,9 @@ def train_only(model, train_loader, num_epochs):
     weight_decay = 0
     batch_size = train_loader.batch_size
     criterion = nn.CrossEntropyLoss();
-    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay = weight_decay);
+    optimizer = torch.optim.Adam(model.parameters(),
+                                 lr=learning_rate,
+                                 weight_decay = weight_decay);
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
     optimizer, 'min', factor=0.1, patience=10, verbose=True)
 #     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate);
@@ -260,7 +262,9 @@ def train_and_validate(model, train_loader, test_loader, num_epochs, device, mul
     weight_decay = 0
     batch_size = train_loader.batch_size
     criterion = nn.CrossEntropyLoss();
-    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay = weight_decay);
+    optimizer = torch.optim.Adam(model.parameters(),
+                                 lr=learning_rate,
+                                 weight_decay = weight_decay);
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
     optimizer, 'max', factor=0.1, patience=7, verbose=True)
 #     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate);
@@ -343,8 +347,12 @@ def predict_on_my_test_set(model, mean_norm_test, std_norm_test, multiGPU=False)
                     std =[std_norm_test])
     ])
 
-    test_mine_dataset = ListsTrainDataset(test_mine_images, test_mine_labels, transform = test_transforms)
-    test_mine_loader = torch.utils.data.DataLoader(test_mine_dataset, batch_size = 32, shuffle = False)
+    test_mine_dataset = ListsTrainDataset(test_mine_images,
+                                          test_mine_labels,
+                                          transform = test_transforms)
+    test_mine_loader = torch.utils.data.DataLoader(test_mine_dataset,
+                                                   batch_size = 32,
+                                                   shuffle = False)
 
     best_accuracy = 0
     model.eval().to(device)
@@ -500,7 +508,8 @@ if __name__ == "__main__":
         extended_train_images = (train_images_no_test+additional_images).copy()
         extended_train_labels = (train_labels_no_test+additional_labels).copy()
 
-        train_dataset, val_dataset = create_train_val_datasets(extended_train_images, extended_train_labels,
+        train_dataset, val_dataset = create_train_val_datasets(extended_train_images,
+                                                               extended_train_labels,
                                                                new_test_mine_images,
                                                                new_test_mine_labels,
                                                                norm_params =norm)
