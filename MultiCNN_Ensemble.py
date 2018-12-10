@@ -363,7 +363,7 @@ def predict_on_my_test_set(model, mean_norm_test, std_norm_test, multiGPU=False)
         total += labels.size(0)
         correct += (predicted.cpu().long() == labels).sum()
         test_accuracy = 100*correct.item() / total
-        print('TEST SET ACCURACY: %.4f %%' % test_accuracy)
+    print('TEST SET ACCURACY: %.4f %%' % test_accuracy)
         # save_model(epoch, model, optimizer, scheduler)
 
 # predict on testset
@@ -458,23 +458,24 @@ if __name__ == "__main__":
     cnn1 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
 
-    cnn2 = ResNetDynamic(pretrained.block, pretrained.layers,
-                num_layers = 2, pretrained_nn = None)
+    # cnn2 = ResNetDynamic(pretrained.block, pretrained.layers,
+    #             num_layers = 2, pretrained_nn = None)
     cnn3 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
     #
-    cnn1_dict = torch.load('models/test_model15.pt')['state_dict']
-    cnn2_dict = torch.load('models/test_model3.pt', map_location={'cuda:1': 'cuda:0'})['state_dict']
+    cnn1_dict = torch.load('models/affine90.pt')['state_dict']
+    # cnn1_dict = torch.load('models/test_model15.pt')['state_dict']
+    # cnn2_dict = torch.load('models/test_model3.pt', map_location={'cuda:1': 'cuda:0'})['state_dict']
     cnn3_dict = torch.load('models/test_model90.pt', map_location={'cuda:2': 'cuda:0'})['state_dict']
 
     cnn1.load_state_dict(cnn1_dict)
-    cnn2.load_state_dict(cnn2_dict)
+    # cnn2.load_state_dict(cnn2_dict)
     cnn3.load_state_dict(cnn3_dict)
 
     # cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
     models = []
     models.append(cnn1)
-    models.append(cnn2)
+    # models.append(cnn2)
     models.append(cnn3)
 
     cnn = EnsembleClassifier(models)
