@@ -165,7 +165,7 @@ for lr in learning_rates:
     y_pred_val = model.predict(X_val)
 
     print("Training Accuracy: " +str(accuracy_score(y_train, y_pred_train)))
-    print("Validation Accuracy: " +str(accuracy_score(y_test, y_pred_val)))
+    print("Validation Accuracy: " +str(accuracy_score(y_val, y_pred_val)))
 
     elapsed_time = time.time() - start_time
     print("elapsed time: "+str(elapsed_time))
