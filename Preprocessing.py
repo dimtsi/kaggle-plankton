@@ -217,9 +217,13 @@ def train_and_validate(model, train_loader, test_loader,
     # optimizer = torch.optim.RMSprop(model.parameters(), lr=learning_rate,
     #                                 weight_decay = weight_decay,
     #                                 momentum = 0.6);
-    # scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=15, gamma=0.5)
+
+    patience = 15 if weight_decay > 0 else 7
+    step_size = 25 if weight_decay > 0 else 15
+
+    # scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=step_size, gamma=0.5)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-    optimizer, 'max', factor=0.1, patience=7, verbose=True)
+    optimizer, 'max', factor=0.1, patience=patience, verbose=True)
 #     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate);
     #Training
     print("lr:{} wd:{}".format(learning_rate, weight_decay))
@@ -256,14 +260,13 @@ def train_and_validate(model, train_loader, test_loader,
                   "Epoch : %d/%d" % (epoch+1, num_epochs),
                   "Iter : %d/%d" % (i+1, len(train_loader.dataset)//batch_size)])
                 print('\r{}'.format(log), end=" ")
-                # history['batch'].append(i)
-                # history['loss'].append(loss.item())
-                # history['accuracy'].append(accuracy_train.item())
+
         epoch_log = " ".join([
           "Epoch : %d/%d" % (epoch+1, num_epochs),
           "Training Loss: %.4f" % np.mean(losses),
           "Training Accuracy: %.4f" % np.mean(accuracies_train)])
         print('\r{}'.format(epoch_log))
+
         ##VALIDATION SCORE AFTER EVERY EPOCH
         model.eval()
         correct = 0
@@ -286,6 +289,8 @@ def train_and_validate(model, train_loader, test_loader,
             val_accuracy = 100*correct.item() / total
         print('VALIDATION SET ACCURACY: %.4f %%' % val_accuracy)
         scheduler.step(correct.item() / total)
+
+        ###Results for analysis###
         if val_accuracy >= best_val_accuracy:
             best_val_accuracy = val_accuracy
             save_model(epoch, model, optimizer, scheduler, name = save_name)
@@ -303,33 +308,6 @@ def train_and_validate(model, train_loader, test_loader,
         print(toc-tic)
     return model
 
-
-def predict_on_my_test_set(model, mean_norm_test, std_norm_test):
-
-    test_transforms = transforms. Compose([
-        transforms.Grayscale(),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[mean_norm_test],
-                    std =[std_norm_test])
-    ])
-
-    test_mine_dataset = ListsTrainDataset(test_mine_images, test_mine_labels, transform = test_transforms)
-    test_mine_loader = torch.utils.data.DataLoader(test_mine_dataset, batch_size = 32, shuffle = False)
-
-    best_accuracy = 0
-    model.eval().to(device)
-    correct = 0
-    total = 0
-    for images, labels in test_mine_loader:
-        images = Variable(images).to(device)
-        labels= labels.squeeze(1)
-        outputs = model(images)
-        _, predicted = torch.max(outputs.data, 1)
-        total += labels.size(0)
-        correct += (predicted.cpu().long() == labels).sum()
-        test_accuracy = 100*correct.item() / total
-        print('TEST SET ACCURACY: %.4f %%' % test_accuracy)
-        # save_model(epoch, model, optimizer, scheduler)
 
 # predict on testset
 
@@ -483,7 +461,7 @@ if __name__ == "__main__":
             trained_model = train_and_validate(cnn, train_loader, test_loader,
                                                num_epochs=200,
                                                learning_rate = 0.001,
-                                               weight_decay = 0.001,
+                                               weight_decay = 0,
                                                device = device,
                                                save_name = 'trained_model.pt')
                                                # save_name = 'test_model'+str(num_splits)+'splits.pt')

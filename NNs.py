@@ -119,7 +119,7 @@ class ResNetDynamic(nn.Module):
                 inside_layers[str(i)] = self._make_layer(block, layer_planes, layers[i], stride=2)
             layer_planes *= 2
         self.inside_layers = nn.Sequential(inside_layers)
-        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        self.avgpool = nn.AdaptiveMaxPool2d((1, 1))
         self.flatten = Flatten()
         self.final_size = 64* block.expansion * 2**(num_layers-1)
         self.fc1 = nn.Sequential(
@@ -141,7 +141,7 @@ class ResNetDynamic(nn.Module):
         if (pretrained_nn != None):
             self.pretrain(pretrained_nn)
 
-    def pretrain(self, pretrained_resnet):
+    def pretrain(self, pretrained_resnet): ###Only for use with original ResNet
         pretrained_layers = []
         pretrained_layers.append(pretrained_resnet.layer1)
         pretrained_layers.append(pretrained_resnet.layer2)
