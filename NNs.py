@@ -265,9 +265,10 @@ class EnsembleClassifier(nn.Module):
             x1 = self.net1(x)
             x2 = self.net2(x)
             x3 = self.net3(x)
-            # x4 = self.net4(x)
-            z = self.fusion([x1, x2.to(self.devices[0]), x3.to(self.devices[0])])#, x3.to(self.devices[0]), x4.to(self.devices[0])
-
+            x4 = self.net4(x)
+            z = self.fusion([x1, x2.to(self.devices[0]),
+                             x3.to(self.devices[0]),
+                             x4.to(self.devices[0])])#
 
         z = self.fc1(z)
         z = self.fc2(z)
