@@ -593,7 +593,7 @@ if __name__ == "__main__":
         # cnn.to(device)
         trained_model = train_and_validate(cnn, train_loader, test_loader,
                                            num_epochs=100, device = device,
-                                           multiGPU = False)
+                                           multiGPU = True)
 
     train_ensemble_on_test()
 
