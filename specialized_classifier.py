@@ -141,10 +141,10 @@ np_cnn_test_outputs = np.concatenate(cnn_test_outputs, axis = 1)
 
 
 X_train = np_cnn_train_outputs
-Y_train = train_labels_no_test
+Y_train = np.array(train_labels_no_test)
 
 X_val = np_cnn_test_outputs 
-Y_val = test_mine_labels 
+Y_val = np.array(test_mine_labels) 
 
 
 # In[ ]:
