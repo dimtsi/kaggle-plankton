@@ -343,6 +343,10 @@ def predict_test_set_kaggle(model, filenames,  mean_norm_test, std_norm_test):
 if __name__ == "__main__":
     # print("weighted classes")
     classified = False
+    augmented = False
+    print('classified: '+str(classified))
+    print('augmented: '+str(augmented))
+
 
     if classified == False:
         original_images = pickle.load(open("pkl/train_padded64.pkl", "rb"))
@@ -370,6 +374,10 @@ if __name__ == "__main__":
 
     ###========================MAIN EXECUTION=========================###
 
+    #####Specialization####
+    fold = 0
+    print('Fold: '+str(fold))
+
     #PIL
     widths, heights = [], []
     sumx, sumy = 0, 0
@@ -392,7 +400,7 @@ if __name__ == "__main__":
     norm_mean_width = np.mean(widths)
     norm_mean_height = np.mean(heights)
 
-    device = torch.device("cuda:2" if torch.cuda.device_count()>2 else "cuda:0")
+    device = torch.device("cuda:"+str(fold) if torch.cuda.device_count()>2 else "cuda:0")
     import timeit
 
     ##Class weights for imbalance
@@ -402,35 +410,49 @@ if __name__ == "__main__":
     # class_weights = np.interp(class_weights, (class_weights.min(), class_weights.max()), (0, +1))
     # class_weights = torch.from_numpy(class_weights).float().to(device)
 
-    from sklearn.model_selection import StratifiedKFold
 
     pretrained = resnet50(pretrained = True)
     cnn = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
 
+    from sklearn.model_selection import KFold, StratifiedKFold
 
-    # cnn = inceptionv4(num_classes=121,pretrained=None)
+    ####==========SPECIALIZED TRAINING========####
+    indexes_by_fold = []
+
+    kf = KFold(n_splits=4, random_state=None, shuffle=False) ##no_shuffle_for_class_specialization
+    for train_indexes, validation_indexes in kf.split(X = train_images_no_test,
+                                                      y = train_labels_no_test):
+        indexes_by_fold.append(validation_indexes)
+
+    training_indexes = indexes_by_fold[fold]
+    images_for_nn = []
+    labels_for_nn = []
 
 
+    for index in training_indexes:
+        images_for_nn.append(train_images_no_test[index])
+        labels_for_nn.append(train_labels_no_test[index])
 
+    ####TRAIN####
     trained_models = []
     def run_KFolds():
-        num_splits = 1000
+        num_splits = 15
         print(num_splits)
         kf = StratifiedKFold(n_splits=num_splits, random_state=None, shuffle=True)
-        for train_indexes, validation_indexes in kf.split(X = train_images_no_test,
-                                                          y = train_labels_no_test):
+        for train_indexes, validation_indexes in kf.split(X = images_for_nn,
+                                                          y = labels_for_nn):
             X_train = []
             y_train = []
             X_val = []
             y_val = []
             norm = {}
             for i in train_indexes:
-                X_train.append(train_images_no_test[i])
-                y_train.append(train_labels_no_test[i])
-            # for j in validation_indexes:
-            #     X_val.append(train_images_no_test[j])
-            #     y_val.append(train_labels_no_test[j])
+                X_train.append(images_for_nn[i])
+                y_train.append(labels_for_nn[i])
+            for j in validation_indexes:
+                X_val.append(images_for_nn[j])
+                y_val.append(labels_for_nn[j])
             # X_train = X_train[:10]
             # y_train = y_train[:10]
 
@@ -438,7 +460,7 @@ if __name__ == "__main__":
             y_val = test_mine_labels
             print("train: "+ str(len(X_train)) + " val: " + str(len(X_val))+ " None: " + str(len(original_images)-len(X_train)))
             print(np.bincount(y_train))
-            print(np.bincount(test_mine_labels))
+            print(np.bincount(y_val))
             norm['train_norm_mean'], norm['train_norm_std'] = calc_means_stds(original_images)
 
             class_sample_counts = np.bincount(y_train)
@@ -475,7 +497,7 @@ if __name__ == "__main__":
                                                learning_rate = 0.001,
                                                weight_decay = 0,
                                                device = device,
-                                               save_name = 'trained_model'+str(classified)+'.pt')
+                                               save_name = 'trained_model_fold'+str(fold)+'.pt')
                                                # save_name = 'test_model'+str(num_splits)+'splits.pt')
             # trained_models.append(trained_model)
             break
