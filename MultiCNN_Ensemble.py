@@ -495,25 +495,25 @@ if __name__ == "__main__":
     pretrained = resnet50(pretrained = True)
     cnn1 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
-    cnn1_dict = torch.load('models/trained_model_fold0_'+str(num_layers)'layers.pt')['state_dict']
+    cnn1_dict = torch.load('models/trained_model_fold0_'+str(num_layers)+'layers.pt')['state_dict']
     cnn1.load_state_dict(cnn1_dict)
     models.append(cnn1)
 
     cnn2 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
-    cnn1_dict = torch.load('models/trained_model_fold1_'+str(num_layers)'layers.pt')['state_dict']
+    cnn1_dict = torch.load('models/trained_model_fold1_'+str(num_layers)+'layers.pt')['state_dict']
     cnn2.load_state_dict(cnn2_dict)
     models.append(cnn2)
 
     cnn3 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
-    cnn1_dict = torch.load('models/trained_model_fold2_'+str(num_layers)'layers.pt')['state_dict']
+    cnn1_dict = torch.load('models/trained_model_fold2_'+str(num_layers)+'layers.pt')['state_dict']
     cnn3.load_state_dict(cnn3_dict)
     models.append(cnn3)
 
     cnn4 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
-    cnn1_dict = torch.load('models/trained_model_fold3_'+str(num_layers)'layers.pt')['state_dict']
+    cnn1_dict = torch.load('models/trained_model_fold3_'+str(num_layers)+'layers.pt')['state_dict']
     cnn4.load_state_dict(cnn4_dict)
     models.append(cnn4)
 
