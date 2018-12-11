@@ -275,9 +275,9 @@ def train_and_validate(model, train_loader, test_loader,
     patience = 15 if weight_decay > 0 else 7
     step_size = 25 if weight_decay > 0 else 20
 
-    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=step_size, gamma=0.4)
-    # scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-    # optimizer, 'max', factor=0.1, patience=patience, verbose=True)
+    # scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=step_size, gamma=0.4)
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(
+    optimizer, 'max', factor=0.1, patience=patience, verbose=True)
 #     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate);
     #Training
     print("lr:{} wd:{}".format(learning_rate, weight_decay))
@@ -290,7 +290,7 @@ def train_and_validate(model, train_loader, test_loader,
     history = {'batch': [], 'loss': [], 'accuracy': []}
     best_val_accuracy = 0
     for epoch in range(num_epochs):
-        scheduler.step()
+        # scheduler.step()
         model.train()
         tic=timeit.default_timer()
         losses = [] #losses in epoch per batch
@@ -342,7 +342,7 @@ def train_and_validate(model, train_loader, test_loader,
 
             val_accuracy = 100*correct.item() / total
         print('VALIDATION SET ACCURACY: %.4f %%' % val_accuracy)
-        # scheduler.step(correct.item() / total)
+        scheduler.step(correct.item() / total)
 
         ###Results for analysis###
         if val_accuracy >= best_val_accuracy:
@@ -594,6 +594,7 @@ if __name__ == "__main__":
         trained_model = train_and_validate(cnn, train_loader, test_loader,
                                            num_epochs=100, device = device,
                                            multiGPU = True)
+    print(cnn)
     # cnn.to(device)
     train_ensemble_on_test()
 
