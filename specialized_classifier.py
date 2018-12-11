@@ -128,11 +128,8 @@ for model in models:
 np_cnn_outputs = np.concatenate(all_model_outputs, axis = 1)
 
 
-# In[43]:
-
-
 X_train = np_cnn_outputs
-Y_train = train_labels_no_test
+y_train = train_labels_no_test
 
 X_val = test_mine_images
 Y_val = test_mine_labels
