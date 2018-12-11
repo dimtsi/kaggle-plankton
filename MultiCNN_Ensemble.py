@@ -580,8 +580,8 @@ if __name__ == "__main__":
                                                                train_labels_no_test,
                                                                test_mine_images,
                                                                test_mine_labels,
-                                                               norm_params = norm,
-                                                                save_name = 'ensemble2.pt')
+                                                               norm_params = norm)
+
         train_sampler = ImbalancedDatasetSampler(train_dataset)
         print("train: "+ str(len(train_images))
               + " val: " +str(len(test_mine_images)))
@@ -594,7 +594,8 @@ if __name__ == "__main__":
         # cnn.to(device)
         trained_model = train_and_validate(cnn, train_loader, test_loader,
                                            num_epochs=100, device = device,
-                                           multiGPU = True)
+                                           multiGPU = True,
+                                           save_name = 'ensemble1_disc.pt')
     print(cnn)
     # cnn.to(device)
     train_ensemble_on_test()
