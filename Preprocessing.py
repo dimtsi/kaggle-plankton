@@ -251,14 +251,14 @@ def train_only(model, train_loader, num_epochs):
 
 def train_and_validate(model, train_loader, test_loader,
                        num_epochs, device,
+                       learning_rate = 0.001,
+                       weight_decay = 0,
                        multiGPU = False,
                        save_name = 'trained_model.pt'):
-    learning_rate = 0.001
-    weight_decay = 0.0001
     batch_size = train_loader.batch_size
     criterion = nn.CrossEntropyLoss();
     optimizer = torch.optim.Adam(model.parameters(),
-                                 lr=learning_rate,
+                                 lr = learning_rate,
                                  weight_decay = weight_decay);
     # optimizer = torch.optim.RMSprop(model.parameters(), lr=learning_rate,
     #                                 weight_decay = weight_decay,
@@ -268,6 +268,7 @@ def train_and_validate(model, train_loader, test_loader,
     # optimizer, 'max', factor=0.1, patience=7, verbose=True)
 #     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate);
     #Training
+    print("lr:{} wd:{}".format(learning_rate, weight_decay))
     model.train().to(device)
     if isinstance(model, EnsembleClassifier):
         if multiGPU == True:
@@ -524,8 +525,11 @@ if __name__ == "__main__":
             # summary(cnn, (1,64,64))
 
         #     print(summary(cnn, (1,28,28)))
-            trained_model, predictions = train_and_validate(cnn, train_loader, test_loader,
-                                               num_epochs=200, device = device,
+            trained_model = train_and_validate(cnn, train_loader, test_loader,
+                                               num_epochs=200,
+                                               learning_rate = 0.001,
+                                               weight_decay = 0.001,
+                                               device = device,
                                                save_name = 'trained_model.pt')
                                                # save_name = 'test_model'+str(num_splits)+'splits.pt')
             # trained_models.append(trained_model)
