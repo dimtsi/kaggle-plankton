@@ -594,7 +594,7 @@ if __name__ == "__main__":
         trained_model = train_and_validate(cnn, train_loader, test_loader,
                                            num_epochs=100, device = device,
                                            multiGPU = True)
-
+    cnn.to(device)
     train_ensemble_on_test()
 
     mean_norm_test, std_norm_test = calc_means_stds(train_images)
