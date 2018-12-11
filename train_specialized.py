@@ -375,7 +375,7 @@ if __name__ == "__main__":
     ###========================MAIN EXECUTION=========================###
 
     #####Specialization####
-    fold = 3
+    fold = 0
     print('Fold: '+str(fold))
 
     #PIL
@@ -413,7 +413,7 @@ if __name__ == "__main__":
 
     pretrained = resnet50(pretrained = True)
     cnn = ResNetDynamic(pretrained.block, pretrained.layers,
-                num_layers = 2, pretrained_nn = None)
+                num_layers = 3, pretrained_nn = None)
 
     from sklearn.model_selection import KFold, StratifiedKFold
 
@@ -497,7 +497,7 @@ if __name__ == "__main__":
                                                learning_rate = 0.001,
                                                weight_decay = 0,
                                                device = device,
-                                               save_name = 'trained_model_fold'+str(fold)+'.pt')
+                                               save_name = 'trained_model_fold'+str(fold)+'3_layers.pt')
                                                # save_name = 'test_model'+str(num_splits)+'splits.pt')
             # trained_models.append(trained_model)
             break
