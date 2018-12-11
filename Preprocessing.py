@@ -23,6 +23,9 @@ import math
 importlib.reload(NNs)
 from NNs import *
 from NNs import ResNetDynamic, ResNetMine, CNN, SuperNet, EnsembleClassifier
+import inceptionresnet
+
+from inceptionresnet import *
 
 from torchsummary import summary
 # %matplotlib inline
@@ -385,7 +388,7 @@ if __name__ == "__main__":
     norm_mean_width = np.mean(widths)
     norm_mean_height = np.mean(heights)
 
-    device = torch.device("cuda:0" if torch.cuda.device_count()>2 else "cuda:0")
+    device = torch.device("cuda:3" if torch.cuda.device_count()>2 else "cuda:0")
     import timeit
 
     ##Class weights for imbalance
@@ -397,9 +400,14 @@ if __name__ == "__main__":
 
     from sklearn.model_selection import StratifiedKFold
 
-    pretrained = resnet50(pretrained = True)
-    cnn = ResNetDynamic(pretrained.block, pretrained.layers,
-                num_layers = 2, pretrained_nn = None)
+    # pretrained = resnet50(pretrained = True)
+    # cnn = ResNetDynamic(pretrained.block, pretrained.layers,
+    #             num_layers = 2, pretrained_nn = None)
+
+
+    cnn = inceptionresnetv2(num_classes=121, pretrained=None)
+
+
 
     trained_models = []
     def run_KFolds():
