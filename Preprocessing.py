@@ -422,8 +422,8 @@ if __name__ == "__main__":
 
     ##create separate test set
     test_set_mine_indexes = pickle.load(open("pkl/test_set_mine_indexes_classified.pkl", "rb"))
-    # train_images_no_test = [i for j, i in enumerate(train_images) if j not in test_set_mine_indexes]
-    # train_labels_no_test = [i for j, i in enumerate(train_labels) if j not in test_set_mine_indexes]
+    train_images_no_test = [i for j, i in enumerate(train_images) if j not in test_set_mine_indexes]
+    train_labels_no_test = [i for j, i in enumerate(train_labels) if j not in test_set_mine_indexes]
     #
     test_mine_images = [i for j, i in enumerate(original_images) if j in test_set_mine_indexes]
     test_mine_labels = [i for j, i in enumerate(original_labels) if j in test_set_mine_indexes]
@@ -472,16 +472,16 @@ if __name__ == "__main__":
     def run_KFolds():
         num_splits = 90
         kf = StratifiedKFold(n_splits=num_splits, random_state=None, shuffle=True)
-        for train_indexes, validation_indexes in kf.split(X = train_images,
-                                                          y = train_labels):
+        for train_indexes, validation_indexes in kf.split(X = train_images_no_test,
+                                                          y = train_labels_no_test):
             X_train = []
             y_train = []
             X_val = []
             y_val = []
             norm = {}
             for i in train_indexes:
-                X_train.append(train_images[i])
-                y_train.append(train_labels[i])
+                X_train.append(train_images_no_test[i])
+                y_train.append(train_labels_no_test[i])
             # for j in validation_indexes:
             #     X_val.append(train_images_no_test[j])
             #     y_val.append(train_labels_no_test[j])
