@@ -156,18 +156,24 @@ from xgboost import XGBClassifier
 
 start_time = time.time()
 learning_rates = [0.1, 0.01, 0.01, 0.001]
+child_weights = [0.5 ,0.1 ,0.01]
+depths = [3 ,5 ,7]
+
 for lr in learning_rates:
-    model = XGBClassifier(nthread=-1, learning_rate = lr, min_child_weight = 0.001, max_depth=2)
-    # model.fit(X_train, y_train, sample_weight=train_sample_weight)
-    model.fit(X_train, y_train)
+    for depth in depths:
+        for child_weight in child_weights:
 
-    y_pred_train = model.predict(X_train)
-    y_pred_val = model.predict(X_val)
+            model = XGBClassifier(nthread=-1, learning_rate = lr, min_child_weight = child_weight, max_depth=depth)
+            # model.fit(X_train, y_train, sample_weight=train_sample_weight)
+            model.fit(X_train, y_train)
 
-    print("Training Accuracy: " +str(accuracy_score(y_train, y_pred_train)))
-    print("Validation Accuracy: " +str(accuracy_score(y_val, y_pred_val)))
+            y_pred_train = model.predict(X_train)
+            y_pred_val = model.predict(X_val)
 
-    elapsed_time = time.time() - start_time
-    print("elapsed time: "+str(elapsed_time))
-    print("lr: "+str(lr))
-    print(y_pred_val)
+            print("Training Accuracy: " +str(accuracy_score(y_train, y_pred_train)))
+            print("Validation Accuracy: " +str(accuracy_score(y_val, y_pred_val)))
+
+            elapsed_time = time.time() - start_time
+            print("elapsed time: "+str(elapsed_time))
+            print("lr: "+str(lr)+ " childw: "+str(child_weight)+ " depth: "+str(depth))
+            print(y_pred_val)
