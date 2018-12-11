@@ -490,9 +490,8 @@ if __name__ == "__main__":
 
             X_val = test_mine_images
             y_val = test_mine_labels
-            print("train: "+ str(len(X_train)) + " val: " +str(len(X_val)))
+            print("train: "+ str(len(X_train)) + " val: " + str(len(X_val))+ " None: " + str(len(original_images)-len(X_train)))
             print(np.bincount(y_train))
-            print(np.bincount(y_val))
             print(np.bincount(test_mine_labels))
             norm['train_norm_mean'], norm['train_norm_std'] = calc_means_stds(original_images)
 
