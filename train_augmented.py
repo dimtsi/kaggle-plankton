@@ -209,66 +209,23 @@ def save_model(epoch, model, optimizer, scheduler, name = 'trained_model.pt'):
 # class_weights = class_weights.type(torch.FloatTensor)
 #=============================TRAINING ===================================#
 
-def train_only(model, train_loader, num_epochs):
-    learning_rate = 0.001
-    weight_decay = 0
-    batch_size = train_loader.batch_size
-    criterion = nn.CrossEntropyLoss();
-    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay = weight_decay);
-    scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-    optimizer, 'min', factor=0.1, patience=10, verbose=True)
-#     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate);
-    #Training
-    history = {'batch': [], 'loss': [], 'accuracy': []}
-    for epoch in range(num_epochs):
-        model.train().cuda()
-        losses = [] #losses in epoch per batch
-        accuracies_train = [] #accuracies in epoch per batch
-        for i, (images, labels) in enumerate(train_loader):
-            images = Variable(images).to(device)
-            labels = Variable(labels).squeeze(1).long().to(device)#.cpu()
-            # Forward + Backward + Optimize
-            optimizer.zero_grad()
-            outputs = model(images)
-            loss = criterion(outputs, labels)
-            loss.backward()
-            losses.append(loss.item())
-            optimizer.step()
-            _, argmax = torch.max(outputs, 1)
-            accuracy_train = (labels == argmax.squeeze()).float().mean()*100
-            accuracies_train.append(accuracy_train)
-            # Show progress
-            # if (i+1) % 32 == 0:
-            log = " ".join([
-              "Epoch : %d/%d" % (epoch+1, num_epochs),
-              "Iter : %d/%d" % (i+1, len(train_loader.dataset)//batch_size)])
-            print('\r{}'.format(log), end = " ")
-                # history['batch'].append(i)
-                # history['loss'].append(loss.item())
-                # history['accuracy'].append(accuracy_train.item())
-        epoch_log = " ".join([
-          "Epoch : %d/%d" % (epoch+1, num_epochs),
-          "Training Loss: %.4f" % np.mean(losses),
-          "Training Accuracy: %.4f" % np.mean(accuracies_train)])
-        print('\r{}'.format(epoch_log))
-        print()
-    return model
-
-
 def train_and_validate(model, train_loader, test_loader,
                        num_epochs, device,
                        multiGPU = False,
                        save_name = 'trained_model.pt'):
     learning_rate = 0.001
-    weight_decay = 0
+    weight_decay = 0.001
     batch_size = train_loader.batch_size
     criterion = nn.CrossEntropyLoss();
-    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay = weight_decay);
+    optimizer = torch.optim.Adam(model.parameters(),
+                                 lr=learning_rate,
+                                 weight_decay = weight_decay);
     # optimizer = torch.optim.RMSprop(model.parameters(), lr=learning_rate,
     #                                 weight_decay = weight_decay,
     #                                 momentum = 0.6);
-    scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-    optimizer, 'max', factor=0.1, patience=7, verbose=True)
+    scheduler = StepLR(optimizer, step_size=20, gamma=0.5)
+    # scheduler = optim.lr_scheduler.ReduceLROnPlateau(
+    # optimizer, 'max', factor=0.1, patience=7, verbose=True)
 #     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate);
     #Training
     model.train().to(device)
@@ -506,7 +463,7 @@ if __name__ == "__main__":
                                                                    norm_params =norm)
             # train_sampler = ImbalancedDatasetSampler(train_dataset)
 
-            train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 16,
+            train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 64,
                 shuffle = True, num_workers=4)
 
             test_loader = torch.utils.data.DataLoader(val_dataset,
