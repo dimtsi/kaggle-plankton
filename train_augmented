@@ -315,6 +315,10 @@ def train_and_validate(model, train_loader, test_loader,
         model.eval()
         correct = 0
         total = 0
+        total_labels = torch.Tensor().long()
+        total_predicted = torch.Tensor().long()
+
+
         for images, labels in test_loader:
             images = Variable(images).to(device)
             labels= labels.squeeze(1)
@@ -322,18 +326,17 @@ def train_and_validate(model, train_loader, test_loader,
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
             correct += (predicted.cpu().long() == labels).sum()
-            if epoch == 0:
-                total_labels = labels
-            else:
-                total_labels += labels.squeeze()
-                print(predicted)
+
+            total_labels = torch.cat((total_labels,labels))
+            total_predicted = torch.cat((total_predicted, predicted.cpu().long()))
+
             val_accuracy = 100*correct.item() / total
         print('VALIDATION SET ACCURACY: %.4f %%' % val_accuracy)
         scheduler.step(correct.item() / total)
         if val_accuracy >= best_val_accuracy:
             best_val_accuracy = val_accuracy
             save_model(epoch, model, optimizer, scheduler, name = save_name)
-            pickle.dump(predicted.cpu().long(), open("predicted.pkl", "wb"))
+            pickle.dump(total_predicted.cpu().long(), open("predicted.pkl", "wb"))
             pickle.dump(total_labels.long(), open("training_labels.pkl", "wb"))
 
         toc=timeit.default_timer()
@@ -483,8 +486,8 @@ if __name__ == "__main__":
             # for j in validation_indexes:
             #     X_val.append(train_images_no_test[j])
             #     y_val.append(train_labels_no_test[j])
-            X_train = X_train[:10]
-            y_train = y_train[:10]
+            # X_train = X_train[:10]
+            # y_train = y_train[:10]
 
             X_val = test_mine_images
             y_val = test_mine_labels
