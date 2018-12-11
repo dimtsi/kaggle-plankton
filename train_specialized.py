@@ -375,7 +375,7 @@ if __name__ == "__main__":
     ###========================MAIN EXECUTION=========================###
 
     #####Specialization####
-    fold = 3
+    fold = 0
     print('Fold: '+str(fold))
 
     #PIL
@@ -410,7 +410,7 @@ if __name__ == "__main__":
     # class_weights = np.interp(class_weights, (class_weights.min(), class_weights.max()), (0, +1))
     # class_weights = torch.from_numpy(class_weights).float().to(device)
 
-    num_layers = 4
+    num_layers = 3
     pretrained = resnet50(pretrained = True)
     cnn = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = num_layers, pretrained_nn = None)
