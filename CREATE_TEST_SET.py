@@ -30,12 +30,12 @@ for train_indexes, validation_indexes in kf.split(X = train_images, y = train_la
     break
 
 pickle.dump(validation_indexes, open("pkl/test_set_mine_indexes.pkl", "wb"))
-print(np.bincount(y_train))
-print(np.bincount(y_val))
-
-# In[2]:
-
-# In[3]:
+count_train = np.bincount(train_labels)
+count_val = np.bincount(y_val)
+import pandas as pd
+pd.set_option('display.max_rows', 150)
+df= pd.DataFrame.from_dict({'train':count_train, 'val':count_val})
+print(df)
 
 
 train_images = pickle.load(open("pkl/classified_padded64.pkl", "rb"))
@@ -58,7 +58,11 @@ for train_indexes, validation_indexes in kf.split(X = train_images, y = train_la
     break
 
 pickle.dump(validation_indexes, open("pkl/test_set_mine_indexes_classified.pkl", "wb"))
-
+count_train = np.bincount(train_labels)
+count_val = np.bincount(y_val)
+import pandas as pd
+df= pd.DataFrame.from_dict({'train':count_train, 'val':count_val})
+print(df)
 
 
 
