@@ -273,7 +273,7 @@ def train_and_validate(model, train_loader, test_loader,
     #                                 momentum = 0.6);
 
     patience = 15 if weight_decay > 0 else 7
-    step_size = 25 if weight_decay > 0 else 15
+    step_size = 25 if weight_decay > 0 else 20
 
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=step_size, gamma=0.4)
     # scheduler = optim.lr_scheduler.ReduceLROnPlateau(
