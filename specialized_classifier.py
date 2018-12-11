@@ -1,12 +1,8 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[38]:
 
 
 import numpy as np
 import pickle
-import timeit
+import time
 
 import torch
 import torch.nn as nn
@@ -138,8 +134,8 @@ np_cnn_outputs = np.concatenate(all_model_outputs, axis = 1)
 X_train = np_cnn_outputs
 Y_train = train_labels_no_test
 
-X_val = test_mine_images 
-Y_val = test_mine_labels 
+X_val = test_mine_images
+Y_val = test_mine_labels
 
 
 # In[ ]:
@@ -163,4 +159,3 @@ for lr in learning_rates:
     print("elapsed time: "+str(elapsed_time))
     print("lr: "+str(lr))
     print(y_pred_val)
-
