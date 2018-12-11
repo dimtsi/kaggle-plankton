@@ -23,9 +23,6 @@ import math
 importlib.reload(NNs)
 from NNs import *
 from NNs import ResNetDynamic, ResNetMine, CNN, SuperNet, EnsembleClassifier
-import inceptionresnet
-
-from inceptionresnet import *
 
 from torchsummary import summary
 # %matplotlib inline
