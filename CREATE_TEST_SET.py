@@ -30,7 +30,7 @@ for train_indexes, validation_indexes in kf.split(X = train_images, y = train_la
     break
 
 pickle.dump(validation_indexes, open("pkl/test_set_mine_indexes.pkl", "wb"))
-print(np.bincount(y_val))
+print(np.bincount(y_train))
 print(np.bincount(y_val))
 
 # In[2]:
