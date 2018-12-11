@@ -7,6 +7,7 @@
 import numpy as np
 import pickle
 import timeit
+import time
 
 import torch
 import torch.nn as nn
@@ -126,7 +127,7 @@ for model in models:
     train_outputs, train_predictions = predict_cnn(model.cuda(), train_images_no_test, mean_norm_test, std_norm_test)
     cnn_train_outputs.append(train_outputs)
     cnn_train_predictions.append(train_predictions)
-    
+
     test_outputs, test_predictions = predict_cnn(model.cuda(), test_mine_images, mean_norm_test, std_norm_test)
     cnn_test_outputs.append(test_outputs)
     cnn_test_predictions.append(test_predictions)
@@ -145,8 +146,8 @@ np_cnn_test_outputs = np.concatenate(cnn_test_outputs, axis = 1)
 X_train = np_cnn_train_outputs
 Y_train = np.array(train_labels_no_test)
 
-X_val = np_cnn_test_outputs 
-Y_val = np.array(test_mine_labels) 
+X_val = np_cnn_test_outputs
+Y_val = np.array(test_mine_labels)
 
 
 # In[ ]:
@@ -170,4 +171,3 @@ for lr in learning_rates:
     print("elapsed time: "+str(elapsed_time))
     print("lr: "+str(lr))
     print(y_pred_val)
-
