@@ -1,8 +1,12 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[38]:
 
 
 import numpy as np
 import pickle
-import time
+import timeit
 
 import torch
 import torch.nn as nn
@@ -113,26 +117,34 @@ def predict_cnn(model, images,  mean_norm_test, std_norm_test, multiGPU = False)
 # In[4]:
 
 
-all_model_outputs = []
-all_model_predictions = []
+all_model_train_outputs = []
+all_model_train_predictions = []
 
 for model in models:
-    outputs, predictions = predict_cnn(model.cuda(), train_images_no_test, mean_norm_test, std_norm_test)
-    all_model_outputs.append(outputs)
-    all_model_predictions.append(predictions)
+    train_outputs, train_predictions = predict_cnn(model.cuda(), train_images_no_test, mean_norm_test, std_norm_test)
+    cnn_train_outputs.append(train_outputs)
+    cnn_train_predictions.append(train_predictions)
+    
+    test_outputs, test_predictions = predict_cnn(model.cuda(), test_mine_images, mean_norm_test, std_norm_test)
+    cnn_test_outputs.append(test_outputs)
+    cnn_test_predictions.append(test_predictions)
 
 
 # In[42]:
 
 
-np_cnn_outputs = np.concatenate(all_model_outputs, axis = 1)
+np_cnn_train_outputs = np.concatenate(cnn_train_outputs, axis = 1)
+np_cnn_test_outputs = np.concatenate(cnn_test_outputs, axis = 1)
 
 
-X_train = np_cnn_outputs
-y_train = train_labels_no_test
+# In[43]:
 
-X_val = test_mine_images
-Y_val = test_mine_labels
+
+X_train = np_cnn_train_outputs
+Y_train = train_labels_no_test
+
+X_val = np_cnn_test_outputs 
+Y_val = test_mine_labels 
 
 
 # In[ ]:
@@ -156,3 +168,4 @@ for lr in learning_rates:
     print("elapsed time: "+str(elapsed_time))
     print("lr: "+str(lr))
     print(y_pred_val)
+
