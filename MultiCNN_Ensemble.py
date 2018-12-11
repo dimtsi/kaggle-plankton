@@ -296,8 +296,8 @@ def train_and_validate(model, train_loader, test_loader,
         losses = [] #losses in epoch per batch
         accuracies_train = [] #accuracies in epoch per batch
         for i, (images, labels) in enumerate(train_loader):
-            images = Variable(images)
-            labels = Variable(labels).squeeze(1).long()#.cpu()
+            images = Variable(images).to(device)
+            labels = Variable(labels).squeeze(1).long().to(device)#.cpu()
             # Forward + Backward + Optimize
             optimizer.zero_grad()
             outputs = model(images)
