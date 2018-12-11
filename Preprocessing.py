@@ -460,7 +460,7 @@ if __name__ == "__main__":
             #   # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 cGPUs
             # #   cnn = nn.DataParallel(cnn)
             #   cnn = nn.DataParallel(cnn, device_ids=[0, 1])
-            cnn1 = nn.DataParallel(cnn)
+            cnn1 = nn.DataParallel(cnn).cuda()
 
             # cnn = CNN().cuda()
             # summary(cnn, (1,64,64))
