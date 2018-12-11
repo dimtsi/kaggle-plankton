@@ -296,8 +296,8 @@ def train_and_validate(model, train_loader, test_loader,
         losses = [] #losses in epoch per batch
         accuracies_train = [] #accuracies in epoch per batch
         for i, (images, labels) in enumerate(train_loader):
-            images = Variable(images).to(device)
-            labels = Variable(labels).squeeze(1).long().to(device)#.cpu()
+            images = Variable(images)
+            labels = Variable(labels).squeeze(1).long()#.cpu()
             # Forward + Backward + Optimize
             optimizer.zero_grad()
             outputs = model(images)
@@ -330,7 +330,7 @@ def train_and_validate(model, train_loader, test_loader,
 
 
         for images, labels in test_loader:
-            images = Variable(images).to(device)
+            images = Variable(images)
             labels= labels.squeeze(1)
             outputs = model(images)
             _, predicted = torch.max(outputs.data, 1)
@@ -389,7 +389,7 @@ def predict_on_my_test_set(model, mean_norm_test, std_norm_test, multiGPU=False)
     correct = 0
     total = 0
     for images, labels in test_mine_loader:
-        images = Variable(images).to(device)
+        images = Variable(images)
         labels= labels.squeeze(1)
         outputs = model(images).cpu()
         _, predicted = torch.max(outputs.data, 1)
