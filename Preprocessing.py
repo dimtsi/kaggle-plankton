@@ -254,7 +254,7 @@ def train_and_validate(model, train_loader, test_loader,
                        multiGPU = False,
                        save_name = 'trained_model.pt'):
     learning_rate = 0.001
-    weight_decay = 0.001
+    weight_decay = 0.0001
     batch_size = train_loader.batch_size
     criterion = nn.CrossEntropyLoss();
     optimizer = torch.optim.Adam(model.parameters(),
