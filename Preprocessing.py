@@ -407,7 +407,7 @@ if __name__ == "__main__":
     norm_mean_width = np.mean(widths)
     norm_mean_height = np.mean(heights)
 
-    device = torch.device("cuda:2" if torch.cuda.device_count()>2 else "cuda:0")
+    device = torch.device("cuda:3" if torch.cuda.device_count()>2 else "cuda:0")
     import timeit
 
     ##Class weights for imbalance
@@ -483,7 +483,7 @@ if __name__ == "__main__":
             trained_model = train_and_validate(cnn, train_loader, test_loader,
                                                num_epochs=200,
                                                learning_rate = 0.001,
-                                               weight_decay = 0,
+                                               weight_decay = 0.001,
                                                device = device,
                                                save_name = 'trained_model.pt')
                                                # save_name = 'test_model'+str(num_splits)+'splits.pt')
