@@ -460,7 +460,7 @@ if __name__ == "__main__":
             cnn.to(device)
 
             # cnn = CNN().cuda()
-            summary(cnn, (1,64,64))
+            # summary(cnn, (1,64,64))
 
         #     print(summary(cnn, (1,28,28)))
             trained_model = train_and_validate(cnn, train_loader, test_loader,
