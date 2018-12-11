@@ -413,7 +413,7 @@ if __name__ == "__main__":
 
     pretrained = resnet50(pretrained = True)
     cnn = ResNetDynamic(pretrained.block, pretrained.layers,
-                num_layers = 3, pretrained_nn = None)
+                num_layers = 4, pretrained_nn = None)
 
     from sklearn.model_selection import KFold, StratifiedKFold
 
@@ -489,7 +489,7 @@ if __name__ == "__main__":
             cnn.to(device)
 
             # cnn = CNN().cuda()
-            # summary(cnn, (1,64,64))
+            summary(cnn, (1,64,64))
 
         #     print(summary(cnn, (1,28,28)))
             trained_model = train_and_validate(cnn, train_loader, test_loader,
@@ -497,7 +497,7 @@ if __name__ == "__main__":
                                                learning_rate = 0.001,
                                                weight_decay = 0,
                                                device = device,
-                                               save_name = 'trained_model_fold'+str(fold)+'3_layers.pt')
+                                               save_name = 'trained_model_fold'+str(fold)+'_4layers.pt')
                                                # save_name = 'test_model'+str(num_splits)+'splits.pt')
             # trained_models.append(trained_model)
             break
