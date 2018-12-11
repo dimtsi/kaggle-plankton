@@ -246,9 +246,9 @@ class EnsembleClassifier(nn.Module):
             self.final_size += num_classes
         self.fc1 = nn.Sequential(
             nn.Linear(self.final_size, self.final_size),
-            # nn.LeakyReLU(0.3),
+            nn.LeakyReLU(0.3),
             nn.Dropout(0.6)
-            # )
+            )
         self.fc2 = nn.Linear(self.final_size, num_classes)
 #
     def forward(self, x):
