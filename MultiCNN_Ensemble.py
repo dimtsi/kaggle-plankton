@@ -281,7 +281,7 @@ def train_and_validate(model, train_loader, test_loader,
 #     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate);
     #Training
     print("lr:{} wd:{}".format(learning_rate, weight_decay))
-    # model.train().to(device)
+    model.train().to(device)
     if isinstance(model, EnsembleClassifier):
         if multiGPU == True:
             print("multiGPU")
@@ -291,7 +291,7 @@ def train_and_validate(model, train_loader, test_loader,
     best_val_accuracy = 0
     for epoch in range(num_epochs):
         scheduler.step()
-        # model.train()
+        model.train()
         tic=timeit.default_timer()
         losses = [] #losses in epoch per batch
         accuracies_train = [] #accuracies in epoch per batch

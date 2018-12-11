@@ -275,6 +275,7 @@ class EnsembleClassifier(nn.Module):
         return z
 
     def set_devices_multiGPU(self):
+        self.multiGPU = True
         self.net1.to(self.devices[0])
         self.net2.to(self.devices[1])
         self.net3.to(self.devices[2])
