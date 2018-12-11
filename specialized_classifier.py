@@ -151,9 +151,9 @@ y_val = np.array(test_mine_labels)
 
 
 # In[ ]:
-
-
+from sklearn.metrics import accuracy_score
 from xgboost import XGBClassifier
+
 start_time = time.time()
 learning_rates = [0.1, 0.01, 0.01, 0.001]
 for lr in learning_rates:
