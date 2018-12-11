@@ -406,7 +406,7 @@ if __name__ == "__main__":
 
 
     cnn = inceptionresnetv2(num_classes=121, pretrained=None)
-
+    print(cnn)
 
 
     trained_models = []
