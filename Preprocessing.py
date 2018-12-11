@@ -207,7 +207,7 @@ def save_model(epoch, model, optimizer, scheduler, name = 'trained_model.pt'):
 #=============================TRAINING ===================================#
 
 def train_and_validate(model, train_loader, test_loader,
-                       num_epochs, device,
+                       num_epochs, device = torch.device("cuda:3"),
                        learning_rate = 0.001,
                        weight_decay = 0,
                        multiGPU = False,
@@ -388,7 +388,7 @@ if __name__ == "__main__":
     norm_mean_width = np.mean(widths)
     norm_mean_height = np.mean(heights)
 
-    device = torch.device("cuda:3" if torch.cuda.device_count()>2 else "cuda:0")
+    device = torch.device("cuda:0" if torch.cuda.device_count()>2 else "cuda:0")
     import timeit
 
     ##Class weights for imbalance
