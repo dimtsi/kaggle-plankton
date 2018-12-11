@@ -483,10 +483,10 @@ if __name__ == "__main__":
 
         #     print(summary(cnn, (1,28,28)))
             trained_model, predictions = train_and_validate(cnn, train_loader, test_loader,
-                                               num_epochs=100, device = device,
+                                               num_epochs=200, device = device,
                                                save_name = 'trained_model.pt')
                                                # save_name = 'test_model'+str(num_splits)+'splits.pt')
-            trained_models.append(trained_model)
+            # trained_models.append(trained_model)
             break
 
     run_KFolds()
