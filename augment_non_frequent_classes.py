@@ -42,7 +42,7 @@ train_samples_weight = [class_sample_counts[class_id] for class_id in train_labe
 
 most_frequent = np.max(class_sample_counts)
 most_frequent
-augmentation_rate_per_class = most_frequent//class_sample_counts//15
+augmentation_rate_per_class = most_frequent//class_sample_counts//7
 augmentation_rate_per_class
 
 
