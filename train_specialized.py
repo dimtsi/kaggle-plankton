@@ -456,8 +456,8 @@ if __name__ == "__main__":
             # X_train = X_train[:10]
             # y_train = y_train[:10]
 
-            X_val = test_mine_images
-            y_val = test_mine_labels
+            # X_val = test_mine_images
+            # y_val = test_mine_labels
             print("train: "+ str(len(X_train)) + " val: " + str(len(X_val))+ " None: " + str(len(original_images)-len(X_train)))
             print(np.bincount(y_train))
             print(np.bincount(y_val))
@@ -505,7 +505,7 @@ if __name__ == "__main__":
     run_KFolds()
 
 
-    mean_norm_test, std_norm_test = calc_means_stds(original_images)
-
-    final_model = cnn
-    final_model.load_state_dict(torch.load('models/trained_model.pt')['state_dict'])
+    # mean_norm_test, std_norm_test = calc_means_stds(original_images)
+    #
+    # final_model = cnn
+    # final_model.load_state_dict(torch.load('models/trained_model.pt')['state_dict'])
