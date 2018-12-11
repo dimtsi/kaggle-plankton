@@ -206,7 +206,7 @@ def save_model(epoch, model, optimizer, scheduler, name = 'trained_model.pt'):
 def train_and_validate(model, train_loader, test_loader,
                        num_epochs, device = torch.device("cuda:3"),
                        learning_rate = 0.001,
-                       weight_decay = 0,
+                       weight_decay = 1e-4,
                        multiGPU = False,
                        save_name = 'trained_model.pt'):
     batch_size = train_loader.batch_size
