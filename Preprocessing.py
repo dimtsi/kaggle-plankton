@@ -205,7 +205,7 @@ def save_model(epoch, model, optimizer, scheduler, name = 'trained_model.pt'):
 
 def train_only(model, train_loader, num_epochs):
     learning_rate = 0.001
-    weight_decay = 0
+    weight_decay = 0.001
     batch_size = train_loader.batch_size
     criterion = nn.CrossEntropyLoss();
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay = weight_decay);
@@ -254,7 +254,7 @@ def train_and_validate(model, train_loader, test_loader,
                        multiGPU = False,
                        save_name = 'trained_model.pt'):
     learning_rate = 0.001
-    weight_decay = 0
+    weight_decay = 0.001
     batch_size = train_loader.batch_size
     criterion = nn.CrossEntropyLoss();
     optimizer = torch.optim.Adam(model.parameters(),
