@@ -375,7 +375,7 @@ if __name__ == "__main__":
     ###========================MAIN EXECUTION=========================###
 
     #####Specialization####
-    fold = 1
+    fold = 0
     print('Fold: '+str(fold))
 
     #PIL
