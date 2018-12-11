@@ -230,7 +230,7 @@ def train_and_validate(model, train_loader, test_loader,
 #     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate);
     #Training
     print("lr:{} wd:{}".format(learning_rate, weight_decay))
-    model.train().to(device)
+    model.train()
     if isinstance(model, EnsembleClassifier):
         if multiGPU == True:
             print("multiGPU")
@@ -460,7 +460,7 @@ if __name__ == "__main__":
             #   # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 cGPUs
             # #   cnn = nn.DataParallel(cnn)
             #   cnn = nn.DataParallel(cnn, device_ids=[0, 1])
-            cnn.to(device)
+            cnn = nn.DataParallel(cnn)
 
             # cnn = CNN().cuda()
             summary(cnn, (1,64,64))
