@@ -291,7 +291,7 @@ def train_and_validate(model, train_loader, test_loader,
     best_val_accuracy = 0
     for epoch in range(num_epochs):
         scheduler.step()
-        model.train()
+        # model.train()
         tic=timeit.default_timer()
         losses = [] #losses in epoch per batch
         accuracies_train = [] #accuracies in epoch per batch
