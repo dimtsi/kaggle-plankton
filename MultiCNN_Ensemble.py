@@ -454,6 +454,19 @@ if __name__ == "__main__":
         original_labels = pickle.load(open("pkl/classified_train_labels.pkl", "rb"))
         test_set_mine_indexes = pickle.load(open("pkl/test_set_mine_indexes_classified.pkl", "rb"))
 
+    train_images = original_images
+    train_labels = original_labels
+
+    test_images = pickle.load(open("pkl/test_padded64.pkl", "rb"))
+    test_filenames = pickle.load(open("pkl/test_filenames.pkl", "rb"))
+
+    ##create separate test set
+    train_images_no_test = [i for j, i in enumerate(train_images) if j not in test_set_mine_indexes]
+    train_labels_no_test = [i for j, i in enumerate(train_labels) if j not in test_set_mine_indexes]
+    #
+    test_mine_images = [i for j, i in enumerate(original_images) if j in test_set_mine_indexes]
+    test_mine_labels = [i for j, i in enumerate(original_labels) if j in test_set_mine_indexes]
+
 
     ###========================MAIN EXECUTION=========================###
 
@@ -563,8 +576,8 @@ if __name__ == "__main__":
     def train_ensemble_on_test():
         norm = {}
         norm['train_norm_mean'], norm['train_norm_std'] = calc_means_stds(original_images)
-        train_dataset, val_dataset = create_train_val_datasets(train_images,
-                                                               train_labels,
+        train_dataset, val_dataset = create_train_val_datasets(train_images_no_test,
+                                                               train_labels_no_test,
                                                                test_mine_images,
                                                                test_mine_labels,
                                                                norm_params = norm)
@@ -582,7 +595,7 @@ if __name__ == "__main__":
                                            num_epochs=100, device = device,
                                            multiGPU = False)
 
-    # train_ensemble_on_test()
+    train_ensemble_on_test()
 
     mean_norm_test, std_norm_test = calc_means_stds(train_images)
 
