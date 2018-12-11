@@ -245,11 +245,11 @@ class EnsembleClassifier(nn.Module):
         for net in networks:
             self.final_size += num_classes
         self.fc1 = nn.Sequential(
-            nn.Linear(self.final_size, self.final_size),
+            nn.Linear(self.final_size, (int)(1.2*self.final_size)),
             nn.LeakyReLU(0.3),
             nn.Dropout(0.6)
             )
-        self.fc2 = nn.Linear(self.final_size, num_classes)
+        self.fc2 = nn.Linear((int)(1.2*self.final_size), num_classes)
 #
     def forward(self, x):
         if self.multiGPU == True:
