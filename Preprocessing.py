@@ -342,8 +342,8 @@ def predict_test_set_kaggle(model, filenames,  mean_norm_test, std_norm_test):
 
 if __name__ == "__main__":
     # print("weighted classes")
-    original_images = pickle.load(open("pkl/classified_padded64.pkl", "rb"))
-    original_labels = pickle.load(open("pkl/classified_train_labels.pkl", "rb"))
+    original_images = pickle.load(open("pkl/train_padded64.pkl", "rb"))
+    original_labels = pickle.load(open("pkl/train_labels.pkl", "rb"))
 
     # train_images = pickle.load(open("pkl/augmented/classified_padded64.pkl", "rb"))
     # train_labels = pickle.load(open("pkl/augmented/classified_all_labels.pkl", "rb"))
@@ -354,7 +354,7 @@ if __name__ == "__main__":
     test_filenames = pickle.load(open("pkl/test_filenames.pkl", "rb"))
 
     ##create separate test set
-    test_set_mine_indexes = pickle.load(open("pkl/test_set_mine_indexes_classified.pkl", "rb"))
+    test_set_mine_indexes = pickle.load(open("pkl/test_set_mine_indexes.pkl", "rb"))
     train_images_no_test = [i for j, i in enumerate(train_images) if j not in test_set_mine_indexes]
     train_labels_no_test = [i for j, i in enumerate(train_labels) if j not in test_set_mine_indexes]
     #
