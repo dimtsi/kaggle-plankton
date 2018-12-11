@@ -117,8 +117,10 @@ def predict_cnn(model, images,  mean_norm_test, std_norm_test, multiGPU = False)
 # In[4]:
 
 
-all_model_train_outputs = []
-all_model_train_predictions = []
+cnn_train_outputs = []
+cnn_train_predictions = []
+cnn_test_outputs = []
+cnn_test_predictions = []
 
 for model in models:
     train_outputs, train_predictions = predict_cnn(model.cuda(), train_images_no_test, mean_norm_test, std_norm_test)
