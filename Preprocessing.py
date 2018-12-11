@@ -460,13 +460,13 @@ if __name__ == "__main__":
             #   # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 cGPUs
             # #   cnn = nn.DataParallel(cnn)
             #   cnn = nn.DataParallel(cnn, device_ids=[0, 1])
-            cnn = nn.DataParallel(cnn)
+            cnn1 = nn.DataParallel(cnn)
 
             # cnn = CNN().cuda()
             summary(cnn, (1,64,64))
 
         #     print(summary(cnn, (1,28,28)))
-            trained_model = train_and_validate(cnn, train_loader, test_loader,
+            trained_model = train_and_validate(cnn1, train_loader, test_loader,
                                                num_epochs=200,
                                                learning_rate = 0.001,
                                                weight_decay = 0,
