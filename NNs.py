@@ -254,7 +254,7 @@ class EnsembleClassifier(nn.Module):
     def forward(self, x):
         if self.multiGPU == True:
             x1 = self.net1(x.to(self.devices[0]))
-            x2 = self.net2(x)
+            x2 = self.net2(x.to(self.devices[1]))
             x3 = self.net3(x.to(self.devices[2]))
             x4 = self.net4(x.to(self.devices[3]))
             z = self.fusion([x1, x2.to(self.devices[0]),
