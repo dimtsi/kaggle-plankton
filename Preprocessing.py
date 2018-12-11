@@ -472,6 +472,7 @@ if __name__ == "__main__":
     trained_models = []
     def run_KFolds():
         num_splits = 1000
+        print(num_splits)
         kf = StratifiedKFold(n_splits=num_splits, random_state=None, shuffle=True)
         for train_indexes, validation_indexes in kf.split(X = train_images_no_test,
                                                           y = train_labels_no_test):
@@ -528,7 +529,7 @@ if __name__ == "__main__":
             trained_model = train_and_validate(cnn, train_loader, test_loader,
                                                num_epochs=200,
                                                learning_rate = 0.001,
-                                               weight_decay = 0.001,
+                                               weight_decay = 0,
                                                device = device,
                                                save_name = 'trained_model.pt')
                                                # save_name = 'test_model'+str(num_splits)+'splits.pt')
