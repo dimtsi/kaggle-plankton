@@ -223,7 +223,7 @@ def train_and_validate(model, train_loader, test_loader,
     # optimizer = torch.optim.RMSprop(model.parameters(), lr=learning_rate,
     #                                 weight_decay = weight_decay,
     #                                 momentum = 0.6);
-    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.5)
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=15, gamma=0.5)
     # scheduler = optim.lr_scheduler.ReduceLROnPlateau(
     # optimizer, 'max', factor=0.1, patience=7, verbose=True)
 #     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate);
@@ -237,6 +237,7 @@ def train_and_validate(model, train_loader, test_loader,
     history = {'batch': [], 'loss': [], 'accuracy': []}
     best_val_accuracy = 0
     for epoch in range(num_epochs):
+        scheduler.step()
         model.train()
         tic=timeit.default_timer()
         losses = [] #losses in epoch per batch
@@ -289,7 +290,7 @@ def train_and_validate(model, train_loader, test_loader,
 
             val_accuracy = 100*correct.item() / total
         print('VALIDATION SET ACCURACY: %.4f %%' % val_accuracy)
-        scheduler.step(correct.item() / total)
+        # scheduler.step(correct.item() / total)
         if val_accuracy >= best_val_accuracy:
             best_val_accuracy = val_accuracy
             save_model(epoch, model, optimizer, scheduler, name = save_name)
