@@ -257,28 +257,40 @@ def train_only(model, train_loader, num_epochs):
     return model
 
 
-def train_and_validate(model, train_loader, test_loader, num_epochs, device, multiGPU = False):
-    learning_rate = 0.001
-    weight_decay = 0
+def train_and_validate(model, train_loader, test_loader,
+                       num_epochs, device = torch.device("cuda:0"),
+                       learning_rate = 0.001,
+                       weight_decay = 0,
+                       multiGPU = False,
+                       save_name = 'ensemble.pt'):
     batch_size = train_loader.batch_size
     criterion = nn.CrossEntropyLoss();
     optimizer = torch.optim.Adam(model.parameters(),
-                                 lr=learning_rate,
+                                 lr = learning_rate,
                                  weight_decay = weight_decay);
-    scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-    optimizer, 'max', factor=0.1, patience=7, verbose=True)
+    # optimizer = torch.optim.RMSprop(model.parameters(), lr=learning_rate,
+    #                                 weight_decay = weight_decay,
+    #                                 momentum = 0.6);
+
+    patience = 15 if weight_decay > 0 else 7
+    step_size = 25 if weight_decay > 0 else 15
+
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=step_size, gamma=0.4)
+    # scheduler = optim.lr_scheduler.ReduceLROnPlateau(
+    # optimizer, 'max', factor=0.1, patience=patience, verbose=True)
 #     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate);
     #Training
+    print("lr:{} wd:{}".format(learning_rate, weight_decay))
     model.train().to(device)
     if isinstance(model, EnsembleClassifier):
         if multiGPU == True:
             print("multiGPU")
             model.set_devices_multiGPU()
-            model.multiGPU = True
 
     history = {'batch': [], 'loss': [], 'accuracy': []}
     best_val_accuracy = 0
     for epoch in range(num_epochs):
+        scheduler.step()
         model.train()
         tic=timeit.default_timer()
         losses = [] #losses in epoch per batch
@@ -302,18 +314,21 @@ def train_and_validate(model, train_loader, test_loader, num_epochs, device, mul
                   "Epoch : %d/%d" % (epoch+1, num_epochs),
                   "Iter : %d/%d" % (i+1, len(train_loader.dataset)//batch_size)])
                 print('\r{}'.format(log), end=" ")
-                # history['batch'].append(i)
-                # history['loss'].append(loss.item())
-                # history['accuracy'].append(accuracy_train.item())
+
         epoch_log = " ".join([
           "Epoch : %d/%d" % (epoch+1, num_epochs),
           "Training Loss: %.4f" % np.mean(losses),
           "Training Accuracy: %.4f" % np.mean(accuracies_train)])
         print('\r{}'.format(epoch_log))
+
         ##VALIDATION SCORE AFTER EVERY EPOCH
         model.eval()
         correct = 0
         total = 0
+        total_labels = torch.Tensor().long()
+        total_predicted = torch.Tensor().long()
+
+
         for images, labels in test_loader:
             images = Variable(images).to(device)
             labels= labels.squeeze(1)
@@ -321,18 +336,28 @@ def train_and_validate(model, train_loader, test_loader, num_epochs, device, mul
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
             correct += (predicted.cpu().long() == labels).sum()
+
+            total_labels = torch.cat((total_labels,labels))
+            total_predicted = torch.cat((total_predicted, predicted.cpu().long()))
+
             val_accuracy = 100*correct.item() / total
         print('VALIDATION SET ACCURACY: %.4f %%' % val_accuracy)
-        scheduler.step(correct.item() / total)
+        # scheduler.step(correct.item() / total)
+
+        ###Results for analysis###
         if val_accuracy >= best_val_accuracy:
             best_val_accuracy = val_accuracy
-            save_model(epoch, model, optimizer, scheduler, name = 'ensemble.pt')
+            save_model(epoch, model, optimizer, scheduler, name = save_name)
+            pickle.dump(total_predicted.cpu().long(), open("predicted.pkl", "wb"))
+            pickle.dump(total_labels.long(), open("training_labels.pkl", "wb"))
+
         toc=timeit.default_timer()
         if epoch+1 == 70:
             for group in optimizer.param_groups:
                 if 'lr' in group.keys():
                     if group['lr'] == 0.001:
                         group['lr'] == 0.0001
+                        scheduler._reset()
                         print("MANUAL CHANGE OF LR")
         print(toc-tic)
     return model
@@ -414,21 +439,21 @@ if __name__ == "__main__":
     # print("weighted classes")
 
     # print("weighted classes")
-    original_images = pickle.load(open("pkl/classified_padded64.pkl", "rb"))
-    original_labels = pickle.load(open("pkl/classified_train_labels.pkl", "rb"))
+    classified = False
+    augmented = False
+    print('classified: '+str(classified))
+    print('augmented: '+str(augmented))
 
-    train_images = pickle.load(open("pkl/augmented/classified_padded64.pkl", "rb"))
-    train_labels = pickle.load(open("pkl/augmented/classified_all_labels.pkl", "rb"))
-    test_images = pickle.load(open("pkl/test_padded64.pkl", "rb"))
-    test_filenames = pickle.load(open("pkl/test_filenames.pkl", "rb"))
 
-    ##create separate test set
-    test_set_mine_indexes = pickle.load(open("pkl/test_set_mine_indexes_classified.pkl", "rb"))
-    # train_images_no_test = [i for j, i in enumerate(train_images) if j not in test_set_mine_indexes]
-    # train_labels_no_test = [i for j, i in enumerate(train_labels) if j not in test_set_mine_indexes]
-    #
-    test_mine_images = [i for j, i in enumerate(original_images) if j in test_set_mine_indexes]
-    test_mine_labels = [i for j, i in enumerate(original_labels) if j in test_set_mine_indexes]
+    if classified == False:
+        original_images = pickle.load(open("pkl/train_padded64.pkl", "rb"))
+        original_labels = pickle.load(open("pkl/train_labels.pkl", "rb"))
+        test_set_mine_indexes = pickle.load(open("pkl/test_set_mine_indexes.pkl", "rb"))
+    else:
+        original_images = pickle.load(open("pkl/classified_padded64.pkl", "rb"))
+        original_labels = pickle.load(open("pkl/classified_train_labels.pkl", "rb"))
+        test_set_mine_indexes = pickle.load(open("pkl/test_set_mine_indexes_classified.pkl", "rb"))
+
 
     ###========================MAIN EXECUTION=========================###
 
@@ -465,30 +490,30 @@ if __name__ == "__main__":
     # class_weights = torch.from_numpy(class_weights).float().to(device)
 
     from sklearn.model_selection import StratifiedKFold
-
+    num_layers = 2
     models = []
     pretrained = resnet50(pretrained = True)
     cnn1 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
-    cnn1_dict = torch.load('models/trained_model_fold0.pt')['state_dict']
+    cnn1_dict = torch.load('models/trained_model_fold0_'+str(num_layers)'layers.pt')['state_dict']
     cnn1.load_state_dict(cnn1_dict)
     models.append(cnn1)
 
     cnn2 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
-    cnn2_dict = torch.load('models/trained_model_fold1.pt', map_location={'cuda:1': 'cuda:0'}))['state_dict']
+    cnn1_dict = torch.load('models/trained_model_fold1_'+str(num_layers)'layers.pt')['state_dict']
     cnn2.load_state_dict(cnn2_dict)
     models.append(cnn2)
 
     cnn3 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
-    cnn3_dict = torch.load('models/trained_model_fold2.pt', map_location={'cuda:2': 'cuda:0'})['state_dict']
+    cnn1_dict = torch.load('models/trained_model_fold2_'+str(num_layers)'layers.pt')['state_dict']
     cnn3.load_state_dict(cnn3_dict)
     models.append(cnn3)
 
     cnn4 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
-    cnn4_dict = torch.load('models/trained_model_fold3.pt', map_location={'cuda:3': 'cuda:0'})['state_dict']
+    cnn1_dict = torch.load('models/trained_model_fold3_'+str(num_layers)'layers.pt')['state_dict']
     cnn4.load_state_dict(cnn4_dict)
     models.append(cnn4)
 
@@ -565,4 +590,6 @@ if __name__ == "__main__":
     final_model.load_state_dict(torch.load('models/ensemble.pt')['state_dict'])
     #
     # predict_on_my_test_set(final_model, mean_norm_test, std_norm_test, multiGPU=False)
-    predict_test_set_kaggle(final_model, test_filenames, mean_norm_test, std_norm_test, multiGPU=False)
+    predict_test_set_kaggle(final_model, test_filenames,
+                            mean_norm_test, std_norm_test,
+                            multiGPU=False)

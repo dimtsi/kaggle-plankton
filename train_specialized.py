@@ -497,8 +497,8 @@ if __name__ == "__main__":
                                                learning_rate = 0.001,
                                                weight_decay = 0,
                                                device = device,
-                                               save_name = 'trained_model_fold'+str(fold)+
-                                               '_'+str(num_layers)+'layers.pt')
+                                               save_name = '/models/trained_model_fold'
+                                               +str(fold)+'_'+str(num_layers)+'layers.pt')
                                                # save_name = 'test_model'+str(num_splits)+'splits.pt')
             # trained_models.append(trained_model)
             break
