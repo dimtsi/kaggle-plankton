@@ -230,7 +230,7 @@ def train_and_validate(model, train_loader, test_loader,
 #     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate);
     #Training
     print("lr:{} wd:{}".format(learning_rate, weight_decay))
-    model.train()
+    model.train().to(device)
     if isinstance(model, EnsembleClassifier):
         if multiGPU == True:
             print("multiGPU")
