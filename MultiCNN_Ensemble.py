@@ -291,7 +291,7 @@ def train_and_validate(model, train_loader, test_loader,
     best_val_accuracy = 0
     for epoch in range(num_epochs):
         scheduler.step()
-        model.train().to(device)
+        model.train()
         tic=timeit.default_timer()
         losses = [] #losses in epoch per batch
         accuracies_train = [] #accuracies in epoch per batch
@@ -330,7 +330,7 @@ def train_and_validate(model, train_loader, test_loader,
 
 
         for images, labels in test_loader:
-            images = Variable(images)
+            images = Variable(images).to(device)
             labels= labels.squeeze(1)
             outputs = model(images)
             _, predicted = torch.max(outputs.data, 1)
@@ -594,7 +594,7 @@ if __name__ == "__main__":
         trained_model = train_and_validate(cnn, train_loader, test_loader,
                                            num_epochs=100, device = device,
                                            multiGPU = True)
-    cnn.to(device)
+    # cnn.to(device)
     train_ensemble_on_test()
 
     mean_norm_test, std_norm_test = calc_means_stds(train_images)
