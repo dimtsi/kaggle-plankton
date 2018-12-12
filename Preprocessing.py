@@ -22,7 +22,7 @@ import NNs
 import math
 importlib.reload(NNs)
 from NNs import *
-from NNs import ResNetDynamic, ResNetMine, CNN, SuperNet, DenseNet
+from NNs import ResNetDynamic, ResNetMine, CNN, SuperNet, DenseNet, EnsembleClassifier
 
 from torchsummary import summary
 # %matplotlib inline
