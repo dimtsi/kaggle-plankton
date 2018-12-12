@@ -343,7 +343,7 @@ def predict_test_set_kaggle(model, filenames,  mean_norm_test, std_norm_test):
 if __name__ == "__main__":
     # print("weighted classes")
     classified = False
-
+    num_splits = 3
     if classified == False:
         original_images = pickle.load(open("pkl/train_padded64.pkl", "rb"))
         original_labels = pickle.load(open("pkl/train_labels.pkl", "rb"))
@@ -392,7 +392,7 @@ if __name__ == "__main__":
     norm_mean_width = np.mean(widths)
     norm_mean_height = np.mean(heights)
 
-    device = torch.device("cuda:2" if torch.cuda.device_count()>2 else "cuda:0")
+    device = torch.device("cuda:0" if torch.cuda.device_count()>2 else "cuda:0")
     import timeit
 
     ##Class weights for imbalance
@@ -405,22 +405,21 @@ if __name__ == "__main__":
     from sklearn.model_selection import StratifiedKFold
 
     pretrained = resnet50(pretrained = True)
-    # cnn = ResNetDynamic(pretrained.block, pretrained.layers,
-    #             num_layers = 2, pretrained_nn = None)
+    cnn = ResNetDynamic(pretrained.block, pretrained.layers,
+                num_layers = 2, pretrained_nn = None)
 
 
-    model = DenseNet(num_init_features=64, growth_rate=32, block_config=(6, 12, 48, 32),
-                     **kwargs)
+    # model = DenseNet(num_init_features=64, growth_rate=32, block_config=(6, 12, 48, 32),
+    #                  **kwargs)
 
 
 
     trained_models = []
     def run_KFolds():
-        # num_splits = 1000
-        # print(num_splits)
-        # kf = StratifiedKFold(n_splits=num_splits, random_state=None, shuffle=True)
-        # for train_indexes, validation_indexes in kf.split(X = train_images_no_test,
-        #                                                   y = train_labels_no_test):
+        print(num_splits)
+        kf = StratifiedKFold(n_splits=num_splits, random_state=None, shuffle=True)
+        for train_indexes, validation_indexes in kf.split(X = train_images_no_test,
+                                                          y = train_labels_no_test):
             X_train = []
             y_train = []
             X_train = train_images_no_test
@@ -478,7 +477,7 @@ if __name__ == "__main__":
                                                learning_rate = 0.001,
                                                weight_decay = 0,
                                                device = device,
-                                               save_name = 'trained_model'+str(classified)+'.pt')
+                                               save_name = 'trained_model'+str(num_splits)+'.pt')
                                                # save_name = 'test_model'+str(num_splits)+'splits.pt')
             # trained_models.append(trained_model)
             # break
@@ -486,7 +485,7 @@ if __name__ == "__main__":
     run_KFolds()
 
 
-    mean_norm_test, std_norm_test = calc_means_stds(original_images)
-
-    final_model = cnn
-    final_model.load_state_dict(torch.load('models/trained_model.pt')['state_dict'])
+    # mean_norm_test, std_norm_test = calc_means_stds(original_images)
+    #
+    # final_model = cnn
+    # final_model.load_state_dict(torch.load('models/trained_model.pt')['state_dict'])
