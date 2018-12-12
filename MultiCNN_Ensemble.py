@@ -661,7 +661,7 @@ if __name__ == "__main__":
         trained_model = train_and_validate(cnn, train_loader, test_loader,
                                            num_epochs=200, device = device,
                                            multiGPU = True,
-                                           save_name = 'extraclassified/ensemble.pt')
+                                           save_name = 'extraclassified/ensemble_1fc.pt')
     print(cnn)
     # # cnn.to(device)
     # train_ensemble_on_test()
