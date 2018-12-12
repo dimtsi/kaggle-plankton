@@ -613,8 +613,8 @@ if __name__ == "__main__":
         # additional_labels = test_mine_labels[:split]
         # new_test_mine_labels = test_mine_labels[split:]
 
-        extended_train_images = (train_images+additional_images).copy()
-        extended_train_labels = (train_labels+additional_labels).copy()
+        extended_train_images = (train_images_no_test+additional_images).copy()
+        extended_train_labels = (train_images_no_test+additional_labels).copy()
 
         train_dataset, val_dataset = create_train_val_datasets(extended_train_images,
                                                                extended_train_labels,
