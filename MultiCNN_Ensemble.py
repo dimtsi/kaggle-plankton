@@ -572,6 +572,13 @@ if __name__ == "__main__":
 
         extended_train_images = (train_images+additional_images).copy()
         extended_train_labels = (train_labels+additional_labels).copy()
+
+        train_dataset, val_dataset = create_train_val_datasets(extended_train_images,
+                                                               extended_train_labels,
+                                                               new_test_mine_images,
+                                                               new_test_mine_labels,
+                                                               norm_params = norm)
+
         print("train: "+ str(len(train_images))
               + " val: " +str(len(test_mine_images)))
         train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32,
