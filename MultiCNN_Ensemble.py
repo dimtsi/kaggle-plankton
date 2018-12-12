@@ -565,19 +565,19 @@ if __name__ == "__main__":
         norm['train_norm_mean'], norm['train_norm_std'] = calc_means_stds(train_images)
 
         kf = StratifiedKFold(n_splits=2, random_state=None, shuffle=True)
-        for additional_train_indexes_no_test, additional_validation_indexes_no_test in kf.split(X = test_images_no_test,
-                                                          y = test_labels_no_test):
+        for additional_train_indexes_no_test, additional_validation_indexes_no_test in kf.split(X = test_mine_images,
+                                                          y = test_mine_labels):
             additional_images = []
             additional_labels = []
             new_test_mine_images = []
             new_test_mine_labels = []
 
             for i in additional_train_indexes_no_test:
-                additional_images.append(test_images_no_test[i])
-                additional_labels.append(test_labels_no_test[i])
+                additional_images.append(test_mine_images[i])
+                additional_labels.append(test_mine_labels[i])
             for j in additional_validation_indexes_no_test:
-                new_test_mine_images.append(test_images_no_test[j])
-                new_test_mine_labels.append(test_labels_no_test[j])
+                new_test_mine_images.append(test_mine_images[j])
+                new_test_mine_labels.append(test_mine_labels[j])
         #
         #
         #
