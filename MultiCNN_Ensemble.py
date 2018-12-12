@@ -634,7 +634,7 @@ if __name__ == "__main__":
         trained_model = train_and_validate(cnn, train_loader, test_loader,
                                            num_epochs=200, device = device,
                                            multiGPU = True,
-                                           save_name = 'final_ensemble.pt')
+                                           save_name = 'ensemble.pt')
 
     train_ensemble_on_whole_test_mine()
 
@@ -661,7 +661,7 @@ if __name__ == "__main__":
         trained_model = train_and_validate(cnn, train_loader, test_loader,
                                            num_epochs=200, device = device,
                                            multiGPU = True,
-                                           save_name = 'final_ensemble.pt')
+                                           save_name = 'ensemble.pt')
     print(cnn)
     # # cnn.to(device)
     # train_ensemble_on_test()

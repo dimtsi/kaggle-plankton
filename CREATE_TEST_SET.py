@@ -88,7 +88,6 @@ count_train = np.bincount(train_labels)
 count_val = np.bincount(y_val)
 import pandas as pd
 df= pd.DataFrame.from_dict({'train':count_train, 'val':count_val})
-len(train_images)
 
 
 # In[ ]:
