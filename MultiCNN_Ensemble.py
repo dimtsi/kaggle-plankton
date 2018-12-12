@@ -272,7 +272,7 @@ def train_and_validate(model, train_loader, test_loader,
     #                                 weight_decay = weight_decay,
     #                                 momentum = 0.6);
 
-    patience = 15 if weight_decay > 0 else 15
+    patience = 15 if weight_decay > 0 else 10
     step_size = 25 if weight_decay > 0 else 20
 
     # scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=step_size, gamma=0.4)
@@ -564,7 +564,7 @@ if __name__ == "__main__":
         norm = {}
         norm['train_norm_mean'], norm['train_norm_std'] = calc_means_stds(train_images)
 
-        split = 1500
+        split = 1000
         additional_images = test_mine_images[:split]
         new_test_mine_images = test_mine_images[split:]
         additional_labels = test_mine_labels[:split]
@@ -593,7 +593,7 @@ if __name__ == "__main__":
                                            multiGPU = True,
                                            save_name = 'final_ensemble.pt')
 
-    # train_ensemble_on_whole_test_mine()
+    train_ensemble_on_whole_test_mine()
 
 
     def train_ensemble_on_test():
