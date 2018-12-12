@@ -706,7 +706,7 @@ if __name__ == "__main__":
                                            multiGPU = True,
                                            save_name = 'ultra_boost.pt')
 
-    train_ensemble_on_whole_test_mine()
+    # train_ensemble_on_whole_test_mine()
 
 
     def train_ensemble_on_test():
@@ -734,7 +734,7 @@ if __name__ == "__main__":
                                            save_name = 'ultra_boost.pt')
     print(cnn)
     # # cnn.to(device)
-    # # train_ensemble_on_test()
+    train_ensemble_on_test()
     #
     # mean_norm_test, std_norm_test = calc_means_stds(train_images)
     #
