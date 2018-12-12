@@ -245,16 +245,16 @@ class EnsembleClassifier(nn.Module):
         for net in networks:
             self.final_size += num_classes
         self.fc1 = nn.Sequential(
-            nn.Linear(self.final_size, 1.5*self.final_size),
+            nn.Linear(self.final_size, (int)(1.2*self.final_size)),
             nn.LeakyReLU(0.3),
             nn.Dropout(0.3)
             )
         self.fc2 = nn.Sequential(
-            nn.Linear(1.5*self.final_size, 1.5*self.final_size),
+            nn.Linear((int)(1.2*self.final_size), (int)(1.2*self.final_size)),
             nn.LeakyReLU(0.3),
             nn.Dropout(0.3)
             )
-        self.fc3 = nn.Linear(1.5*self.final_size, num_classes)
+        self.fc3 = nn.Linear((int)(1.2*self.final_size), num_classes)
 
 #
     def forward(self, x):
