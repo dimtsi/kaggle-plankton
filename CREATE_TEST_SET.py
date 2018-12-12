@@ -67,7 +67,7 @@ import numpy as np
 train_images = pickle.load(open("pkl/extraclassified_padded64.pkl", "rb"))
 train_labels = pickle.load(open("pkl/extraclassified_train_labels.pkl", "rb"))
 
-kf = StratifiedKFold(n_splits=12, random_state=None, shuffle=True)
+kf = StratifiedKFold(n_splits=8, random_state=None, shuffle=True)
 for train_indexes, validation_indexes in kf.split(X = train_images, y = train_labels):
     X_train = []
     y_train = []
@@ -88,8 +88,7 @@ count_train = np.bincount(train_labels)
 count_val = np.bincount(y_val)
 import pandas as pd
 df= pd.DataFrame.from_dict({'train':count_train, 'val':count_val})
-print(df)
-
+len(train_images)
 
 
 # In[ ]:
