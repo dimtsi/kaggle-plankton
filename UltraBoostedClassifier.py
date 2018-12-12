@@ -653,7 +653,7 @@ if __name__ == "__main__":
     # models.append(cnn4)
 
     # cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
-    cnn = Ul(models)
+    cnn = UltraBoostedClassifier(models)
     # cnn_dict = torch.load('models/ensemble_stratified_0.3_drop.pt')['state_dict']
     # cnn.load_state_dict(cnn_dict)
 
