@@ -196,7 +196,7 @@ def save_model(epoch, model, optimizer, scheduler, name = 'trained_model.pt'):
     'scheduler': scheduler.state_dict()
     }
     print("Saved model at: "+str(name))
-    torch.save(train_state, name)
+    torch.save(train_state, 'models/'+str(name))
 
 # In[9]:
 
@@ -342,8 +342,8 @@ def predict_test_set_kaggle(model, filenames,  mean_norm_test, std_norm_test):
 
 if __name__ == "__main__":
     # print("weighted classes")
-    classified = False
-    num_splits = 90
+    classified = True
+    num_splits = 3
     if classified == False:
         original_images = pickle.load(open("pkl/train_padded64.pkl", "rb"))
         original_labels = pickle.load(open("pkl/train_labels.pkl", "rb"))
@@ -477,8 +477,7 @@ if __name__ == "__main__":
                                                learning_rate = 0.001,
                                                weight_decay = 0,
                                                device = device,
-                                               save_name = 'single_modelpt')
-                                               # save_name = 'test_model'+str(num_splits)+'splits.pt')
+                                               save_name = 'classified/trained_model'+str(num_splits)+'.pt')
             # trained_models.append(trained_model)
             break
 
