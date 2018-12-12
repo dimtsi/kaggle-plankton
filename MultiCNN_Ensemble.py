@@ -636,7 +636,7 @@ if __name__ == "__main__":
                                            multiGPU = True,
                                            save_name = 'final_ensemble.pt')
 
-    train_ensemble_on_whole_test_mine()
+    # train_ensemble_on_whole_test_mine()
 
 
     def train_ensemble_on_test():
@@ -666,10 +666,10 @@ if __name__ == "__main__":
     # # cnn.to(device)
     # # train_ensemble_on_test()
     #
-    # mean_norm_test, std_norm_test = calc_means_stds(train_images)
-    #
-    # final_model = cnn.to(device)
-    # final_model.load_state_dict(torch.load('models/final_ensemble.pt')['state_dict'])
+    mean_norm_test, std_norm_test = calc_means_stds(train_images)
+
+    final_model = cnn.to(device)
+    final_model.load_state_dict(torch.load('models/ ens_subm_1.pt')['state_dict'])
     #
     # predict_on_my_test_set(final_model, mean_norm_test, std_norm_test, multiGPU=False)
     predict_test_set_kaggle(final_model, test_filenames,
