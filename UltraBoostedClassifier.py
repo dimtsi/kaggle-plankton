@@ -26,9 +26,8 @@ from torchvision import transforms
 import importlib
 import NNs
 import math
-importlib.reload(NNs)
 from NNs import *
-from NNs import ResNetDynamic, ResNetMine, CNN, SuperNet, EnsembleClassifier
+from NNs import ResNetDynamic, ResNetMine, CNN, SuperNet, EnsembleClassifier, Fusion, Flatten
 
 from torchsummary import summary
 # %matplotlib inline
