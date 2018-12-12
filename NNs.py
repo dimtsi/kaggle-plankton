@@ -237,8 +237,8 @@ class EnsembleClassifier(nn.Module):
         self.net2.requires_grad = False
         self.net3 =  nn.Sequential(*list(networks[2].children()))#[:-1]
         self.net3.requires_grad = False
-        self.net4 =  nn.Sequential(*list(networks[3].children()))#[:-1]
-        self.net4.requires_grad = False
+        # self.net4 =  nn.Sequential(*list(networks[3].children()))#[:-1]
+        # self.net4.requires_grad = False
 
         self.fusion = Fusion()
         self.final_size = 0
