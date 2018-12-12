@@ -589,7 +589,7 @@ if __name__ == "__main__":
         norm = {}
         norm['train_norm_mean'], norm['train_norm_std'] = calc_means_stds(train_images)
 
-        kf = StratifiedKFold(n_splits=4], random_state=None, shuffle=True)
+        kf = StratifiedKFold(n_splits=4, random_state=None, shuffle=True)
         for additional_train_indexes_no_test, additional_validation_indexes_no_test in kf.split(X = test_mine_images,
                                                           y = test_mine_labels):
             additional_images = []
