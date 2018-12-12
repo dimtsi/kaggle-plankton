@@ -741,7 +741,7 @@ if __name__ == "__main__":
     final_model = cnn.to(device)
     final_model.load_state_dict(torch.load('models/ultra_boost.pt')['state_dict'])
 
-    predict_on_my_test_set(final_model, mean_norm_test, std_norm_test, multiGPU=False)
+    # predict_on_my_test_set(final_model, mean_norm_test, std_norm_test, multiGPU=False)
     predict_test_set_kaggle(final_model, test_filenames,
                             mean_norm_test, std_norm_test,
-                            multiGPU=False)
+                            multiGPU=True)
