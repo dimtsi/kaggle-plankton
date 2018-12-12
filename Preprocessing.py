@@ -343,7 +343,7 @@ def predict_test_set_kaggle(model, filenames,  mean_norm_test, std_norm_test):
 if __name__ == "__main__":
     # print("weighted classes")
     classified = True
-    num_splits = 3
+    num_splits = 15
     if classified == False:
         original_images = pickle.load(open("pkl/train_padded64.pkl", "rb"))
         original_labels = pickle.load(open("pkl/train_labels.pkl", "rb"))
@@ -392,7 +392,7 @@ if __name__ == "__main__":
     norm_mean_width = np.mean(widths)
     norm_mean_height = np.mean(heights)
 
-    device = torch.device("cuda:3" if torch.cuda.device_count()>2 else "cuda:0")
+    device = torch.device("cuda:0" if torch.cuda.device_count()>2 else "cuda:0")
     import timeit
 
     ##Class weights for imbalance
