@@ -557,7 +557,7 @@ if __name__ == "__main__":
 
     # cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
     cnn = EnsembleClassifier(models)
-    cnn_dict = torch.load('ensemble_stratified_0.3_drop.pt')['state_dict']
+    cnn_dict = torch.load('models/ensemble_stratified_0.3_drop.pt')['state_dict']
     cnn.load_state_dict(cnn_dict)
 
     def train_ensemble_on_whole_test_mine():
@@ -585,7 +585,7 @@ if __name__ == "__main__":
                                            num_epochs=200, device = device,
                                            multiGPU = True,
                                            save_name = 'final_ensemble.pt')
-                                           
+
     train_ensemble_on_whole_test_mine()
 
 
