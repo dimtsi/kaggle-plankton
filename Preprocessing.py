@@ -22,7 +22,7 @@ import NNs
 import math
 importlib.reload(NNs)
 from NNs import *
-from NNs import ResNetDynamic, ResNetMine, CNN, SuperNet, EnsembleClassifier
+from NNs import ResNetDynamic, ResNetMine, CNN, SuperNet, DenseNet
 
 from torchsummary import summary
 # %matplotlib inline
@@ -405,8 +405,8 @@ if __name__ == "__main__":
     from sklearn.model_selection import StratifiedKFold
 
     pretrained = resnet50(pretrained = True)
-    cnn = ResNetDynamic(pretrained.block, pretrained.layers,
-                num_layers = 2, pretrained_nn = None)
+    # cnn = ResNetDynamic(pretrained.block, pretrained.layers,
+    #             num_layers = 2, pretrained_nn = None)
 
 
     # cnn = inceptionv4(num_classes=121,pretrained=None)
@@ -415,13 +415,15 @@ if __name__ == "__main__":
 
     trained_models = []
     def run_KFolds():
-        num_splits = 1000
-        print(num_splits)
-        kf = StratifiedKFold(n_splits=num_splits, random_state=None, shuffle=True)
-        for train_indexes, validation_indexes in kf.split(X = train_images_no_test,
-                                                          y = train_labels_no_test):
+        # num_splits = 1000
+        # print(num_splits)
+        # kf = StratifiedKFold(n_splits=num_splits, random_state=None, shuffle=True)
+        # for train_indexes, validation_indexes in kf.split(X = train_images_no_test,
+        #                                                   y = train_labels_no_test):
             X_train = []
             y_train = []
+            X_train = train_images_no_test
+            y_train = train_labels_no_test
             X_val = []
             y_val = []
             norm = {}

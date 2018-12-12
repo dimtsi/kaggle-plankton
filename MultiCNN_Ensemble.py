@@ -272,7 +272,7 @@ def train_and_validate(model, train_loader, test_loader,
     #                                 weight_decay = weight_decay,
     #                                 momentum = 0.6);
 
-    patience = 15 if weight_decay > 0 else 7
+    patience = 15 if weight_decay > 0 else 15
     step_size = 25 if weight_decay > 0 else 20
 
     # scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=step_size, gamma=0.4)
@@ -557,10 +557,8 @@ if __name__ == "__main__":
 
     # cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
     cnn = EnsembleClassifier(models)
-    # cnn1_dict = torch.load('ensemble.pt')['state_dict']
-
-
-
+    cnn_dict = torch.load('ensemble_stratified_0.3_drop.pt')['state_dict']
+    cnn.load_state_dict(cnn_dict)
 
     def train_ensemble_on_whole_test_mine():
         norm = {}
@@ -620,10 +618,10 @@ if __name__ == "__main__":
         trained_model = train_and_validate(cnn, train_loader, test_loader,
                                            num_epochs=200, device = device,
                                            multiGPU = True,
-                                           save_name = 'ensemble_stratified_0.3_drop_3fc_conn.pt')
+                                           save_name = 'final_ensemble.pt')
     print(cnn)
     # cnn.to(device)
-    train_ensemble_on_test()
+    # train_ensemble_on_test()
 
     mean_norm_test, std_norm_test = calc_means_stds(train_images)
 
