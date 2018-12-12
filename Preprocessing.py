@@ -409,7 +409,8 @@ if __name__ == "__main__":
     #             num_layers = 2, pretrained_nn = None)
 
 
-    # cnn = inceptionv4(num_classes=121,pretrained=None)
+    model = DenseNet(num_init_features=64, growth_rate=32, block_config=(6, 12, 48, 32),
+                     **kwargs)
 
 
 
