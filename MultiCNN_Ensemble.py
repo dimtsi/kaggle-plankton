@@ -277,7 +277,7 @@ def train_and_validate(model, train_loader, test_loader,
 
     # scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=step_size, gamma=0.4)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-    optimizer, 'max', factor=0.1, patience=patience, verbose=True)
+    optimizer, 'max', factor=0.4, patience=patience, verbose=True)
 #     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate);
     #Training
     print("lr:{} wd:{}".format(learning_rate, weight_decay))
@@ -559,19 +559,19 @@ if __name__ == "__main__":
 
     cnn1 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
-    cnn1_dict = torch.load('models/test_model3.pt')['state_dict']
+    cnn1_dict = torch.load('models/trained_model3.pt')['state_dict']
     cnn1.load_state_dict(cnn1_dict)
     models.append(cnn1)
 
     cnn2 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
-    cnn2_dict = torch.load('models/test_model15.pt')['state_dict']
+    cnn2_dict = torch.load('models/trained_model15.pt')['state_dict']
     cnn2.load_state_dict(cnn2_dict)
     models.append(cnn2)
 
     cnn3 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
-    cnn3_dict = torch.load('models/test_model90.pt')['state_dict']
+    cnn3_dict = torch.load('models/trained_model90.pt')['state_dict']
     cnn3.load_state_dict(cnn3_dict)
     models.append(cnn3)
 
@@ -664,7 +664,7 @@ if __name__ == "__main__":
                                            save_name = 'final_ensemble.pt')
     print(cnn)
     # # cnn.to(device)
-    # # train_ensemble_on_test()
+    train_ensemble_on_test()
     #
     mean_norm_test, std_norm_test = calc_means_stds(train_images)
 

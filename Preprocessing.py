@@ -223,7 +223,7 @@ def train_and_validate(model, train_loader, test_loader,
 
     # scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=step_size, gamma=0.4)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-    optimizer, 'max', factor=0.1, patience=patience, verbose=True)
+    optimizer, 'max', factor=0.4, patience=patience, verbose=True)
 #     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate);
     #Training
     print("lr:{} wd:{}".format(learning_rate, weight_decay))
