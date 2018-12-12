@@ -422,8 +422,8 @@ if __name__ == "__main__":
                                                           y = train_labels_no_test):
             X_train = []
             y_train = []
-            X_train = train_images_no_test
-            y_train = train_labels_no_test
+            # X_train = train_images_no_test
+            # y_train = train_labels_no_test
             X_val = []
             y_val = []
             norm = {}
@@ -435,7 +435,7 @@ if __name__ == "__main__":
             #     y_val.append(train_labels_no_test[j])
             # X_train = X_train[:10]
             # y_train = y_train[:10]
-            break 
+
             X_val = test_mine_images
             y_val = test_mine_labels
             print("train: "+ str(len(X_train)) + " val: " + str(len(X_val))+ " None: " + str(len(original_images)-len(X_train)))
