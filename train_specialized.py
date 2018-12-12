@@ -375,9 +375,9 @@ if __name__ == "__main__":
     ###========================MAIN EXECUTION=========================###
 
     #####Specialization####
-    fold =0
+    fold = 0
     print('Fold: '+str(fold))
-
+     ##new_additions
     #PIL
     widths, heights = [], []
     sumx, sumy = 0, 0
@@ -397,7 +397,7 @@ if __name__ == "__main__":
     avg_height = np.mean(heights)
     print('Average width {} , Average height: {}'.format(avg_width, avg_height))
 
-    norm_mean_width = np.mean(widths)
+    norm_mean_width = np.mean(widths)##
     norm_mean_height = np.mean(heights)
 
     device = torch.device("cuda:"+str(fold) if torch.cuda.device_count()>2 else "cuda:0")
