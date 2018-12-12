@@ -343,7 +343,7 @@ def predict_test_set_kaggle(model, filenames,  mean_norm_test, std_norm_test):
 if __name__ == "__main__":
     # print("weighted classes")
     classified = True
-    num_splits = 15
+    num_splits = 90
     if classified == False:
         original_images = pickle.load(open("pkl/train_padded64.pkl", "rb"))
         original_labels = pickle.load(open("pkl/train_labels.pkl", "rb"))
