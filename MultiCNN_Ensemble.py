@@ -618,9 +618,9 @@ if __name__ == "__main__":
 
         # cnn.to(device)
         trained_model = train_and_validate(cnn, train_loader, test_loader,
-                                           num_epochs=100, device = device,
+                                           num_epochs=200, device = device,
                                            multiGPU = True,
-                                           save_name = 'ensemble_stratified_0.2_drop.pt')
+                                           save_name = 'ensemble_stratified_0.3_drop.pt')
     print(cnn)
     # cnn.to(device)
     train_ensemble_on_test()

@@ -232,13 +232,13 @@ class EnsembleClassifier(nn.Module):
         self.multiGPU = multiGPU
         super(type(self), self).__init__()
         self.net1 =  nn.Sequential(*list(networks[0].children()))
-        # self.net1.requires_grad = False
+        self.net1.requires_grad = False
         self.net2 =  nn.Sequential(*list(networks[1].children()))#[:-1]
-        # self.net2.requires_grad = False
+        self.net2.requires_grad = False
         self.net3 =  nn.Sequential(*list(networks[2].children()))#[:-1]
-        # self.net3.requires_grad = False
+        self.net3.requires_grad = False
         self.net4 =  nn.Sequential(*list(networks[3].children()))#[:-1]
-        # self.net4.requires_grad = False
+        self.net4.requires_grad = False
 
         self.fusion = Fusion()
         self.final_size = 0
@@ -247,7 +247,7 @@ class EnsembleClassifier(nn.Module):
         self.fc1 = nn.Sequential(
             nn.Linear(self.final_size, self.final_size),
             nn.LeakyReLU(0.3),
-            nn.Dropout(0.2)
+            nn.Dropout(0.3)
             )
         self.fc2 = nn.Linear(self.final_size, num_classes)
 #
