@@ -375,7 +375,7 @@ if __name__ == "__main__":
     ###========================MAIN EXECUTION=========================###
 
     #####Specialization####
-    fold = 3
+    fold = 0
     print('Fold: '+str(fold))
 
     #PIL
@@ -410,7 +410,7 @@ if __name__ == "__main__":
     # class_weights = np.interp(class_weights, (class_weights.min(), class_weights.max()), (0, +1))
     # class_weights = torch.from_numpy(class_weights).float().to(device)
 
-    num_layers = 3
+    num_layers = 2
     pretrained = resnet50(pretrained = True)
     cnn = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = num_layers, pretrained_nn = None)
@@ -420,10 +420,12 @@ if __name__ == "__main__":
     ####==========SPECIALIZED TRAINING========####
     indexes_by_fold = []
 
-    kf = KFold(n_splits=4, random_state=None, shuffle=False) ##no_shuffle_for_class_specialization
-    for train_indexes, validation_indexes in kf.split(X = train_images_no_test,
-                                                      y = train_labels_no_test):
-        indexes_by_fold.append(validation_indexes)
+    # kf = KFold(n_splits=4, random_state=None, shuffle=False) ##no_shuffle_for_class_specialization
+    # for train_indexes, validation_indexes in kf.split(X = train_images_no_test,
+    #                                                   y = train_labels_no_test):
+    #     indexes_by_fold.append(validation_indexes)
+    indexes_by_fold = pickle.load(open("pkl/train_indexes_no_test_stratified.pkl", "rb"))
+
 
     training_indexes = indexes_by_fold[fold]
     images_for_nn = []
@@ -497,10 +499,9 @@ if __name__ == "__main__":
                                                learning_rate = 0.001,
                                                weight_decay = 0,
                                                device = device,
-                                               save_name = 'models/trained_model.pt')
-                                               # save_name = 'models/trained_model_fold'
-                                               # +str(fold)+'_'+str(num_layers)+'layers.pt')
-                                               # save_name = 'test_model'+str(num_splits)+'splits.pt')
+                                               # save_name = 'models/trained_model.pt')
+                                               save_name = 'models/trained_model_fold'
+                                               +str(fold)+'_stratified.pt')
             # trained_models.append(trained_model)
             break
 
