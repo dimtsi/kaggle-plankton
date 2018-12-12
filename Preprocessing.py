@@ -480,7 +480,7 @@ if __name__ == "__main__":
                                                save_name = 'trained_model'+str(num_splits)+'.pt')
                                                # save_name = 'test_model'+str(num_splits)+'splits.pt')
             # trained_models.append(trained_model)
-            # break
+            break
 
     run_KFolds()
 
