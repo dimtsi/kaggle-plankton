@@ -247,7 +247,7 @@ class EnsembleClassifier(nn.Module):
         self.fc1 = nn.Sequential(
             nn.Linear(self.final_size, self.final_size),
             nn.LeakyReLU(0.3),
-            nn.Dropout(0.3)
+            nn.Dropout(0.6)
             )
         self.fc2 = nn.Linear(self.final_size, num_classes)
 
@@ -257,10 +257,10 @@ class EnsembleClassifier(nn.Module):
             x1 = self.net1(x.to(self.devices[0]))
             x2 = self.net2(x.to(self.devices[1]))
             x3 = self.net3(x.to(self.devices[2]))
-            x4 = self.net4(x.to(self.devices[3]))
+            # x4 = self.net4(x.to(self.devices[3]))
             z = self.fusion([x1, x2.to(self.devices[0]),
-                            x3.to(self.devices[0]),
-                            x4.to(self.devices[0])])
+                            x3.to(self.devices[0])])#x4.to(self.devices[0])]
+
 
         else:
             x1 = self.net1(x)
@@ -268,8 +268,8 @@ class EnsembleClassifier(nn.Module):
             x3 = self.net3(x)
             x4 = self.net4(x)
             z = self.fusion([x1, x2.to(self.devices[0]),
-                             x3.to(self.devices[0]),
-                             x4.to(self.devices[0])])#
+                             x3.to(self.devices[0])])#x4.to(self.devices[0])]
+                             # x4.to(self.devices[0])])#
 
         z = self.fc1(z)
         z = self.fc2(z)
@@ -280,7 +280,7 @@ class EnsembleClassifier(nn.Module):
         self.net1.to(self.devices[0])
         self.net2.to(self.devices[1])
         self.net3.to(self.devices[2])
-        self.net4.to(self.devices[3])
+        # self.net4.to(self.devices[3])
 
 class PretrainedResnetMine(ResNetMine):
 
