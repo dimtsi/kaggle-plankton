@@ -579,8 +579,8 @@ if __name__ == "__main__":
                                                                new_test_mine_labels,
                                                                norm_params = norm)
 
-        print("train: "+ str(len(train_images))
-              + " val: " +str(len(test_mine_images)))
+        print("train: "+ str(len(extended_train_images))
+              + " val: " +str(len(new_test_mine_images)))
         train_loader = torch.utils.data.DataLoader(train_dataset, batch_size = 32,
             shuffle = True, num_workers=4)
 
