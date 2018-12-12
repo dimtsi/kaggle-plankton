@@ -438,19 +438,19 @@ class UltraBoostedClassifier(nn.Module):
         self.multiGPU = multiGPU
         super(type(self), self).__init__()
         self.net1 =  nn.Sequential(*list(networks[0].children()))
-        self.net1.requires_grad = False
+        # self.net1.requires_grad = False
         self.net2 =  nn.Sequential(*list(networks[1].children()))#[:-1]
-        self.net2.requires_grad = False
+        # self.net2.requires_grad = False
         self.net3 =  nn.Sequential(*list(networks[2].children()))#[:-1]
-        self.net3.requires_grad = False
+        # self.net3.requires_grad = False
         self.net4 =  nn.Sequential(*list(networks[3].children()))#[:-1]
-        self.net4.requires_grad = False
+        # self.net4.requires_grad = False
         self.net5 =  nn.Sequential(*list(networks[4].children()))#[:-1]
-        self.net5.requires_grad = False
+        # self.net5.requires_grad = False
         self.net6 =  nn.Sequential(*list(networks[5].children()))#[:-1]
-        self.net6.requires_grad = False
+        # self.net6.requires_grad = False
         self.net7 =  nn.Sequential(*list(networks[6].children()))#[:-1]
-        self.net7.requires_grad = False
+        # self.net7.requires_grad = False
 
         self.fusion = Fusion()
         self.final_size = 0
