@@ -438,7 +438,6 @@ def predict_test_set_kaggle(model, filenames,  mean_norm_test, std_norm_test, mu
 if __name__ == "__main__":
     # print("weighted classes")
     classified = "extra"
-    num_splits = 90
     if classified == "full":
         original_images = pickle.load(open("pkl/train_padded64.pkl", "rb"))
         original_labels = pickle.load(open("pkl/train_labels.pkl", "rb"))
@@ -590,7 +589,7 @@ if __name__ == "__main__":
         norm = {}
         norm['train_norm_mean'], norm['train_norm_std'] = calc_means_stds(train_images)
 
-        kf = StratifiedKFold(n_splits=2, random_state=None, shuffle=True)
+        kf = StratifiedKFold(n_splits=4], random_state=None, shuffle=True)
         for additional_train_indexes_no_test, additional_validation_indexes_no_test in kf.split(X = test_mine_images,
                                                           y = test_mine_labels):
             additional_images = []
@@ -634,9 +633,9 @@ if __name__ == "__main__":
         trained_model = train_and_validate(cnn, train_loader, test_loader,
                                            num_epochs=200, device = device,
                                            multiGPU = True,
-                                           save_name = 'extraclassified/ensemble.pt')
+                                           save_name = 'extraclassified/ensemblev2.pt')
 
-    # train_ensemble_on_whole_test_mine()
+    train_ensemble_on_whole_test_mine()
 
 
     def train_ensemble_on_test():
