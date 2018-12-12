@@ -411,7 +411,7 @@ def predict_test_set_kaggle(model, filenames,  mean_norm_test, std_norm_test, mu
     test_dataset = ListsTestDataset(test_images, transform = test_transforms)
     test_loader = torch.utils.data.DataLoader(test_dataset, batch_size = 32, shuffle = False)
 
-    if isinstance(model, EnsembleClassifier, UltraBoostedClassifier):
+    if isinstance(model, EnsembleClassifier) or isinstance(model, UltraBoostedClassifier):
         if multiGPU == True:
             print("multiGPU")
             model.set_devices_multiGPU()
