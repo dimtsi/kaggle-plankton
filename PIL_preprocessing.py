@@ -45,7 +45,7 @@ for im in classified_train_images:
 # In[17]:
 train_images[78]
 
-pickle.dump( preprocessed_train_images, open( "pkl/train_padded64", "wb" ) )
+pickle.dump( preprocessed_train_images, open( "pkl/train_padded64.pkl", "wb" ) )
 pickle.dump( preprocessed_test_images, open( "pkl/test_padded64.pkl", "wb" ) )
 pickle.dump( preprocessed_classified_images, open( "pkl/classified_padded64.pkl", "wb" ) )
 
@@ -77,7 +77,7 @@ for im in classified_train_images:
 train_images[78]
 preprocessed_train_images[78]
 
-pickle.dump( preprocessed_train_images, open( "pkl/train_resized64", "wb" ) )
+pickle.dump( preprocessed_train_images, open( "pkl/train_resized64.pkl", "wb" ) )
 pickle.dump( preprocessed_test_images, open( "pkl/test_resized64.pkl", "wb" ) )
 pickle.dump( preprocessed_classified_images, open( "pkl/classified_resized64.pkl", "wb" ) )
 
@@ -113,7 +113,7 @@ for im in classified_train_images:
 # In[17]:
 train_images[78]
 
-pickle.dump( preprocessed_train_images, open( "pkl/train_padded80", "wb" ) )
+pickle.dump( preprocessed_train_images, open( "pkl/train_padded80.pkl", "wb" ) )
 pickle.dump( preprocessed_test_images, open( "pkl/test_padded80.pkl", "wb" ) )
 pickle.dump( preprocessed_classified_images, open( "pkl/classified_padded80.pkl", "wb" ) )
 
@@ -145,6 +145,6 @@ for im in classified_train_images:
 train_images[78]
 preprocessed_train_images[78]
 
-pickle.dump( preprocessed_train_images, open( "pkl/train_resized80", "wb" ) )
+pickle.dump( preprocessed_train_images, open( "pkl/train_resized80.pkl", "wb" ) )
 pickle.dump( preprocessed_test_images, open( "pkl/test_resized80.pkl", "wb" ) )
 pickle.dump( preprocessed_classified_images, open( "pkl/classified_resized80.pkl", "wb" ) )
