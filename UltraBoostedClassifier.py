@@ -706,7 +706,7 @@ if __name__ == "__main__":
                                            multiGPU = True,
                                            save_name = 'ultra_boost2.pt')
 
-    # train_ensemble_on_whole_test_mine()
+    train_ensemble_on_whole_test_mine()
 
 
     def train_ensemble_on_test():
