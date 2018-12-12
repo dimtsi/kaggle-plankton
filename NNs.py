@@ -249,7 +249,7 @@ class EnsembleClassifier(nn.Module):
             nn.LeakyReLU(0.3),
             nn.Dropout(0.3)
             )
-        self.fc3 = nn.Linear(self.final_size, num_classes)
+        self.fc2 = nn.Linear(self.final_size, num_classes)
 
 #
     def forward(self, x):
