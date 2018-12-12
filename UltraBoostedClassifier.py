@@ -281,7 +281,7 @@ def train_and_validate(model, train_loader, test_loader,
     #Training
     print("lr:{} wd:{}".format(learning_rate, weight_decay))
     model.train().to(device)
-    if isinstance(model, EnsembleClassifier):
+    if isinstance(model, EnsembleClassifier) or isinstance(model, UltraBoostedClassifier):
         if multiGPU == True:
             print("multiGPU")
             model.set_devices_multiGPU()
