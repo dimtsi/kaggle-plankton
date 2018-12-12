@@ -404,7 +404,7 @@ if __name__ == "__main__":
 
     from sklearn.model_selection import StratifiedKFold
 
-    pretrained = resnet50(pretrained = True)
+    pretrained = resnet152(pretrained = True)
     cnn = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
 
@@ -422,14 +422,14 @@ if __name__ == "__main__":
                                                           y = train_labels_no_test):
             X_train = []
             y_train = []
-            # X_train = train_images_no_test
-            # y_train = train_labels_no_test
+            X_train = train_images_no_test
+            y_train = train_labels_no_test
             X_val = []
             y_val = []
             norm = {}
-            for i in train_indexes:
-                X_train.append(train_images_no_test[i])
-                y_train.append(train_labels_no_test[i])
+            # for i in train_indexes:
+            #     X_train.append(train_images_no_test[i])
+            #     y_train.append(train_labels_no_test[i])
             # for j in validation_indexes:
             #     X_val.append(train_images_no_test[j])
             #     y_val.append(train_labels_no_test[j])
@@ -477,7 +477,7 @@ if __name__ == "__main__":
                                                learning_rate = 0.001,
                                                weight_decay = 0,
                                                device = device,
-                                               save_name = 'classified/trained_model'+str(num_splits)+'.pt')
+                                               save_name = 'classified/resnet152_trained_model'+str(num_splits)+'.pt')
             # trained_models.append(trained_model)
             break
 

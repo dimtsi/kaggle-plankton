@@ -14,6 +14,8 @@ import numpy as np
 train_images = pickle.load(open("pkl/train_images.pkl", "rb"))
 test_images = pickle.load(open("pkl/test_images.pkl", "rb"))
 classified_train_images = pickle.load(open("pkl/classified_train_images.pkl", "rb"))
+extraclassified_train_images = pickle.load(open("pkl/extraclassified_train_images.pkl", "rb"))
+
 
 # In[13]:
 
@@ -34,6 +36,7 @@ def pad_and_resize(im):
 preprocessed_train_images = []
 preprocessed_test_images = []
 preprocessed_classified_images = []
+preprocessed_extraclassified_images = []
 
 for im in train_images:
     preprocessed_train_images.append(pad_and_resize(im))
@@ -41,6 +44,8 @@ for im in test_images:
     preprocessed_test_images.append(pad_and_resize(im))
 for im in classified_train_images:
     preprocessed_classified_images.append(pad_and_resize(im))
+for im in extraclassified_train_images:
+    preprocessed_extraclassified_images.append(pad_and_resize(im))
 
 # In[17]:
 train_images[78]
@@ -48,6 +53,8 @@ train_images[78]
 pickle.dump( preprocessed_train_images, open( "pkl/train_padded64.pkl", "wb" ) )
 pickle.dump( preprocessed_test_images, open( "pkl/test_padded64.pkl", "wb" ) )
 pickle.dump( preprocessed_classified_images, open( "pkl/classified_padded64.pkl", "wb" ) )
+pickle.dump( preprocessed_extraclassified_images, open( "pkl/extraclassified_padded64.pkl", "wb" ) )
+
 
 def pad_and_resize(im):
     desired_size = 64
@@ -65,6 +72,7 @@ def pad_and_resize(im):
 preprocessed_train_images = []
 preprocessed_test_images = []
 preprocessed_classified_images = []
+preprocessed_extraclassified_images = []
 
 for im in train_images:
     preprocessed_train_images.append(pad_and_resize(im))
@@ -72,6 +80,8 @@ for im in test_images:
     preprocessed_test_images.append(pad_and_resize(im))
 for im in classified_train_images:
     preprocessed_classified_images.append(pad_and_resize(im))
+for im in extraclassified_train_images:
+    preprocessed_extraclassified_images.append(pad_and_resize(im))
 
 # In[17]:
 train_images[78]
@@ -80,6 +90,7 @@ preprocessed_train_images[78]
 pickle.dump( preprocessed_train_images, open( "pkl/train_resized64.pkl", "wb" ) )
 pickle.dump( preprocessed_test_images, open( "pkl/test_resized64.pkl", "wb" ) )
 pickle.dump( preprocessed_classified_images, open( "pkl/classified_resized64.pkl", "wb" ) )
+pickle.dump( preprocessed_extraclassified_images, open( "pkl/extraclassified_resized64.pkl", "wb" ) )
 
 
 
@@ -102,6 +113,7 @@ def pad_and_resize(im):
 preprocessed_train_images = []
 preprocessed_test_images = []
 preprocessed_classified_images = []
+preprocessed_extraclassified_images = []
 
 for im in train_images:
     preprocessed_train_images.append(pad_and_resize(im))
@@ -109,6 +121,8 @@ for im in test_images:
     preprocessed_test_images.append(pad_and_resize(im))
 for im in classified_train_images:
     preprocessed_classified_images.append(pad_and_resize(im))
+for im in extraclassified_train_images:
+    preprocessed_extraclassified_images.append(pad_and_resize(im))
 
 # In[17]:
 train_images[78]
@@ -116,6 +130,7 @@ train_images[78]
 pickle.dump( preprocessed_train_images, open( "pkl/train_padded80.pkl", "wb" ) )
 pickle.dump( preprocessed_test_images, open( "pkl/test_padded80.pkl", "wb" ) )
 pickle.dump( preprocessed_classified_images, open( "pkl/classified_padded80.pkl", "wb" ) )
+pickle.dump( preprocessed_extraclassified_images, open( "pkl/extraclassified_padded80.pkl", "wb" ) )
 
 def pad_and_resize(im):
     desired_size = 80
@@ -133,6 +148,7 @@ def pad_and_resize(im):
 preprocessed_train_images = []
 preprocessed_test_images = []
 preprocessed_classified_images = []
+preprocessed_extraclassified_images = []
 
 for im in train_images:
     preprocessed_train_images.append(pad_and_resize(im))
@@ -140,6 +156,8 @@ for im in test_images:
     preprocessed_test_images.append(pad_and_resize(im))
 for im in classified_train_images:
     preprocessed_classified_images.append(pad_and_resize(im))
+for im in extraclassified_train_images:
+    preprocessed_extraclassified_images.append(pad_and_resize(im))
 
 # In[17]:
 train_images[78]
@@ -148,3 +166,4 @@ preprocessed_train_images[78]
 pickle.dump( preprocessed_train_images, open( "pkl/train_resized80.pkl", "wb" ) )
 pickle.dump( preprocessed_test_images, open( "pkl/test_resized80.pkl", "wb" ) )
 pickle.dump( preprocessed_classified_images, open( "pkl/classified_resized80.pkl", "wb" ) )
+pickle.dump( preprocessed_extraclassified_images, open( "pkl/extraclassified_resized80.pkl", "wb" ) )

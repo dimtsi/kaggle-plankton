@@ -509,7 +509,7 @@ if __name__ == "__main__":
     # print("weighted classes")
 
     # print("weighted classes")
-    classified = False
+    classified = True
     augmented = False
     print('classified: '+str(classified))
     print('augmented: '+str(augmented))
