@@ -564,11 +564,28 @@ if __name__ == "__main__":
         norm = {}
         norm['train_norm_mean'], norm['train_norm_std'] = calc_means_stds(train_images)
 
-        split = 1000
-        additional_images = test_mine_images[:split]
-        new_test_mine_images = test_mine_images[split:]
-        additional_labels = test_mine_labels[:split]
-        new_test_mine_labels = test_mine_labels[split:]
+        kf = StratifiedKFold(n_splits=2, random_state=None, shuffle=True)
+        for additional_train_indexes_no_test, additional_validation_indexes_no_test in kf.split(X = test_images_no_test,
+                                                          y = test_labels_no_test):
+            additional_images = []
+            additional_labels = []
+            new_test_mine_images = []
+            new_test_mine_labels = []
+
+            for i in additional_train_indexes_no_test:
+                additional_images.append(test_images_no_test[i])
+                additional_labels.append(test_labels_no_test[i])
+            for j in additional_validation_indexes_no_test:
+                new_test_mine_images.append(test_images_no_test[j])
+                new_test_mine_labels.append(test_labels_no_test[j])
+        #
+        #
+        #
+        # split = 1000
+        # additional_images = test_mine_images[:split]
+        # new_test_mine_images = test_mine_images[split:]
+        # additional_labels = test_mine_labels[:split]
+        # new_test_mine_labels = test_mine_labels[split:]
 
         extended_train_images = (train_images+additional_images).copy()
         extended_train_labels = (train_labels+additional_labels).copy()
