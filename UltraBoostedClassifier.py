@@ -507,22 +507,22 @@ class UltraBoostedClassifier(nn.Module):
 
 if __name__ == "__main__":
     # print("weighted classes")
-
-    # print("weighted classes")
-    classified = True
-    augmented = False
-    print('classified: '+str(classified))
-    print('augmented: '+str(augmented))
-
-
-    if classified == False:
+    classified = "extra"
+    num_splits = 90
+    if classified == "full":
         original_images = pickle.load(open("pkl/train_padded64.pkl", "rb"))
         original_labels = pickle.load(open("pkl/train_labels.pkl", "rb"))
         test_set_mine_indexes = pickle.load(open("pkl/test_set_mine_indexes.pkl", "rb"))
-    else:
+
+    elif classified == "unknown_only":
         original_images = pickle.load(open("pkl/classified_padded64.pkl", "rb"))
         original_labels = pickle.load(open("pkl/classified_train_labels.pkl", "rb"))
         test_set_mine_indexes = pickle.load(open("pkl/test_set_mine_indexes_classified.pkl", "rb"))
+
+    elif classified == "extra":
+        original_images = pickle.load(open("pkl/extraclassified_padded64.pkl", "rb"))
+        original_labels = pickle.load(open("pkl/extraclassified_train_labels.pkl", "rb"))
+        test_set_mine_indexes = pickle.load(open("pkl/test_set_mine_indexes_extraclassified.pkl", "rb"))
 
     train_images = original_images
     train_labels = original_labels

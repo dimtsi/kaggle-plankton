@@ -352,7 +352,7 @@ def train_and_validate(model, train_loader, test_loader,
             pickle.dump(total_labels.long(), open("training_labels.pkl", "wb"))
 
         toc=timeit.default_timer()
-        if epoch+1 == 70:
+        if epoch+1 == 120:
             for group in optimizer.param_groups:
                 if 'lr' in group.keys():
                     if group['lr'] == 0.001:
@@ -437,22 +437,22 @@ def predict_test_set_kaggle(model, filenames,  mean_norm_test, std_norm_test, mu
 
 if __name__ == "__main__":
     # print("weighted classes")
-
-    # print("weighted classes")
-    classified = True
-    augmented = False
-    print('classified: '+str(classified))
-    print('augmented: '+str(augmented))
-
-
-    if classified == False:
+    classified = "extra"
+    num_splits = 90
+    if classified == "full":
         original_images = pickle.load(open("pkl/train_padded64.pkl", "rb"))
         original_labels = pickle.load(open("pkl/train_labels.pkl", "rb"))
         test_set_mine_indexes = pickle.load(open("pkl/test_set_mine_indexes.pkl", "rb"))
-    else:
+
+    elif classified == "unknown_only":
         original_images = pickle.load(open("pkl/classified_padded64.pkl", "rb"))
         original_labels = pickle.load(open("pkl/classified_train_labels.pkl", "rb"))
         test_set_mine_indexes = pickle.load(open("pkl/test_set_mine_indexes_classified.pkl", "rb"))
+
+    elif classified == "extra":
+        original_images = pickle.load(open("pkl/extraclassified_padded64.pkl", "rb"))
+        original_labels = pickle.load(open("pkl/extraclassified_train_labels.pkl", "rb"))
+        test_set_mine_indexes = pickle.load(open("pkl/test_set_mine_indexes_extraclassified.pkl", "rb"))
 
     train_images = original_images
     train_labels = original_labels
@@ -559,19 +559,19 @@ if __name__ == "__main__":
 
     cnn1 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
-    cnn1_dict = torch.load('models/trained_model3.pt')['state_dict']
+    cnn1_dict = torch.load('models/extraclassified/trained_model3.pt')['state_dict']
     cnn1.load_state_dict(cnn1_dict)
     models.append(cnn1)
 
     cnn2 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
-    cnn2_dict = torch.load('models/trained_model15.pt')['state_dict']
+    cnn2_dict = torch.load('models/extraclassified/trained_model15.pt')['state_dict']
     cnn2.load_state_dict(cnn2_dict)
     models.append(cnn2)
 
     cnn3 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
-    cnn3_dict = torch.load('models/trained_model90.pt')['state_dict']
+    cnn3_dict = torch.load('models/extraclassified/trained_model90.pt')['state_dict']
     cnn3.load_state_dict(cnn3_dict)
     models.append(cnn3)
 
@@ -634,9 +634,9 @@ if __name__ == "__main__":
         trained_model = train_and_validate(cnn, train_loader, test_loader,
                                            num_epochs=200, device = device,
                                            multiGPU = True,
-                                           save_name = 'ensemble.pt')
+                                           save_name = 'extraclassified/ensemble.pt')
 
-    train_ensemble_on_whole_test_mine()
+    # train_ensemble_on_whole_test_mine()
 
 
     def train_ensemble_on_test():
@@ -661,10 +661,10 @@ if __name__ == "__main__":
         trained_model = train_and_validate(cnn, train_loader, test_loader,
                                            num_epochs=200, device = device,
                                            multiGPU = True,
-                                           save_name = 'ensemble.pt')
+                                           save_name = 'extraclassified/ensemble.pt')
     print(cnn)
     # # cnn.to(device)
-    # train_ensemble_on_test()
+    train_ensemble_on_test()
     #
     # mean_norm_test, std_norm_test = calc_means_stds(train_images)
     #
@@ -672,6 +672,6 @@ if __name__ == "__main__":
     # final_model.load_state_dict(torch.load('models/final_ensemble.pt')['state_dict'])
     #
     # predict_on_my_test_set(final_model, mean_norm_test, std_norm_test, multiGPU=False)
-    predict_test_set_kaggle(final_model, test_filenames,
-                            mean_norm_test, std_norm_test,
-                            multiGPU=True)
+    # predict_test_set_kaggle(final_model, test_filenames,
+    #                         mean_norm_test, std_norm_test,
+    #                         multiGPU=True)
