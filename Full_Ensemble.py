@@ -370,7 +370,7 @@ for learn in lr:
     for estim in est:
         ada_params['n_estimators']=estim
         ada_params['learning_rate']=learn
-
+        print(ada_params)
 
         start_time = time.time()
 
