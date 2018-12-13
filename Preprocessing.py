@@ -411,13 +411,12 @@ if __name__ == "__main__":
     from sklearn.model_selection import StratifiedKFold
 
     pretrained = resnet50(pretrained = True)
-    cnn = ResNetDynamic(pretrained.block, pretrained.layers,
-                num_layers = 2, pretrained_nn = None)
+    # cnn = ResNetDynamic(pretrained.block, pretrained.layers,
+    #             num_layers = 2, pretrained_nn = None)
 
-
-    # model = DenseNet(num_init_features=64, growth_rate=32, block_config=(6, 12, 48, 32),
-    #                  **kwargs)
-
+    block = (6, 12, 48, 32)
+    print("block": block)
+    cnn = DenseNet(num_init_features=64, growth_rate=32, block_config=block)
 
 
     trained_models = []
@@ -428,14 +427,14 @@ if __name__ == "__main__":
                                                           y = train_labels_no_test):
             X_train = []
             y_train = []
-            # X_train = train_images_no_test
-            # y_train = train_labels_no_test
+            X_train = train_images_no_test
+            y_train = train_labels_no_test
             X_val = []
             y_val = []
             norm = {}
-            for i in train_indexes:
-                X_train.append(train_images_no_test[i])
-                y_train.append(train_labels_no_test[i])
+            # for i in train_indexes:
+            #     X_train.append(train_images_no_test[i])
+            #     y_train.append(train_labels_no_test[i])
             # for j in validation_indexes:
             #     X_val.append(train_images_no_test[j])
             #     y_val.append(train_labels_no_test[j])
@@ -483,7 +482,7 @@ if __name__ == "__main__":
                                                learning_rate = 0.001,
                                                weight_decay = 0,
                                                device = device,
-                                               save_name = 'extraclassified/trained_model'+str(num_splits)+'.pt')
+                                               save_name = 'extraclassified/dense.pt')
             # trained_models.append(trained_model)
             break
 
