@@ -558,27 +558,27 @@ if __name__ == "__main__":
 
     cnn1 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
-    cnn1_dict = torch.load('models/extraclassified/trained_model3.pt')['state_dict']
+    cnn1_dict = torch.load('models/extraclassified/trained_model3_new.pt')['state_dict']
     cnn1.load_state_dict(cnn1_dict)
     models.append(cnn1)
 
-    # cnn2 = ResNetDynamic(pretrained.block, pretrained.layers,
-    #             num_layers = 2, pretrained_nn = None)
-    # cnn2_dict = torch.load('models/extraclassified/trained_model15.pt')['state_dict']
-    # cnn2.load_state_dict(cnn2_dict)
-    # models.append(cnn2)
-    #
-    # cnn3 = ResNetDynamic(pretrained.block, pretrained.layers,
-    #             num_layers = 2, pretrained_nn = None)
-    # cnn3_dict = torch.load('models/extraclassified/trained_model90.pt')['state_dict']
-    # cnn3.load_state_dict(cnn3_dict)
-    # models.append(cnn3)
+    cnn2 = ResNetDynamic(pretrained.block, pretrained.layers,
+                num_layers = 2, pretrained_nn = None)
+    cnn2_dict = torch.load('models/extraclassified/trained_model15_new.pt')['state_dict']
+    cnn2.load_state_dict(cnn2_dict)
+    models.append(cnn2)
+
+    cnn3 = ResNetDynamic(pretrained.block, pretrained.layers,
+                num_layers = 2, pretrained_nn = None)
+    cnn3_dict = torch.load('models/extraclassified/trained_model90_new.pt')['state_dict']
+    cnn3.load_state_dict(cnn3_dict)
+    models.append(cnn3)
 
 
-    cnn4 = densenet201(pretrained=False)
-    cnn4_dict = torch.load('models/extraclassified/dense201.pt')['state_dict']
-    cnn4.load_state_dict(cnn4_dict)
-    models.append(cnn4)
+    # cnn4 = densenet201(pretrained=False)
+    # cnn4_dict = torch.load('models/extraclassified/dense201.pt')['state_dict']
+    # cnn4.load_state_dict(cnn4_dict)
+    # models.append(cnn4)
 
     # cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
     cnn = EnsembleClassifier(models)
@@ -633,7 +633,7 @@ if __name__ == "__main__":
         trained_model = train_and_validate(cnn, train_loader, test_loader,
                                            num_epochs=200, device = device,
                                            multiGPU = True,
-                                           save_name = 'extraclassified/res_dense_whole.pt')
+                                           save_name = 'extraclassified/ensemble_2fc.pt')
 
     # train_ensemble_on_whole_test_mine()
 
@@ -660,7 +660,7 @@ if __name__ == "__main__":
         trained_model = train_and_validate(cnn, train_loader, test_loader,
                                            num_epochs=200, device = device,
                                            multiGPU = True,
-                                           save_name = 'extraclassified/res_dense_2fc.pt')
+                                           save_name = 'extraclassified/ensemble_2fc.pt')
     print(cnn)
     # # cnn.to(device)
     train_ensemble_on_test()
@@ -668,7 +668,7 @@ if __name__ == "__main__":
     mean_norm_test, std_norm_test = calc_means_stds(train_images)
 
     final_model = cnn.to(device)
-    final_model.load_state_dict(torch.load('models/extraclassified/ensemblev2.pt')['state_dict'])
+    final_model.load_state_dict(torch.load('models/extraclassified/ensemble_2fc.pt')['state_dict'])
 
     # predict_on_my_test_set(final_model, mean_norm_test, std_norm_test, multiGPU=False)
     predict_test_set_kaggle(final_model, test_filenames,

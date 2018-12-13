@@ -306,7 +306,7 @@ class EnsembleClassifier(nn.Module):
         self.net2 =  networks[1]#[:-1]
 
         # self.net2.requires_grad = False
-        # self.net3 =  nn.Sequential(*list(networks[2].children()))#[:-1]
+        self.net3 =  nn.Sequential(*list(networks[2].children()))#[:-1]
         # self.net3.requires_grad = False
         # self.net4 =  nn.Sequential(*list(networks[3].children()))#[:-1]
         # self.net4.requires_grad = False
@@ -327,10 +327,10 @@ class EnsembleClassifier(nn.Module):
         if self.multiGPU == True:
             x1 = self.net1(x.to(self.devices[0]))
             x2 = self.net2(x.to(self.devices[1]))
-            # x3 = self.net3(x.to(self.devices[2]))
+            x3 = self.net3(x.to(self.devices[2]))
             # x4 = self.net4(x.to(self.devices[3]))
-            z = self.fusion([x1, x2.to(self.devices[0])])
-                            # x3.to(self.devices[0])])#x4.to(self.devices[0])]
+            z = self.fusion([x1, x2.to(self.devices[0]),
+                            x3.to(self.devices[0])])#x4.to(self.devices[0])]
 
 
         else:
@@ -350,7 +350,7 @@ class EnsembleClassifier(nn.Module):
         self.multiGPU = True
         self.net1.to(self.devices[0])
         self.net2.to(self.devices[1])
-        # self.net3.to(self.devices[2])
+        self.net3.to(self.devices[2])
         # self.net4.to(self.devices[3])
 
 class PretrainedResnetMine(ResNetMine):
