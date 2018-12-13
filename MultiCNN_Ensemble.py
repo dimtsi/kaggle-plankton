@@ -491,7 +491,7 @@ if __name__ == "__main__":
     norm_mean_width = np.mean(widths)
     norm_mean_height = np.mean(heights)
 
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
     import timeit
 
     ##Class weights for imbalance
@@ -633,7 +633,7 @@ if __name__ == "__main__":
         trained_model = train_and_validate(cnn, train_loader, test_loader,
                                            num_epochs=200, device = device,
                                            multiGPU = True,
-                                           save_name = 'extraclassified/ensemble_2fc.pt')
+                                           save_name = 'extraclassified/ensemble_1fc.pt')
 
     # train_ensemble_on_whole_test_mine()
 
@@ -660,7 +660,7 @@ if __name__ == "__main__":
         trained_model = train_and_validate(cnn, train_loader, test_loader,
                                            num_epochs=200, device = device,
                                            multiGPU = True,
-                                           save_name = 'extraclassified/ensemble_2fc.pt')
+                                           save_name = 'extraclassified/ensemble_1fc.pt')
     print(cnn)
     # # cnn.to(device)
     train_ensemble_on_test()
