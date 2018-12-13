@@ -415,9 +415,9 @@ if __name__ == "__main__":
     # cnn = ResNetDynamic(pretrained.block, pretrained.layers,
     #             num_layers = 2, pretrained_nn = None)
     from NNs import densenet201
-    block = 169
+    block = 121
     print("block: "+ str(block))
-    cnn = densenet169(pretrained=False)
+    cnn = densenet121(pretrained=False)
 
 
     trained_models = []
