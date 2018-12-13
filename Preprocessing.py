@@ -23,7 +23,7 @@ import math
 importlib.reload(NNs)
 
 from NNs import ResNetDynamic, ResNetMine, CNN, SuperNet, DenseNet, EnsembleClassifier
-from NNs import densenet161, densenet169, densenet121, densenet201, inception_v3
+from NNs import densenet161, densenet169, densenet121, densenet201
 
 from torchsummary import summary
 # %matplotlib inline
@@ -414,10 +414,9 @@ if __name__ == "__main__":
     # pretrained = resnet50(pretrained = True)
     # cnn = ResNetDynamic(pretrained.block, pretrained.layers,
     #             num_layers = 2, pretrained_nn = None)
-    from NNs import densenet201
     block = 121
     print("block: "+ str(block))
-    cnn = inception_v3(pretrained=False)
+    cnn = densenet161(pretrained=False)
 
 
     trained_models = []

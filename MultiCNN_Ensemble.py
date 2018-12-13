@@ -562,23 +562,23 @@ if __name__ == "__main__":
     cnn1.load_state_dict(cnn1_dict)
     models.append(cnn1)
 
-    cnn2 = ResNetDynamic(pretrained.block, pretrained.layers,
-                num_layers = 2, pretrained_nn = None)
-    cnn2_dict = torch.load('models/extraclassified/trained_model15.pt')['state_dict']
-    cnn2.load_state_dict(cnn2_dict)
-    models.append(cnn2)
-
-    cnn3 = ResNetDynamic(pretrained.block, pretrained.layers,
-                num_layers = 2, pretrained_nn = None)
-    cnn3_dict = torch.load('models/extraclassified/trained_model90.pt')['state_dict']
-    cnn3.load_state_dict(cnn3_dict)
-    models.append(cnn3)
-
-    # cnn4 = ResNetDynamic(pretrained.block, pretrained.layers,
+    # cnn2 = ResNetDynamic(pretrained.block, pretrained.layers,
     #             num_layers = 2, pretrained_nn = None)
-    # cnn4_dict = torch.load('models/trained_model_fold3_'+'stratified.pt')['state_dict']
-    # cnn4.load_state_dict(cnn4_dict)
-    # models.append(cnn4)
+    # cnn2_dict = torch.load('models/extraclassified/trained_model15.pt')['state_dict']
+    # cnn2.load_state_dict(cnn2_dict)
+    # models.append(cnn2)
+    #
+    # cnn3 = ResNetDynamic(pretrained.block, pretrained.layers,
+    #             num_layers = 2, pretrained_nn = None)
+    # cnn3_dict = torch.load('models/extraclassified/trained_model90.pt')['state_dict']
+    # cnn3.load_state_dict(cnn3_dict)
+    # models.append(cnn3)
+
+
+    cnn4 = densenet201(pretrained=False)
+    cnn4_dict = torch.load('models/extraclassified/dense201.pt')['state_dict']
+    cnn4.load_state_dict(cnn4_dict)
+    models.append(cnn4)
 
     # cnn2 = ResNetDynamic(Bottleneck, [2, 2, 2, 3],num_layers = 4)
     cnn = EnsembleClassifier(models)
@@ -660,10 +660,10 @@ if __name__ == "__main__":
         trained_model = train_and_validate(cnn, train_loader, test_loader,
                                            num_epochs=200, device = device,
                                            multiGPU = True,
-                                           save_name = 'extraclassified/ensemble.pt')
+                                           save_name = 'extraclassified/res_dense.pt')
     print(cnn)
     # # cnn.to(device)
-    # train_ensemble_on_test()
+    train_ensemble_on_test()
     #
     mean_norm_test, std_norm_test = calc_means_stds(train_images)
 
