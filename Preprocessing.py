@@ -343,7 +343,7 @@ def predict_test_set_kaggle(model, filenames,  mean_norm_test, std_norm_test):
 
 if __name__ == "__main__":
     # print("weighted classes")
-    classified = "extra"
+    classified = "full"
     num_splits = 90
     if classified == "full":
         original_images = pickle.load(open("pkl/train_padded64.pkl", "rb"))
@@ -482,7 +482,7 @@ if __name__ == "__main__":
                                                learning_rate = 0.001,
                                                weight_decay = 0,
                                                device = device,
-                                               save_name = 'extraclassified/trained_model_'+str(num_splits)+'_new.pt')
+                                               save_name = 'all_elements_trained_model_'+str(num_splits)+'_new.pt')
             # trained_models.append(trained_model)
             break
 
