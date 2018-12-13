@@ -21,9 +21,10 @@ import importlib
 import NNs
 import math
 importlib.reload(NNs)
-from NNs import *
 
 from NNs import ResNetDynamic, ResNetMine, CNN, SuperNet, DenseNet, EnsembleClassifier
+from NNs import densenet161, densenet169, densenet121, densenet201
+
 from torchsummary import summary
 # %matplotlib inline
 
