@@ -399,7 +399,7 @@ if __name__ == "__main__":
     norm_mean_width = np.mean(widths)
     norm_mean_height = np.mean(heights)
 
-    device = torch.device("cuda:3" if torch.cuda.device_count()>2 else "cuda:0")
+    device = torch.device("cuda:0" if torch.cuda.device_count()>2 else "cuda:0")
     import timeit
 
     ##Class weights for imbalance
@@ -482,7 +482,7 @@ if __name__ == "__main__":
                                                learning_rate = 0.001,
                                                weight_decay = 0,
                                                device = device,
-                                               save_name = 'extraclassified/trained_model90_new.pt')
+                                               save_name = 'extraclassified/trained_model_'+str(num_splits)+'_new.pt')
             # trained_models.append(trained_model)
             break
 
