@@ -22,8 +22,8 @@ import NNs
 import math
 importlib.reload(NNs)
 from NNs import *
-from NNs import ResNetDynamic, ResNetMine, CNN, SuperNet, DenseNet, EnsembleClassifier
 
+from NNs import ResNetDynamic, ResNetMine, CNN, SuperNet, DenseNet, EnsembleClassifier
 from torchsummary import summary
 # %matplotlib inline
 
@@ -398,7 +398,7 @@ if __name__ == "__main__":
     norm_mean_width = np.mean(widths)
     norm_mean_height = np.mean(heights)
 
-    device = torch.device("cuda:2" if torch.cuda.device_count()>2 else "cuda:0")
+    device = torch.device("cuda:0" if torch.cuda.device_count()>2 else "cuda:0")
     import timeit
 
     ##Class weights for imbalance
@@ -410,13 +410,13 @@ if __name__ == "__main__":
 
     from sklearn.model_selection import StratifiedKFold
 
-    pretrained = resnet50(pretrained = True)
+    # pretrained = resnet50(pretrained = True)
     # cnn = ResNetDynamic(pretrained.block, pretrained.layers,
     #             num_layers = 2, pretrained_nn = None)
-
-    block = (6, 12, 48, 32)
+    from NNs import densenet201
+    block = 201
     print("block: "+ str(block))
-    cnn = DenseNet(num_init_features=64, growth_rate=32, block_config=block)
+    cnn = densenet201(pretrained=False)
 
 
     trained_models = []
