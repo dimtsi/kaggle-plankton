@@ -411,12 +411,12 @@ if __name__ == "__main__":
 
     from sklearn.model_selection import StratifiedKFold
 
-    # pretrained = resnet50(pretrained = True)
-    # cnn = ResNetDynamic(pretrained.block, pretrained.layers,
-    #             num_layers = 2, pretrained_nn = None)
+    pretrained = resnet50(pretrained = True)
+    cnn = ResNetDynamic(pretrained.block, pretrained.layers,
+                num_layers = 2, pretrained_nn = None)
     block = 121
     print("block: "+ str(block))
-    cnn = densenet161(pretrained=False)
+    # cnn = densenet161(pretrained=False)
 
 
     trained_models = []
@@ -427,22 +427,22 @@ if __name__ == "__main__":
                                                           y = train_labels_no_test):
             X_train = []
             y_train = []
-            X_train = train_images_no_test
-            y_train = train_labels_no_test
+            # X_train = train_images_no_test
+            # y_train = train_labels_no_test
             X_val = []
             y_val = []
             norm = {}
-            # for i in train_indexes:
-            #     X_train.append(train_images_no_test[i])
-            #     y_train.append(train_labels_no_test[i])
-            # for j in validation_indexes:
-            #     X_val.append(train_images_no_test[j])
-            #     y_val.append(train_labels_no_test[j])
+            for i in train_indexes:
+                X_train.append(train_images_no_test[i])
+                y_train.append(train_labels_no_test[i])
+            for j in validation_indexes:
+                X_val.append(train_images_no_test[j])
+                y_val.append(train_labels_no_test[j])
             # X_train = X_train[:10]
             # y_train = y_train[:10]
 
-            X_val = test_mine_images
-            y_val = test_mine_labels
+            # X_val = test_mine_images
+            # y_val = test_mine_labels
             print("train: "+ str(len(X_train)) + " val: " + str(len(X_val))+ " None: " + str(len(original_images)-len(X_train)))
             print(np.bincount(y_train))
             print(np.bincount(test_mine_labels))
@@ -482,7 +482,7 @@ if __name__ == "__main__":
                                                learning_rate = 0.001,
                                                weight_decay = 0,
                                                device = device,
-                                               save_name = 'extraclassified/dense'+str(block)+'.pt')
+                                               save_name = 'extraclassified/trained_model90_new.pt')
             # trained_models.append(trained_model)
             break
 
