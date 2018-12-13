@@ -129,11 +129,11 @@ def get_cnn_features(feature_extractor, model, x):
         transforms.Normalize(mean=[mean_norm_test],
                     std =[std_norm_test])
     ])
-    
+
     total_features = torch.Tensor().float().cpu()
     total_predicted = torch.Tensor().long()
-    total_probabilities = torch.Tensor().float()  
-    
+    total_probabilities = torch.Tensor().float()
+
     cnn_dataset = ListsTestDataset(x, transform = test_transforms)
     cnn_loader = torch.utils.data.DataLoader(cnn_dataset, batch_size = 32, shuffle = False)
 
@@ -143,7 +143,7 @@ def get_cnn_features(feature_extractor, model, x):
         outputs = model(images).cuda()
         _, predicted = torch.max(outputs.data, 1)
         features = feature_extractor(images)
-        
+
         total_features = torch.cat((total_features, features.detach().cpu()))
         total_predicted = torch.cat((total_predicted, predicted.cpu().long()))
         total_probabilities = torch.cat((total_probabilities,(torch.nn.Softmax()(outputs)).detach().cpu()))
@@ -187,7 +187,7 @@ for i in range(original_moments.shape[1]):
 for i in range(original_sizes.shape[1]):
     feature_names.append("sizes"+str(i))
 for i in range(scaled_cnn_train_features.shape[1]):
-    feature_names.append("deep"+str(i))   
+    feature_names.append("deep"+str(i))
 
 
 # In[ ]:
@@ -231,7 +231,7 @@ x_kaggle = principalComponents[len(X_train)+len(X_test):]
 ## Base Learners
 import sklearn
 import xgboost as xgb
-from sklearn.ensemble import (RandomForestClassifier, AdaBoostClassifier, 
+from sklearn.ensemble import (RandomForestClassifier, AdaBoostClassifier,
                               GradientBoostingClassifier, ExtraTreesClassifier)
 from sklearn.svm import SVC
 from sklearn.model_selection import KFold, StratifiedKFold
@@ -252,8 +252,8 @@ NFOLDS = 5 # set folds for out-of-fold prediction
 kf = KFold(n_splits = NFOLDS, random_state=SEED)
 
 # Class to extend the Sklearn classifier
-    
-            
+
+
 
 
 # In[ ]:
@@ -271,10 +271,11 @@ def get_results(model, train_data, test_data, training_labels, test_labels):
 
 ####Weak Classifiers Params
 
+
 rf_params = {
     'n_jobs': -1,
     'n_estimators': 500,
-     'warm_start': True, 
+     'warm_start': True,
      #'max_features': 0.2,
     'max_depth': 5,
     'min_samples_leaf': 2,
@@ -307,7 +308,7 @@ gb_params = {
     'verbose': 0
 }
 
-# Support Vector Classifier parameters 
+# Support Vector Classifier parameters
 svc_params = {
     'kernel' : 'linear',
     'C' : 0.025
@@ -319,104 +320,109 @@ svc_params = {
 
 ##DTree
 
-start_time = time.time()
-
-dt_model = DecisionTreeClassifier(random_state=1)
-
-dt_model.fit(x_train, y_train)
-get_results(dt_model, x_train, x_test, y_train, y_test)
-
-
-elapsed_time = time.time() - start_time
-print("elapsed time: "+str(elapsed_time))
-
-
-# In[62]:
-
-
-##RandomForest
-
-start_time = time.time()
-
-rf_model = RandomForestClassifier(**rf_params)
-rf_model.fit(x_train, y_train)
-get_results(rf_model, x_train, x_test, y_train, y_test)
-
-elapsed_time = time.time() - start_time
-print("elapsed time: "+str(elapsed_time))
-
-
-# In[63]:
-
-
-##XGBoost
-
-start_time = time.time()
-
-xgb_model = XGBClassifier(nthread=-1, learning_rate = 0.01, min_child_weight = 0.01, max_depth=5, )
-xgb_model.fit(x_train, y_train)
-get_results(xgb_model, x_train, x_test, y_train, y_test)
-
-elapsed_time = time.time() - start_time
-print("elapsed time: "+str(elapsed_time))
-
-
-# In[64]:
-
-
+# start_time = time.time()
+#
+# dt_model = DecisionTreeClassifier(random_state=1)
+#
+# dt_model.fit(x_train, y_train)
+# get_results(dt_model, x_train, x_test, y_train, y_test)
+#
+#
+# elapsed_time = time.time() - start_time
+# print("elapsed time: "+str(elapsed_time))
+#
+#
+# # In[62]:
+#
+#
+# ##RandomForest
+#
+# start_time = time.time()
+#
+# rf_model = RandomForestClassifier(**rf_params)
+# rf_model.fit(x_train, y_train)
+# get_results(rf_model, x_train, x_test, y_train, y_test)
+#
+# elapsed_time = time.time() - start_time
+# print("elapsed time: "+str(elapsed_time))
+#
+#
+# # In[63]:
+#
+#
+# ##XGBoost
+#
+# start_time = time.time()
+#
+# xgb_model = XGBClassifier(nthread=-1, learning_rate = 0.01, min_child_weight = 0.01, max_depth=5, )
+# xgb_model.fit(x_train, y_train)
+# get_results(xgb_model, x_train, x_test, y_train, y_test)
+#
+# elapsed_time = time.time() - start_time
+# print("elapsed time: "+str(elapsed_time))
+#
+#
+# # In[64]:
+lr = [0.15, 0.1, 0.05, 0.01, 0.01]
+est = [200,500, 100]
 ##AdaBoost
+for learn in lr:
+    for estim in est:
+        ada_params['n_estimators']=estim
+        ada_params['learning_rate']=learn
 
-start_time = time.time()
 
-ada_model = AdaBoostClassifier(**ada_params)
-ada_model.fit(x_train, y_train)
-get_results(ada_model, x_train, x_test, y_train, y_test)
+        start_time = time.time()
 
-elapsed_time = time.time() - start_time
-print("elapsed time: "+str(elapsed_time))
+        ada_model = AdaBoostClassifier(**ada_params)
+        ada_model.fit(x_train, y_train)
+        get_results(ada_model, x_train, x_test, y_train, y_test)
+
+        elapsed_time = time.time() - start_time
+        print("elapsed time: "+str(elapsed_time))
 
 
 # In[24]:
 
 
-##ExtraTrees
-
-start_time = time.time()
-
-et_model = ExtraTreesClassifier(**et_params)
-et_model.fit(x_train, y_train)
-get_results(et_model, x_train, x_test, y_train, y_test)
-
-elapsed_time = time.time() - start_time
-print("elapsed time: "+str(elapsed_time))
-
-
-# In[25]:
-
-
-##SVM
-
-start_time = time.time()
-
-svm = SVC(**svc_params)
-svm.fit(scaler.fit_transform(x_train), y_train)
-get_results(svm, scaler.fit_transform(x_train), scaler.fit_transform(x_test), y_train, y_test)
-
-elapsed_time = time.time() - start_time
-print("elapsed time: "+str(elapsed_time))
-
-
-# In[26]:
-
-
-from sklearn.ensemble import VotingClassifier
-eclf = VotingClassifier(estimators=[('dt', dt_model), ('et_model', clf2), ('xgb', XGBClassifier), ('ada', XGBClassifier)], voting='soft')
-
-
-# In[27]:
-
-
-svm_results = svm.predict(scaler.fit_transform(x_kaggle))
+# ##ExtraTrees
+#
+# start_time = time.time()
+#
+# et_model = ExtraTreesClassifier(**et_params)
+# et_model.fit(x_train, y_train)
+# get_results(et_model, x_train, x_test, y_train, y_test)
+#
+# elapsed_time = time.time() - start_time
+# print("elapsed time: "+str(elapsed_time))
+#
+#
+# # In[25]:
+#
+#
+# ##SVM
+#
+# start_time = time.time()
+#
+# svm = SVC(**svc_params)
+# svm.fit(scaler.fit_transform(x_train), y_train)
+# get_results(svm, scaler.fit_transform(x_train), scaler.fit_transform(x_test), y_train, y_test)
+#
+# elapsed_time = time.time() - start_time
+# print("elapsed time: "+str(elapsed_time))
+#
+#
+# # In[26]:
+#
+#
+# from sklearn.ensemble import VotingClassifier
+# eclf = VotingClassifier(estimators=[('dt', dt_model), ('et_model', clf2), ('xgb', XGBClassifier), ('ada', XGBClassifier)], voting='soft')
+#
+#
+# # In[27]:
+#
+#
+# svm_results = svm.predict(scaler.fit_transform(x_kaggle))
 
 
 # In[28]:
@@ -431,4 +437,3 @@ svm_results = svm.predict(scaler.fit_transform(x_kaggle))
 # final = best_results.rename(index=str, columns={"predicted": "class"})
 # final
 # final.to_csv('results.csv',sep = ',', index = False)
-
