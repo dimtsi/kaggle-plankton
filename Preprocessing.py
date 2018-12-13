@@ -415,7 +415,7 @@ if __name__ == "__main__":
     #             num_layers = 2, pretrained_nn = None)
 
     block = (6, 12, 48, 32)
-    print("block": block)
+    print("block: "+ str(block))
     cnn = DenseNet(num_init_features=64, growth_rate=32, block_config=block)
 
 
@@ -482,7 +482,7 @@ if __name__ == "__main__":
                                                learning_rate = 0.001,
                                                weight_decay = 0,
                                                device = device,
-                                               save_name = 'extraclassified/dense.pt')
+                                               save_name = 'extraclassified/dense'+str(block)+'.pt')
             # trained_models.append(trained_model)
             break
 
