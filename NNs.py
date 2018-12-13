@@ -303,6 +303,7 @@ class EnsembleClassifier(nn.Module):
         self.net1 =  nn.Sequential(*list(networks[0].children()))
         # self.net1.requires_grad = False
         self.net2 =  nn.Sequential(*list(networks[1].children()))#[:-1]
+        print(self.net2)
         # self.net2.requires_grad = False
         # self.net3 =  nn.Sequential(*list(networks[2].children()))#[:-1]
         # self.net3.requires_grad = False
