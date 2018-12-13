@@ -558,19 +558,19 @@ if __name__ == "__main__":
 
     cnn1 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
-    cnn1_dict = torch.load('models/extraclassified/trained_model3_new.pt')['state_dict']
+    cnn1_dict = torch.load('models/extraclassified/trained_model_3_new.pt')['state_dict']
     cnn1.load_state_dict(cnn1_dict)
     models.append(cnn1)
 
     cnn2 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
-    cnn2_dict = torch.load('models/extraclassified/trained_model15_new.pt')['state_dict']
+    cnn2_dict = torch.load('models/extraclassified/trained_model_15_new.pt')['state_dict']
     cnn2.load_state_dict(cnn2_dict)
     models.append(cnn2)
 
     cnn3 = ResNetDynamic(pretrained.block, pretrained.layers,
                 num_layers = 2, pretrained_nn = None)
-    cnn3_dict = torch.load('models/extraclassified/trained_model90_new.pt')['state_dict']
+    cnn3_dict = torch.load('models/extraclassified/trained_model_90_new.pt')['state_dict']
     cnn3.load_state_dict(cnn3_dict)
     models.append(cnn3)
 
