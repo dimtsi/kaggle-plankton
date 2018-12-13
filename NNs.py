@@ -297,7 +297,7 @@ class SuperNet(nn.Module):
 class EnsembleClassifier(nn.Module):
 
     def __init__(self, networks, num_classes=121, multiGPU = False):
-        self.devices = [torch.device("cuda:0"), torch.device("cuda:1"), torch.device("cuda:2"), torch.device("cuda:3")]
+        self.devices = [torch.device("cuda:2"), torch.device("cuda:3"), torch.device("cuda:2"), torch.device("cuda:3")]
         self.multiGPU = multiGPU
         super(type(self), self).__init__()
         self.net1 =  nn.Sequential(*list(networks[0].children()))
