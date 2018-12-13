@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[29]:
+# In[1]:
 
 
 import numpy as np
@@ -39,7 +39,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 
 
-# In[30]:
+# In[2]:
 
 
 import sys
@@ -48,7 +48,7 @@ print(sys.path)
 
 # ## LOAD DATA
 
-# In[46]:
+# In[3]:
 
 
 original_train_images = pickle.load(open("pkl/train_padded64.pkl", "rb"))
@@ -60,7 +60,7 @@ kaggle_test_filenames = pickle.load(open("pkl/test_filenames.pkl", "rb"))
 
 # ## Load handcrafted features
 
-# In[47]:
+# In[4]:
 
 
 original_haralick = pickle.load(open("features/train_haralick.pkl", "rb"))
@@ -77,7 +77,7 @@ kaggle_test_handcrafted_features = np.concatenate([kaggle_test_haralick, kaggle_
 
 # ## Split to train test mine
 
-# In[48]:
+# In[5]:
 
 
 test_set_mine_indexes = pickle.load(open("pkl/test_set_mine_indexes.pkl", "rb"))
@@ -92,7 +92,7 @@ test_mine_labels = [i for j, i in enumerate(original_labels) if j in test_set_mi
 test_mine_handcrafted = [i for j, i in enumerate(train_handcrafted_features) if j in test_set_mine_indexes]
 
 
-# In[49]:
+# In[6]:
 
 
 X_train_cnn, y_train_cnn = train_images, train_labels
@@ -101,20 +101,20 @@ X_val_cnn, y_val_cnn = test_mine_images, test_mine_labels
 
 # ## CNN
 
-# In[50]:
+# In[7]:
 
 
 pretrained = resnet50(pretrained = True)
 cnn = ResNetDynamic(pretrained.block, pretrained.layers, num_layers = 2, pretrained_nn = None)
 #
-cnn_dict = torch.load('models/extraclassified/trained_model_90_new.pt', map_location={"cuda:1": "cuda:0", "cuda:2": "cuda:0"})['state_dict']
+cnn_dict = torch.load('models/all_elements_trained_model_90_new.pt', map_location={"cuda:1": "cuda:0", "cuda:2": "cuda:0"})['state_dict']
 cnn.load_state_dict(cnn_dict)
 cnn = cnn.eval().cuda()
 del(pretrained)
 feature_extractor_cnn = nn.Sequential(*list(cnn.children())[:-2]).eval().cuda()
 
 
-# In[51]:
+# In[8]:
 
 
 mean_norm_test, std_norm_test = calc_means_stds(train_images)
@@ -151,7 +151,7 @@ def get_cnn_features(feature_extractor, model, x):
     return (total_features.numpy(), total_predicted.numpy(), total_probabilities.numpy())
 
 
-# In[52]:
+# In[ ]:
 
 
 cnn_train_features, cnn_train_predictions, cnn_train_probabilities = get_cnn_features(feature_extractor_cnn, cnn, X_train_cnn)
@@ -161,7 +161,7 @@ cnn_kaggle_features, cnn_kaggle_predictions, cnn_kaggle_probabilities = get_cnn_
 
 # ## Scale and Preprocess for Ensemble
 
-# In[53]:
+# In[ ]:
 
 
 scaler = StandardScaler()
@@ -175,7 +175,7 @@ scaled_cnn_kaggle_features = scaler.fit_transform(cnn_kaggle_features)
 
 # ### Setup Features DF
 
-# In[54]:
+# In[ ]:
 
 
 feature_names = []
@@ -190,7 +190,7 @@ for i in range(scaled_cnn_train_features.shape[1]):
     feature_names.append("deep"+str(i))   
 
 
-# In[55]:
+# In[ ]:
 
 
 ##concat handcrafted and deep features
@@ -209,7 +209,7 @@ X_kaggle = pd.DataFrame(NP_FEATURES_KAGGLE, columns = feature_names)
 
 # ## PCA
 
-# In[56]:
+# In[ ]:
 
 
 pca = PCA(n_components=40)
@@ -225,7 +225,7 @@ x_test = principalComponents[len(X_train):len(X_train)+len(X_test)]
 x_kaggle = principalComponents[len(X_train)+len(X_test):]
 
 
-# In[57]:
+# In[ ]:
 
 
 ## Base Learners
@@ -239,7 +239,7 @@ from sklearn.tree import DecisionTreeClassifier
 from xgboost import XGBClassifier
 
 
-# In[58]:
+# In[ ]:
 
 
 ntrain = x_train.shape[0]
@@ -256,7 +256,7 @@ kf = KFold(n_splits = NFOLDS, random_state=SEED)
             
 
 
-# In[59]:
+# In[ ]:
 
 
 def get_results(model, train_data, test_data, training_labels, test_labels):
@@ -266,7 +266,7 @@ def get_results(model, train_data, test_data, training_labels, test_labels):
     print("Validation Accuracy: " +str(accuracy_score(test_labels, y_pred_test)))
 
 
-# In[60]:
+# In[ ]:
 
 
 ####Weak Classifiers Params
@@ -331,7 +331,7 @@ elapsed_time = time.time() - start_time
 print("elapsed time: "+str(elapsed_time))
 
 
-# In[ ]:
+# In[62]:
 
 
 ##RandomForest
@@ -346,7 +346,7 @@ elapsed_time = time.time() - start_time
 print("elapsed time: "+str(elapsed_time))
 
 
-# In[ ]:
+# In[63]:
 
 
 ##XGBoost
@@ -361,7 +361,7 @@ elapsed_time = time.time() - start_time
 print("elapsed time: "+str(elapsed_time))
 
 
-# In[ ]:
+# In[64]:
 
 
 ##AdaBoost
@@ -409,8 +409,8 @@ print("elapsed time: "+str(elapsed_time))
 # In[26]:
 
 
-# from sklearn.ensemble import VotingClassifier
-# eclf = VotingClassifier(estimators=[('dt', clf1), ('knn', clf2), ('svc', clf3)], voting='soft', weights=[2, 1, 2])
+from sklearn.ensemble import VotingClassifier
+eclf = VotingClassifier(estimators=[('dt', dt_model), ('et_model', clf2), ('xgb', XGBClassifier), ('ada', XGBClassifier)], voting='soft')
 
 
 # In[27]:
