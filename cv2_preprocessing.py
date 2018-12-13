@@ -37,15 +37,15 @@ for filename in glob.iglob('test_images' +'/*'):
     test_images.append(image)
     test_filenames.append(filename.replace('test_images/', ''))
 
-train_images_PIL = pickle.load(open("pkl/train_padded64.pkl", "rb"))
-train_labels = pickle.load(open("pkl/all_labels.pkl", "rb"))
+train_images_PIL = pickle.load(open("pkl/extraclassified_train_images.pkl", "rb"))
+# train_labels = pickle.load(open("pkl/extraclassified_train_labels.pkl", "rb"))
 
-test_set_mine_indexes = pickle.load(open("pkl/test_set_mine_indexes_classified.pkl", "rb"))
-train_images_no_test = [i for j, i in enumerate(train_images) if j not in test_set_mine_indexes]
-train_labels_no_test = [i for j, i in enumerate(train_labels) if j not in test_set_mine_indexes]
-#
-test_mine_images = [i for j, i in enumerate(original_images) if j in test_set_mine_indexes]
-test_mine_labels = [i for j, i in enumerate(original_labels) if j in test_set_mine_indexes]
+# test_set_mine_indexes = pickle.load(open("pkl/test_set_mine_indexes_extraclassified.pkl", "rb"))
+# train_images_no_test = [i for j, i in enumerate(train_images) if j not in test_set_mine_indexes]
+# train_labels_no_test = [i for j, i in enumerate(train_labels) if j not in test_set_mine_indexes]
+# #
+# test_mine_images = [i for j, i in enumerate(original_images) if j in test_set_mine_indexes]
+# test_mine_labels = [i for j, i in enumerate(original_labels) if j in test_set_mine_indexes]
 
 
 
@@ -56,8 +56,8 @@ for image in train_images_PIL:
 
 len(train_labels)
 
-pickle.dump( train_images, open("pkl/train_images_cv2.pkl", "wb"))
-pickle.dump( train_labels, open("pkl/train_labels_cv2.pkl", "wb"))
+pickle.dump( train_images, open("pkl/extraclassified_train_images_cv2.pkl", "wb"))
+pickle.dump( train_labels, open("pkl/extraclassified_train_labels_cv2.pkl", "wb"))
 pickle.dump( test_images, open("pkl/test_images_cv2.pkl", "wb"))
 
 train_haralick = []
