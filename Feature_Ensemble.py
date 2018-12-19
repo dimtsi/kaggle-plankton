@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[2]:
-
-
 import numpy as np
 import math;
 import pickle
@@ -28,13 +22,9 @@ import glob
 import cv2
 
 from torchsummary import summary
-from Preprocessing import *
-from Preprocessing import ListsTrainDataset, ListsTestDataset
+from train_single import *
+from train_single import ListsTrainDataset, ListsTestDataset
 
-
-# ## LOAD DATA
-
-# In[3]:
 
 
 train_images = pickle.load(open("pkl/train_resized64.pkl", "rb"))
@@ -47,9 +37,6 @@ test_filenames = pickle.load(open("pkl/test_filenames.pkl", "rb"))
 
 # ## Load handcrafted features
 
-# In[4]:
-
-
 train_haralick = pickle.load(open("features/train_haralick.pkl", "rb"))
 train_moments = pickle.load(open("features/train_moments.pkl", "rb"))
 train_sizes = pickle.load(open("features/train_sizes.pkl", "rb"))
@@ -60,11 +47,6 @@ test_sizes = pickle.load(open("features/test_sizes.pkl", "rb"))
 
 train_handcrafted_features = np.concatenate([train_haralick, train_moments,  train_sizes], axis =1)
 test_handcrafted_features = np.concatenate([test_haralick, test_moments,  test_sizes], axis =1)
-
-
-# ### New Dataset
-
-# In[5]:
 
 
 class ListsTrainFeatureDataset(Dataset):
@@ -109,18 +91,12 @@ class ListsTestFeatureDataset(Dataset):
 
 # ## CUSTOM NETWORK
 
-# In[6]:
-
-
 pretrained = resnet50(pretrained = True)
 cnn = ResNetDynamic(pretrained.block, pretrained.layers, num_layers = 2, pretrained_nn = None)
 #
 cnn.load_state_dict(torch.load('best_new.pt')['state_dict'])
-feature_extractor_cnn = nn.Sequential(*list(cnn.children())[:-2])
+feature_extractor_cnn = nn.Sequential(*list(cnn.children())[:-2]) ##Feature Layer output
 feature_extractor_cnn
-
-
-# In[7]:
 
 
 feature_extractor_dict = feature_extractor_cnn.state_dict()
@@ -130,11 +106,7 @@ feature_extractor_dict.update(pretrained_dict)
 feature_extractor_cnn.load_state_dict(feature_extractor_dict)
 feature_extractor_cnn = feature_extractor_cnn.eval().cuda()
 
-
 # ## Get features from pretrained NN
-
-# In[8]:
-
 
 def get_cnn_features(model, x):
     features = ...
@@ -161,8 +133,6 @@ def get_cnn_features(model, x):
             features = torch.cat((features,outputs.detach().cpu()),0)
     return features.numpy()
 
-
-# In[9]:
 
 
 from sklearn.model_selection import StratifiedKFold
@@ -220,23 +190,8 @@ scaled_features_val = scaler.fit_transform(handcrafted_val)
 FINAL_FEATURES_TRAIN = np.concatenate([cnn_train_features, scaled_features_train], axis = 1)
 FINAL_FEATURES_VAL = np.concatenate([cnn_val_features, scaled_features_val], axis = 1)
 
-
-# In[13]:
-
-
-FINAL_FEATURES_TRAIN.shape
-FINAL_FEATURES_VAL.shape
-
-
-# In[15]:
-
-
-# %%time
-
 from sklearn.externals.six.moves import zip
-
 import matplotlib.pyplot as plt
-
 from sklearn.datasets import make_gaussian_quantiles
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.metrics import accuracy_score
@@ -247,15 +202,8 @@ n_estimators = [5, 10, 50, 100, 500]
 n_estimators
 
 
-# In[16]:
-
-
 X_train, X_val = FINAL_FEATURES_TRAIN, FINAL_FEATURES_VAL
 y_train, y_test = y_train, y_val
-
-
-# In[ ]:
-
 
 # ##ADABOOST
 
@@ -277,9 +225,6 @@ y_train, y_test = y_train, y_val
 #             print("lr:" +str(lr) +" est:"+ str(est)+" depth:"+str(depth) )
 #             print("Training Accuracy: " +str(accuracy_score(y_train, y_pred_train)))
 #             print("Validation Accuracy: " +str(accuracy_score(y_test, y_pred_val)))
-
-
-# In[ ]:
 
 
 def CreateBalancedSampleWeights(y_train, largest_class_weight_coef):

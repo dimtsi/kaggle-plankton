@@ -110,7 +110,8 @@ class ResNetMine(nn.Module):
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2)
         # self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
         # self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
-        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        # self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        self.avgpool = nn.MaxPool2d(2)
         self.fc1 = nn.Sequential(
             # nn.Linear(128*block.expansion, 64*block.expansion),
             # nn.LeakyReLU(0.3),
@@ -189,6 +190,7 @@ class ResNetDynamic(nn.Module):
             layer_planes *= 2
         self.inside_layers = nn.Sequential(inside_layers)
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        # self.avgpool = nn.MaxPool2d(4,stride = 6)
         self.flatten = Flatten()
         self.final_size = 64* block.expansion * 2**(num_layers-1)
         self.fc1 = nn.Sequential(

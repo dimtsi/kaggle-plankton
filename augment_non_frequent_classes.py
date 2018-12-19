@@ -5,9 +5,10 @@ from torchvision import transforms
 from PIL import Image, ImageOps, ImageFilter
 import matplotlib.pyplot as plt
 
-
-# In[15]:
-
+"""
+Create augmented external dataset with intense augmentation
+on non-frequent classes
+"""
 
 original_train_images = pickle.load(open("pkl/classified_train_images.pkl", "rb"))
 original_train_labels = pickle.load(open("pkl/classified_train_labels.pkl", "rb"))
@@ -23,21 +24,11 @@ test_mine_images = [i for j, i in enumerate(original_train_images) if j in test_
 test_mine_labels = [i for j, i in enumerate(original_train_labels) if j in test_set_mine_indexes]
 
 
-# In[16]:
-
-
 len(original_train_images)
-
-
-# In[17]:
-
 
 class_weights = {}
 class_sample_counts = np.bincount(train_labels)
 train_samples_weight = [class_sample_counts[class_id] for class_id in train_labels]
-
-
-# In[18]:
 
 
 most_frequent = np.max(class_sample_counts)
@@ -46,48 +37,21 @@ augmentation_rate_per_class = most_frequent//class_sample_counts//7
 augmentation_rate_per_class
 
 
-# In[19]:
-
-
 transform = transforms.Compose([
-    # transforms.resize(image, (64, 64)),
-    # transforms.RandomCrop(64),
-#     transforms.RandomRotation(degrees=360),
+    transforms.RandomRotation(degrees=360),
     transforms.RandomAffine(50, shear=20),
-#     transforms.Normalize(mean=[norm_params['train_norm_mean']],
-#                 std =[norm_params['train_norm_std']])
-])
-
-# plt.imshow(train_images[0])
-for i in range(3):
-    plt.imshow(transform(train_images[0]))
-
-np.bincount(train_labels)
-# plt.imshow(train_images[0])
-
-
-# In[20]:
 
 
 augmented_images = []
 augmented_labels = []
-
-# for original_image in train_images:
 for i, image in enumerate(train_images):
     label = train_labels[i]
     for num_of_transforms in range(augmentation_rate_per_class[label]):
         augmented_images.append(transform(image))
         augmented_labels.append(label)
 
-
-# In[21]:
-
-
 pickle.dump(augmented_images, open("pkl/augmented/augmented_only_images.pkl", "wb" ))
 pickle.dump(augmented_labels, open("pkl/augmented/augmented_only_labels.pkl", "wb" ))
-
-
-# In[22]:
 
 
 all_images_with_aug = train_images+augmented_images
@@ -95,14 +59,9 @@ len(all_images_with_aug)
 all_labels = train_labels+augmented_labels
 
 
-# In[23]:
-
-
 pickle.dump(all_images_with_aug, open("pkl/augmented/all_images.pkl", "wb" ))
 pickle.dump(all_labels, open("pkl/augmented/all_labels.pkl", "wb" ))
 
-
-# In[24]:
 
 
 classified_train_images = []
@@ -119,25 +78,13 @@ pickle.dump( classified_train_images, open("pkl/augmented/classified_all_images.
 pickle.dump( classified_train_labels, open("pkl/augmented/classified_all_labels.pkl", "wb"))
 
 
-# In[25]:
-
 
 train_images = pickle.load(open("pkl/augmented/all_images.pkl", "rb"))
 classified_train_images = pickle.load(open("pkl/augmented/classified_all_images.pkl", "rb"))
 
-# In[13]:
-
 
 def pad_and_resize(im):
     desired_size = 64
-    # old_size = im.size  # old_size[0] is in (width, height) format
-    # ratio = float(desired_size)/max(old_size)
-    # new_size = tuple([int(x*ratio) for x in old_size])
-    # im = im.resize(new_size, Image.ANTIALIAS)
-    # new_im = Image.new("RGB", (desired_size, desired_size), "white")
-    # new_im.paste(im, ((desired_size-new_size[0])//2,
-    #                     (desired_size-new_size[1])//2))
-    # new_im = new_im.convert('L')
     new_im = im.resize((desired_size, desired_size), Image.ANTIALIAS)
     return new_im
 
@@ -150,15 +97,12 @@ for im in train_images:
 for im in classified_train_images:
     preprocessed_classified_images.append(pad_and_resize(im))
 
-# In[17]:
 train_images[78]
 preprocessed_train_images[78]
 
 pickle.dump( preprocessed_train_images, open( "pkl/augmented/train_resized64", "wb" ) )
 pickle.dump( preprocessed_classified_images, open( "pkl/augmented/classified_resized64.pkl", "wb" ) )
 
-
-# In[27]:
 
 
 train_images = pickle.load(open("pkl/augmented/all_images.pkl", "rb"))
@@ -177,7 +121,6 @@ def pad_and_resize(im):
     new_im.paste(im, ((desired_size-new_size[0])//2,
                         (desired_size-new_size[1])//2))
     new_im = new_im.convert('L')
-    # new_im = im.resize((desired_size, desired_size), Image.ANTIALIAS)
     return new_im
 
 preprocessed_train_images = []
@@ -188,7 +131,6 @@ for im in train_images:
 for im in classified_train_images:
     preprocessed_classified_images.append(pad_and_resize(im))
 
-# In[17]:
 train_images[78]
 
 pickle.dump( preprocessed_train_images, open( "pkl/augmented/train_padded64", "wb" ) )
@@ -196,14 +138,6 @@ pickle.dump( preprocessed_classified_images, open( "pkl/augmented/classified_pad
 
 def pad_and_resize(im):
     desired_size = 64
-    # old_size = im.size  # old_size[0] is in (width, height) format
-    # ratio = float(desired_size)/max(old_size)
-    # new_size = tuple([int(x*ratio) for x in old_size])
-    # im = im.resize(new_size, Image.ANTIALIAS)
-    # new_im = Image.new("RGB", (desired_size, desired_size), "white")
-    # new_im.paste(im, ((desired_size-new_size[0])//2,
-    #                     (desired_size-new_size[1])//2))
-    # new_im = new_im.convert('L')
     new_im = im.resize((desired_size, desired_size), Image.ANTIALIAS)
     return new_im
 
@@ -221,9 +155,6 @@ preprocessed_train_images[78]
 
 pickle.dump( preprocessed_train_images, open( "pkl/augmented/train_resized64", "wb" ) )
 pickle.dump( preprocessed_classified_images, open( "pkl/augmented/classified_resized64.pkl", "wb" ) )
-
-
-
 
 
 ######======80========######
@@ -237,7 +168,6 @@ def pad_and_resize(im):
     new_im.paste(im, ((desired_size-new_size[0])//2,
                         (desired_size-new_size[1])//2))
     new_im = new_im.convert('L')
-    # new_im = im.resize((desired_size, desired_size), Image.ANTIALIAS)
     return new_im
 
 preprocessed_train_images = []
@@ -248,22 +178,12 @@ for im in train_images:
 for im in classified_train_images:
     preprocessed_classified_images.append(pad_and_resize(im))
 
-# In[17]:
-train_images[78]
 
 pickle.dump( preprocessed_train_images, open( "pkl/augmented/train_padded80", "wb" ) )
 pickle.dump( preprocessed_classified_images, open( "pkl/augmented/classified_padded80.pkl", "wb" ) )
 
 def pad_and_resize(im):
     desired_size = 80
-    # old_size = im.size  # old_size[0] is in (width, height) format
-    # ratio = float(desired_size)/max(old_size)
-    # new_size = tuple([int(x*ratio) for x in old_size])
-    # im = im.resize(new_size, Image.ANTIALIAS)
-    # new_im = Image.new("RGB", (desired_size, desired_size), "white")
-    # new_im.paste(im, ((desired_size-new_size[0])//2,
-    #                     (desired_size-new_size[1])//2))
-    # new_im = new_im.convert('L')
     new_im = im.resize((desired_size, desired_size), Image.ANTIALIAS)
     return new_im
 
@@ -275,7 +195,6 @@ for im in train_images:
 for im in classified_train_images:
     preprocessed_classified_images.append(pad_and_resize(im))
 
-# In[17]:
 train_images[78]
 preprocessed_train_images[78]
 

@@ -6,6 +6,10 @@ import glob
 import cv2
 import mahotas as mt
 
+
+"""Extract haralick features, image texture moments and sizes to be
+used as external handcrafted features"""
+
 def haralick(image):
         # calculate haralick texture features for 4 types of adjacency
         textures = mt.features.haralick(image)
@@ -22,41 +26,19 @@ test_images = []
 train_filenames = []
 test_filenames = []
 
-# labels_df = pd.read_csv('train_onelabel.csv')
-# labels_dict = labels_df.set_index('image')['class'].to_dict()
-#
-# for filename in labels_df['image'].values: ##to keep mapping with classes
-#     image = cv2.imread('train_images/'+filename,0).copy()
-#     train_images.append(image)
-#     train_labels.append(labels_dict[filename])
-#     train_filenames.append(filename)
-#
-#
 for filename in glob.iglob('test_images' +'/*'):
     image = cv2.imread(filename,0).copy()
     test_images.append(image)
     test_filenames.append(filename.replace('test_images/', ''))
 
-train_images_PIL = pickle.load(open("pkl/extraclassified_train_images.pkl", "rb"))
-# train_labels = pickle.load(open("pkl/extraclassified_train_labels.pkl", "rb"))
-
-# test_set_mine_indexes = pickle.load(open("pkl/test_set_mine_indexes_extraclassified.pkl", "rb"))
-# train_images_no_test = [i for j, i in enumerate(train_images) if j not in test_set_mine_indexes]
-# train_labels_no_test = [i for j, i in enumerate(train_labels) if j not in test_set_mine_indexes]
-# #
-# test_mine_images = [i for j, i in enumerate(original_images) if j in test_set_mine_indexes]
-# test_mine_labels = [i for j, i in enumerate(original_labels) if j in test_set_mine_indexes]
-
-
-
-
+train_images_PIL = pickle.load(open("pkl/classified_train_images.pkl", "rb"))
 
 for image in train_images_PIL:
     train_images.append(np.asarray(image).copy())
 
 len(train_labels)
 
-pickle.dump( train_images, open("pkl/extraclassified_train_images_cv2.pkl", "wb"))
+pickle.dump( train_images, open("pkl/classified_train_images_cv2.pkl", "wb"))
 pickle.dump( test_images, open("pkl/test_images_cv2.pkl", "wb"))
 
 train_haralick = []
@@ -70,8 +52,8 @@ for im in test_images:
 train_haralick = np.array(train_haralick)
 test_haralick = np.array(test_haralick)
 
-pickle.dump(train_haralick, open( "features/extraclassified/train_haralick.pkl", "wb"))
-pickle.dump(test_haralick, open( "features/extraclassified/test_haralick.pkl", "wb"))
+pickle.dump(train_haralick, open( "features/classified/train_haralick.pkl", "wb"))
+pickle.dump(test_haralick, open( "features/classified/test_haralick.pkl", "wb"))
 
 train_moments = []
 test_moments = []
@@ -84,8 +66,8 @@ for im in test_images:
 train_moments = np.array(train_moments)
 test_moments = np.array(test_moments)
 
-pickle.dump(train_moments, open("features/extraclassified/train_moments.pkl", "wb"))
-pickle.dump(test_moments, open("features/extraclassified/test_moments.pkl", "wb"))
+pickle.dump(train_moments, open("features/classified/train_moments.pkl", "wb"))
+pickle.dump(test_moments, open("features/classified/test_moments.pkl", "wb"))
 
 train_sizes = []
 test_sizes = []
